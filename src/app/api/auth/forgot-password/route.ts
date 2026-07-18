@@ -3,16 +3,28 @@ import { prisma } from "@/lib/db";
 import { generateResetToken } from "@/lib/auth";
 import { forgotPasswordSchema } from "@/lib/validation";
 import { sendEmail, passwordResetEmail } from "@/lib/email";
+import { checkRateLimit, clientIp, rateLimitedResponse } from "@/lib/rateLimit";
 
 const GENERIC_RESPONSE = { ok: true, message: "If that email is registered, we've sent a reset link." };
 
+// Per-IP blunts scripted enumeration/spam; per-email stops one account's
+// inbox from being flooded with reset emails triggered from many IPs.
+const IP_LIMIT = { limit: 10, windowMs: 60 * 60 * 1000 };
+const EMAIL_LIMIT = { limit: 5, windowMs: 60 * 60 * 1000 };
+
 export async function POST(req: NextRequest) {
+  const ipCheck = checkRateLimit(`forgot:ip:${clientIp(req)}`, IP_LIMIT.limit, IP_LIMIT.windowMs);
+  if (!ipCheck.allowed) return rateLimitedResponse(ipCheck.retryAfterSeconds);
+
   const body = await req.json().catch(() => null);
   const parsed = forgotPasswordSchema.safeParse(body);
   if (!parsed.success) {
     // Still respond generically to avoid leaking which emails are registered.
     return NextResponse.json(GENERIC_RESPONSE);
   }
+
+  const emailCheck = checkRateLimit(`forgot:email:${parsed.data.email}`, EMAIL_LIMIT.limit, EMAIL_LIMIT.windowMs);
+  if (!emailCheck.allowed) return NextResponse.json(GENERIC_RESPONSE);
 
   const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
   if (!user) {

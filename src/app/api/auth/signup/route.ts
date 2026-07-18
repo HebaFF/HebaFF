@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashPassword, setSessionCookie } from "@/lib/auth";
 import { signupSchema } from "@/lib/validation";
+import { checkRateLimit, clientIp, rateLimitedResponse } from "@/lib/rateLimit";
+
+// Blunts scripted mass account creation from a single source.
+const SIGNUP_LIMIT = { limit: 8, windowMs: 60 * 60 * 1000 };
 
 export async function POST(req: NextRequest) {
+  const rateCheck = checkRateLimit(`signup:ip:${clientIp(req)}`, SIGNUP_LIMIT.limit, SIGNUP_LIMIT.windowMs);
+  if (!rateCheck.allowed) return rateLimitedResponse(rateCheck.retryAfterSeconds);
+
   const body = await req.json().catch(() => null);
   const parsed = signupSchema.safeParse(body);
   if (!parsed.success) {

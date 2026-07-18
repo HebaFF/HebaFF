@@ -76,6 +76,15 @@ provider. `POST /api/auth/reset-password` validates the token, updates the
 password hash, and invalidates all other outstanding reset tokens for that
 account.
 
+**Rate limiting** (`src/lib/rateLimit.ts`): an in-memory fixed-window limiter
+applied to `login` (20/15min per IP, 10/15min per username — blunts both a
+single attacker guessing many usernames and credential stuffing spread across
+IPs), `signup` (8/hour per IP), `forgot-password` (10/hour per IP, 5/hour per
+email so one inbox can't be flooded from many IPs), and `reset-password`
+(20/hour per IP, defense in depth — the tokens themselves are already
+infeasible to brute-force). Blocked requests get `429` with a `Retry-After`
+header. See the "Known gaps" note below on scaling this past one instance.
+
 ## Payments
 
 `src/app/api/subscription/checkout/route.ts` creates a Stripe Checkout
@@ -128,8 +137,10 @@ design_handoff_glucodose/        — original design/behavior reference (kept fo
   is English-only, matching the prototype's stated scope — full i18n +
   RTL-testing every screen is called out as follow-up work in the original
   handoff.
-- Test coverage is limited to the dosing/ratio math (the safety-critical
-  part); API routes and UI flows are verified manually but not covered by
-  automated integration/e2e tests yet.
-- No rate limiting on auth endpoints (login, signup, forgot-password) — worth
-  adding before production launch to blunt brute-force/enumeration attempts.
+- Test coverage is limited to the dosing/ratio math and rate limiter (the
+  safety-critical / security-critical parts); API routes and UI flows are
+  verified manually but not covered by automated integration/e2e tests yet.
+- Rate limiting (`src/lib/rateLimit.ts`) is in-memory, fine for a
+  single-instance deployment but reset on restart and not shared across
+  instances — swap for a shared store (e.g. Upstash Redis) before running
+  multiple instances/serverless replicas in production.

@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashPassword, hashResetToken, setSessionCookie } from "@/lib/auth";
 import { resetPasswordSchema } from "@/lib/validation";
+import { checkRateLimit, clientIp, rateLimitedResponse } from "@/lib/rateLimit";
+
+// Tokens are 256-bit random and single-use, so brute-forcing one is already
+// infeasible — this is just defense in depth against scripted abuse.
+const RESET_LIMIT = { limit: 20, windowMs: 60 * 60 * 1000 };
 
 export async function POST(req: NextRequest) {
+  const rateCheck = checkRateLimit(`reset:ip:${clientIp(req)}`, RESET_LIMIT.limit, RESET_LIMIT.windowMs);
+  if (!rateCheck.allowed) return rateLimitedResponse(rateCheck.retryAfterSeconds);
+
   const body = await req.json().catch(() => null);
   const parsed = resetPasswordSchema.safeParse(body);
   if (!parsed.success) {
