@@ -10,6 +10,7 @@ export async function GET() {
     user: {
       id: user.id,
       username: user.username,
+      email: user.email,
       profile: user.profile ? toProfileDTO(user.profile) : null,
       subscription: user.subscription
         ? {

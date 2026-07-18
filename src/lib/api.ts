@@ -3,6 +3,7 @@ import type { ProfileDTO } from "./profileDto";
 export type MeUser = {
   id: string;
   username: string;
+  email: string | null;
   profile: ProfileDTO | null;
   subscription: { isPremium: boolean; trialUsed: boolean; trialStartedAt: number | null };
 };
@@ -35,10 +36,10 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   me: () => request<{ user: MeUser | null }>("/api/auth/me"),
-  signup: (username: string, password: string) =>
+  signup: (username: string, password: string, email?: string) =>
     request<{ id: string; username: string; hasProfile: boolean }>("/api/auth/signup", {
       method: "POST",
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, email }),
     }),
   login: (username: string, password: string) =>
     request<{ id: string; username: string; hasProfile: boolean }>("/api/auth/login", {
@@ -46,6 +47,15 @@ export const api = {
       body: JSON.stringify({ username, password }),
     }),
   logout: () => request<{ ok: true }>("/api/auth/logout", { method: "POST" }),
+  forgotPassword: (email: string) =>
+    request<{ ok: true; message: string; devResetUrl?: string }>("/api/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+  resetPassword: (token: string, password: string) =>
+    request<{ ok: true }>("/api/auth/reset-password", { method: "POST", body: JSON.stringify({ token, password }) }),
+  updateEmail: (email: string) =>
+    request<{ email: string }>("/api/account/email", { method: "PUT", body: JSON.stringify({ email }) }),
   saveProfile: (data: Record<string, unknown>) =>
     request<{ profile: ProfileDTO }>("/api/profile", { method: "PUT", body: JSON.stringify(data) }),
   listFoods: () => request<{ foods: Food[] }>("/api/foods"),

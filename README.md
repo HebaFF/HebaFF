@@ -57,13 +57,24 @@ one-line provider change, not a schema rewrite.
 
 ## Auth
 
-Custom email-free username/password auth (matching the prototype's
-username-based login) — see `src/lib/auth.ts` and `src/app/api/auth/*`.
-Passwords are hashed with bcrypt (never stored or compared in plaintext).
-Sessions are HS256 JWTs in an httpOnly, sameSite=lax cookie, verified at the
-edge in `src/middleware.ts` for `/dashboard`, `/setup`, `/history`,
-`/premium`, `/onboarding`. There's no password-reset flow yet — same gap
-flagged in the original design handoff; worth adding before shipping.
+Username/password auth (matching the prototype's username-based login) — see
+`src/lib/auth.ts` and `src/app/api/auth/*`. Passwords are hashed with bcrypt
+(never stored or compared in plaintext). Sessions are HS256 JWTs in an
+httpOnly, sameSite=lax cookie, verified at the edge in `src/middleware.ts` for
+`/dashboard`, `/setup`, `/history`, `/premium`, `/onboarding`.
+
+**Password reset** (a gap flagged in the original design handoff, now
+closed): email is optional at signup and editable later from Setup
+(`PUT /api/account/email`). `POST /api/auth/forgot-password` issues a
+single-use, SHA-256-hashed, 1-hour-expiry token (`PasswordResetToken` model)
+and emails a `/reset-password?token=...` link via `src/lib/email.ts`; the
+response is identical whether or not the email is registered, to avoid
+account enumeration. Without `RESEND_API_KEY` configured, the email is logged
+to the server console and the link is also returned directly in the API
+response in non-production, so the flow is fully testable without a real
+provider. `POST /api/auth/reset-password` validates the token, updates the
+password hash, and invalidates all other outstanding reset tokens for that
+account.
 
 ## Payments
 
@@ -89,7 +100,9 @@ original design handoff — the "pay once, keep forever" model maps directly.
 
 `src/lib/calc.ts` ports the prototype's dose formulas verbatim (500 rule for
 carb ratio, 1500/1700/2000 rule for ISF, BG range classification, mg/dL↔mmol/L
-conversion). Do not change these without product/clinical sign-off.
+conversion). Do not change these without product/clinical sign-off. Covered by
+unit tests in `src/lib/calc.test.ts` and `src/lib/profileDto.test.ts` — run
+with `npm test`.
 
 ## Project structure
 
@@ -108,7 +121,6 @@ design_handoff_glucodose/        — original design/behavior reference (kept fo
 
 ## Known gaps / follow-ups
 
-- No password reset flow (flagged as a gap in the original design handoff too).
 - Next.js 14.2.x has several patched CVEs only fixed in Next 16 (a breaking
   major-version upgrade) — worth scheduling before production launch;
   `npm audit` has details.
@@ -116,4 +128,8 @@ design_handoff_glucodose/        — original design/behavior reference (kept fo
   is English-only, matching the prototype's stated scope — full i18n +
   RTL-testing every screen is called out as follow-up work in the original
   handoff.
-- No automated test suite yet.
+- Test coverage is limited to the dosing/ratio math (the safety-critical
+  part); API routes and UI flows are verified manually but not covered by
+  automated integration/e2e tests yet.
+- No rate limiting on auth endpoints (login, signup, forgot-password) — worth
+  adding before production launch to blunt brute-force/enumeration attempts.

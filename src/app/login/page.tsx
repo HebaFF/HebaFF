@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell, SegmentedControl, Field, TextInput, Button } from "@/components/ui";
 import { useLang } from "@/context/LangContext";
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -31,7 +33,10 @@ export default function LoginPage() {
     setError("");
     setSubmitting(true);
     try {
-      const result = mode === "signup" ? await api.signup(username.trim(), password) : await api.login(username.trim(), password);
+      const result =
+        mode === "signup"
+          ? await api.signup(username.trim(), password, email.trim() || undefined)
+          : await api.login(username.trim(), password);
       await refresh();
       router.replace(result.hasProfile ? "/dashboard" : "/onboarding");
     } catch (err) {
@@ -127,10 +132,29 @@ export default function LoginPage() {
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
             />
           </Field>
+          {mode === "signup" && (
+            <Field label="Email" hint="Optional — lets you reset your password if you forget it">
+              <TextInput
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                autoComplete="email"
+              />
+            </Field>
+          )}
           {error && <div style={{ color: "var(--danger)", fontSize: 13, fontWeight: 600 }}>{error}</div>}
           <Button type="submit" full size="lg" disabled={submitting} style={{ marginTop: 8 }}>
             {submitting ? "Please wait…" : mode === "signup" ? S.signup : S.login}
           </Button>
+          {mode === "login" && (
+            <Link
+              href="/forgot-password"
+              style={{ textAlign: "center", fontSize: 13, fontWeight: 600, color: "var(--primary)" }}
+            >
+              Forgot password?
+            </Link>
+          )}
         </form>
 
         <p style={{ fontSize: 12, color: "var(--text-3)", marginTop: 28, textAlign: "center", lineHeight: 1.6 }}>

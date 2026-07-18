@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DashboardCard, Badge, Button } from "@/components/ui";
+import { DashboardCard, Badge, Button, Modal, Field, TextInput } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
 import { DIABETES_TYPES } from "@/lib/constants";
 import { round2 } from "@/lib/calc";
+import { api, ApiError } from "@/lib/api";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -55,8 +57,60 @@ function RatioCard({
   );
 }
 
+function EmailRow({ email, onSaved }: { email: string | null; onSaved: () => Promise<unknown> }) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(email ?? "");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function save() {
+    setError("");
+    setSaving(true);
+    try {
+      await api.updateEmail(value.trim());
+      await onSaved();
+      setOpen(false);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not save email.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <>
+      <div
+        style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: "1px solid var(--border)" }}
+      >
+        <span style={{ fontSize: 13, color: "var(--text-2)" }}>Email</span>
+        <button
+          onClick={() => {
+            setValue(email ?? "");
+            setError("");
+            setOpen(true);
+          }}
+          style={{ border: "none", background: "none", fontSize: 13, fontWeight: 700, color: email ? "var(--text)" : "var(--primary)" }}
+        >
+          {email ?? "+ Add email"}
+        </button>
+      </div>
+      <Modal open={open} onClose={() => setOpen(false)} title="Email for password reset">
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <Field label="Email" hint="Used only to send you a password-reset link if you forget your password.">
+            <TextInput type="email" value={value} onChange={(e) => setValue(e.target.value)} placeholder="you@example.com" autoFocus />
+          </Field>
+          {error && <div style={{ color: "var(--danger)", fontSize: 13, fontWeight: 600 }}>{error}</div>}
+          <Button full onClick={save} disabled={saving}>
+            {saving ? "Saving…" : "Save email"}
+          </Button>
+        </div>
+      </Modal>
+    </>
+  );
+}
+
 export default function SetupPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, refresh } = useAuth();
   const router = useRouter();
 
   if (!user?.profile) return null;
@@ -73,6 +127,7 @@ export default function SetupPage() {
     <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 28px", display: "flex", flexDirection: "column", gap: 16 }}>
       <DashboardCard icon="📋" title="Setup & Ratios" right={isPremium ? <Badge tone="good">Premium</Badge> : <Badge tone="neutral">Free</Badge>}>
         <InfoRow label="Username" value={`@${user.username}`} />
+        <EmailRow email={user.email} onSaved={refresh} />
         <InfoRow label="Gender" value={profile.gender || "—"} />
         <InfoRow label="Age" value={profile.age || "—"} />
         <InfoRow label="Date diagnosed" value={profile.diagnosisDate || "—"} />

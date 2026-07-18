@@ -9,14 +9,30 @@ export const usernameSchema = z
 
 export const passwordSchema = z.string().min(8, "Password must be at least 8 characters.");
 
+export const emailSchema = z.string().trim().toLowerCase().email("Enter a valid email address.");
+
 export const signupSchema = z.object({
   username: usernameSchema,
   password: passwordSchema,
+  email: z.union([emailSchema, z.literal("")]).optional(),
 });
 
 export const loginSchema = z.object({
   username: z.string().trim().min(1),
   password: z.string().min(1),
+});
+
+export const updateEmailSchema = z.object({
+  email: emailSchema,
+});
+
+export const forgotPasswordSchema = z.object({
+  email: emailSchema,
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  password: passwordSchema,
 });
 
 export const profileSchema = z.object({

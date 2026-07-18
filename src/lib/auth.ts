@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { randomBytes, createHash } from "crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { prisma } from "./db";
@@ -67,4 +68,17 @@ export async function getCurrentUser() {
     where: { id: userId },
     include: { profile: true, subscription: true },
   });
+}
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+// Generates a random reset token; only its SHA-256 hash is ever stored, so a
+// leaked database (unlike a leaked email) can't be used to reset passwords.
+export function generateResetToken(): { token: string; tokenHash: string; expiresAt: Date } {
+  const token = randomBytes(32).toString("hex");
+  return { token, tokenHash: hashResetToken(token), expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS) };
+}
+
+export function hashResetToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
 }
