@@ -30,6 +30,7 @@ export default function PremiumPage() {
 
   if (!user) return null;
   const { isPremium, trialUsed, trialStartedAt } = user.subscription;
+  // eslint-disable-next-line react-hooks/purity -- day-granularity countdown, sub-day render-time drift doesn't change the displayed value
   const daysLeft = trialStartedAt ? Math.max(0, TRIAL_DAYS - Math.floor((Date.now() - trialStartedAt) / 86400000)) : 0;
   const trialActive = trialUsed && !isPremium && daysLeft > 0;
 

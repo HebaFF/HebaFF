@@ -25,8 +25,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setFoods(f.foods);
   }, []);
 
+  // One-time entries/foods hydration on mount. See AuthContext.tsx for why
+  // this fetch-on-mount pattern (with an unmount guard) is kept as-is rather
+  // than restructured around react-hooks/set-state-in-effect.
   useEffect(() => {
-    refresh().finally(() => setLoading(false));
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refresh().finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [refresh]);
 
   const logEntry = useCallback(async (entry: Omit<LogEntry, "id">) => {

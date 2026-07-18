@@ -20,6 +20,7 @@ export default function DashboardPage() {
   const profile = user.profile;
   const isPremium = user.subscription.isPremium;
 
+  // eslint-disable-next-line react-hooks/purity -- millisecond-scale render-time drift is inconsequential for a 7-day filter cutoff
   const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const readings = entries.filter((e) => e.timestamp >= cutoff && e.currentBG !== undefined);
   const inRangeCount = readings.filter((e) => classifyBG(e.currentBG!, profile.units) === "inRange").length;

@@ -9,13 +9,13 @@ prototype's localStorage + plaintext-password + fake-subscription-flag setup.
 
 ## Stack
 
-- **Next.js 14** (App Router, TypeScript) — both the front end and the API
-  routes live in this one app.
+- **Next.js 16** (App Router, TypeScript, Turbopack) — both the front end and
+  the API routes live in this one app.
 - **Prisma** ORM. Local dev uses **SQLite** (zero setup, `prisma/dev.db`,
   gitignored) — see [Database](#database) for switching to Postgres.
 - **Auth**: bcrypt password hashing + signed JWT session cookie (httpOnly),
-  verified in `src/middleware.ts` for route protection and in
-  `src/lib/auth.ts` for API routes.
+  verified in `src/proxy.ts` (Next 16's renamed `middleware.ts` convention)
+  for route protection and in `src/lib/auth.ts` for API routes.
 - **Stripe Checkout** in one-time `payment` mode (not `subscription`) for the
   $29.99 lifetime Premium unlock, confirmed server-side via webhook — the
   client can never flip its own entitlement.
@@ -60,8 +60,9 @@ one-line provider change, not a schema rewrite.
 Username/password auth (matching the prototype's username-based login) — see
 `src/lib/auth.ts` and `src/app/api/auth/*`. Passwords are hashed with bcrypt
 (never stored or compared in plaintext). Sessions are HS256 JWTs in an
-httpOnly, sameSite=lax cookie, verified at the edge in `src/middleware.ts` for
-`/dashboard`, `/setup`, `/history`, `/premium`, `/onboarding`.
+httpOnly, sameSite=lax cookie, verified in `src/proxy.ts` (runs on the Node.js
+runtime by default as of Next 16, not Edge) for `/dashboard`, `/setup`,
+`/history`, `/premium`, `/onboarding`.
 
 **Password reset** (a gap flagged in the original design handoff, now
 closed): email is optional at signup and editable later from Setup
@@ -130,9 +131,10 @@ design_handoff_glucodose/        — original design/behavior reference (kept fo
 
 ## Known gaps / follow-ups
 
-- Next.js 14.2.x has several patched CVEs only fixed in Next 16 (a breaking
-  major-version upgrade) — worth scheduling before production launch;
-  `npm audit` has details.
+- One residual moderate `npm audit` advisory: Next 16 bundles its own
+  internal `postcss@8.4.31` (build-tooling, not exposed to user input) with a
+  known XSS-in-stringifier CVE; will resolve itself in a future Next.js patch
+  release. Not fixable from this project's `package.json`.
 - i18n: only nav/auth chrome strings are translated (EN/AR); screen body copy
   is English-only, matching the prototype's stated scope — full i18n +
   RTL-testing every screen is called out as follow-up work in the original

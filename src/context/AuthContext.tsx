@@ -23,8 +23,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return user;
   }, []);
 
+  // One-time session hydration on mount. The `cancelled` guard prevents a
+  // stale response from setting state after unmount; the new
+  // react-hooks/set-state-in-effect rule wants fetch-on-mount replaced with
+  // an external-store/Suspense data layer, which is a larger architectural
+  // change out of scope here — this pattern is safe as written.
   useEffect(() => {
-    refresh().finally(() => setLoading(false));
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refresh().finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [refresh]);
 
   const logout = useCallback(async () => {

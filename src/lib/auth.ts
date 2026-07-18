@@ -41,7 +41,7 @@ export async function verifySessionToken(token: string): Promise<string | null> 
 // Sets the session cookie on the current request (Route Handlers only).
 export async function setSessionCookie(userId: string) {
   const token = await createSessionToken(userId);
-  cookies().set(SESSION_COOKIE, token, {
+  (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -50,13 +50,13 @@ export async function setSessionCookie(userId: string) {
   });
 }
 
-export function clearSessionCookie() {
-  cookies().set(SESSION_COOKIE, "", { path: "/", maxAge: 0 });
+export async function clearSessionCookie() {
+  (await cookies()).set(SESSION_COOKIE, "", { path: "/", maxAge: 0 });
 }
 
 // Reads + verifies the session cookie, returns the authenticated user id or null.
 export async function getSessionUserId(): Promise<string | null> {
-  const token = cookies().get(SESSION_COOKIE)?.value;
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   return verifySessionToken(token);
 }

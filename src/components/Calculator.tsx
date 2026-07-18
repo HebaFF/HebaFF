@@ -180,6 +180,9 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     );
   }
 
+  // logResult only ever runs from the "Log this" onClick below, never during
+  // render, so Date.now() here is safe despite the lexically-scoped lint rule.
+  /* eslint-disable react-hooks/purity -- event handler, not render */
   async function logResult() {
     const foodsPayload = items.map((it) => ({ name: it.food.name, qty: it.qty, carbs: it.food.carbs }));
     if (mode === "meal") {
@@ -215,6 +218,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     setTimeout(() => setSavedFlash(false), 1800);
     if (mode === "meal" || mode === "mealCorrection") setItems([]);
   }
+  /* eslint-enable react-hooks/purity */
 
   const showFoodBuilder = mode === "meal" || mode === "mealCorrection";
   const showBGInputs = mode === "mealCorrection" || mode === "correction" || mode === "hypo";

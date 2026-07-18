@@ -41,6 +41,7 @@ export function LogBGModal({
 
 export function TrendChart({ entries, units }: { entries: LogEntry[]; units: "mgdl" | "mmol" }) {
   const [days, setDays] = useState(7);
+  // eslint-disable-next-line react-hooks/purity -- day-granularity filter cutoff, render-time drift is inconsequential
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
   const readings = entries.filter((e) => e.timestamp >= cutoff && e.currentBG !== undefined);
   const counts: Record<string, number> = { low: 0, inRange: 0, high: 0 };
