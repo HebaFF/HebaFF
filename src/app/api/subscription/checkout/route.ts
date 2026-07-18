@@ -1,49 +1,43 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionUserId } from "@/lib/auth";
-import { getStripe } from "@/lib/stripe";
+import { paymobConfigured, startCheckout } from "@/lib/paymob";
 
-// Creates a Stripe Checkout Session in one-time "payment" mode (NOT
-// "subscription" mode) for the non-recurring $29.99 Premium unlock.
-// Entitlement is only ever flipped by the webhook after Stripe confirms
+// Runs Paymob's auth -> order -> payment-key flow for the non-recurring $10
+// Premium unlock and returns the iframe URL to redirect the user to.
+// Entitlement is only ever flipped by the webhook after Paymob confirms
 // payment — never here, and never by the client.
 export async function POST() {
   const userId = await getSessionUserId();
   if (!userId) return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
 
-  const user = await prisma.user.findUnique({ where: { id: userId }, include: { subscription: true } });
+  const user = await prisma.user.findUnique({ where: { id: userId }, include: { profile: true, subscription: true } });
   if (!user) return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   if (user.subscription?.isPremium) {
     return NextResponse.json({ error: "Already Premium." }, { status: 409 });
   }
 
-  const priceId = process.env.STRIPE_PREMIUM_PRICE_ID;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  if (!priceId) {
-    return NextResponse.json(
-      { error: "Payments are not configured yet (STRIPE_PREMIUM_PRICE_ID missing)." },
-      { status: 503 },
-    );
+  if (!paymobConfigured()) {
+    return NextResponse.json({ error: "Payments are not configured yet." }, { status: 503 });
   }
 
+  const [firstName, ...rest] = (user.profile?.name ?? "").trim().split(/\s+/).filter(Boolean);
+
   try {
-    const stripe = getStripe();
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      line_items: [{ price: priceId, quantity: 1 }],
-      client_reference_id: userId,
-      metadata: { userId },
-      success_url: `${appUrl}/premium?checkout=success`,
-      cancel_url: `${appUrl}/premium?checkout=cancelled`,
+    const { orderId, url } = await startCheckout(userId, {
+      firstName: firstName ?? "",
+      lastName: rest.join(" "),
+      email: user.email ?? "",
+      phoneNumber: "",
     });
 
     await prisma.subscription.upsert({
       where: { userId },
-      create: { userId, stripeSessionId: session.id },
-      update: { stripeSessionId: session.id },
+      create: { userId, paymobOrderId: orderId },
+      update: { paymobOrderId: orderId },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url });
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Could not start checkout." },

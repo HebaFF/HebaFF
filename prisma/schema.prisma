@@ -115,12 +115,12 @@ model Subscription {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  isPremium         Boolean   @default(false)
-  trialUsed         Boolean   @default(false)
-  trialStartedAt    DateTime?
-  purchasedAt       DateTime?
-  paymentReference  String?
-  stripeSessionId   String?
+  isPremium        Boolean   @default(false)
+  trialUsed        Boolean   @default(false)
+  trialStartedAt   DateTime?
+  purchasedAt      DateTime?
+  paymentReference String?
+  paymobOrderId    String?
 
   updatedAt DateTime @updatedAt
 

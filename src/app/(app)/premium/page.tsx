@@ -15,10 +15,13 @@ export default function PremiumPage() {
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const checkoutStatus = searchParams.get("checkout");
+  // Paymob's redirect URL is configured once in its dashboard (not passed
+  // per-request like Stripe's success_url), so it always lands back on
+  // /premium and appends its own query params — "success" is theirs.
+  const paymobSuccess = searchParams.get("success");
 
   useEffect(() => {
-    if (checkoutStatus === "success") {
+    if (paymobSuccess === "true") {
       // Webhook flips is_premium asynchronously; poll briefly for it to land.
       let attempts = 0;
       const id = setInterval(async () => {
@@ -29,7 +32,7 @@ export default function PremiumPage() {
       }, 1500);
       return () => clearInterval(id);
     }
-  }, [checkoutStatus, refresh]);
+  }, [paymobSuccess, refresh]);
 
   if (!user) return null;
   const { isPremium, trialUsed, trialStartedAt } = user.subscription;
@@ -97,12 +100,12 @@ export default function PremiumPage() {
         <div style={{ fontSize: 13.5, color: "var(--text-2)", marginTop: 4 }}>{T.subtitle}</div>
       </div>
 
-      {checkoutStatus === "success" && !isPremium && (
+      {paymobSuccess === "true" && !isPremium && (
         <Card style={{ background: "var(--primary-tint)", border: "none", textAlign: "center" }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>{T.paymentReceived}</div>
         </Card>
       )}
-      {checkoutStatus === "cancelled" && (
+      {paymobSuccess === "false" && (
         <Card style={{ background: "var(--surface-2)", border: "none", textAlign: "center" }}>
           <div style={{ fontSize: 13, fontWeight: 700 }}>{T.checkoutCancelled}</div>
         </Card>

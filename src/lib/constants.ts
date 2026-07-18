@@ -35,7 +35,7 @@ export const PILL_OPTIONS = [
 
 export const DIABETES_TYPE_IDS = ["type1", "type2", "gestational", "other"] as const;
 
-export const ONE_TIME_PRICE_DISPLAY = "$29.99";
+export const ONE_TIME_PRICE_DISPLAY = "$10";
 export const TRIAL_DAYS = 7;
 
 // Full UI-chrome translation (EN/AR), RTL-tested on every screen. Per the

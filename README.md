@@ -4,7 +4,7 @@ Full-stack production build of the GlucoDose diabetes-companion app, built from
 the design handoff in `design_handoff_glucodose/` (kept in this repo for
 reference). Recreates the prototype's screens and dose-calculation logic on a
 real backend: hashed-password auth with server sessions, a relational
-database, and one-time Stripe payments for Premium — replacing the
+database, and one-time Paymob payments for Premium — replacing the
 prototype's localStorage + plaintext-password + fake-subscription-flag setup.
 
 ## Stack
@@ -16,9 +16,9 @@ prototype's localStorage + plaintext-password + fake-subscription-flag setup.
 - **Auth**: bcrypt password hashing + signed JWT session cookie (httpOnly),
   verified in `src/proxy.ts` (Next 16's renamed `middleware.ts` convention)
   for route protection and in `src/lib/auth.ts` for API routes.
-- **Stripe Checkout** in one-time `payment` mode (not `subscription`) for the
-  $29.99 lifetime Premium unlock, confirmed server-side via webhook — the
-  client can never flip its own entitlement.
+- **Paymob Accept** (iframe-hosted card checkout) for the one-time $10
+  lifetime Premium unlock — not a subscription, confirmed server-side via
+  HMAC-verified webhook, never by the client.
 
 ## Getting started
 
@@ -35,9 +35,9 @@ dashboard).
 ## Environment variables
 
 See `.env.example`. `DATABASE_URL` and `AUTH_SECRET` are required to boot the
-app. `STRIPE_*` are only required to actually complete a Premium purchase —
+app. `PAYMOB_*` are only required to actually complete a Premium purchase —
 without them, `/api/subscription/checkout` returns a clear 503 instead of
-crashing, so the rest of the app works fine without a Stripe account
+crashing, so the rest of the app works fine without a Paymob account
 configured.
 
 ## Database
@@ -88,19 +88,53 @@ header. See the "Known gaps" note below on scaling this past one instance.
 
 ## Payments
 
-`src/app/api/subscription/checkout/route.ts` creates a Stripe Checkout
-Session with `mode: "payment"` (one-time, not recurring) against a single
-non-recurring Price (`STRIPE_PREMIUM_PRICE_ID`, $29.99). Entitlement
-(`Subscription.isPremium`) is **only** ever set by
-`src/app/api/webhooks/stripe/route.ts`, which verifies the Stripe webhook
-signature and reacts to `checkout.session.completed` — the client-facing
-checkout route never sets it directly. Point your Stripe webhook at
-`/api/webhooks/stripe` (use the Stripe CLI — `stripe listen --forward-to
-localhost:3000/api/webhooks/stripe` — for local testing).
+Uses [Paymob](https://paymob.com)'s **Accept** API (the standard iframe-hosted
+checkout), not a subscription — a single $10 charge that unlocks Premium
+forever. Paymob is the dominant payment processor in Egypt/MENA, which is
+this app's target market (see the Arabic i18n and Egyptian food items in the
+database).
+
+`src/lib/paymob.ts` implements the three-call flow Paymob's Accept API
+requires: `POST /auth/tokens` (API key → auth token) → `POST
+/ecommerce/orders` (creates an order) → `POST /acceptance/payment_keys`
+(order + billing data → a payment token), then redirects the user to
+`https://accept.paymob.com/api/acceptance/iframes/{PAYMOB_IFRAME_ID}?payment_token=...`.
+`src/app/api/subscription/checkout/route.ts` runs this and stores the
+resulting order id on the user's `Subscription` row so the webhook can
+correlate back to an account.
+
+Entitlement (`Subscription.isPremium`) is **only** ever set by
+`src/app/api/webhooks/paymob/route.ts`, which verifies the HMAC-SHA512
+signature Paymob sends on its "Transaction processed" callback (computed
+over a specific lexicographically-ordered field list — see
+`HMAC_FIELD_ORDER` in `src/lib/paymob.ts`) before trusting the payload. The
+client-facing checkout route never sets it directly. Configure this webhook
+URL (`/api/webhooks/paymob`) as the **Transaction processed callback** in
+your Paymob integration settings; separately, configure your **Transaction
+redirection URL** (the browser-facing redirect after payment) to point at
+`{NEXT_PUBLIC_APP_URL}/premium` — Paymob appends its own `?success=true|false`
+query param to whatever URL you set there, which `/premium` reads to show
+immediate UI feedback while polling for the webhook to actually land.
+
+`billing_data` sent to Paymob (`buildBillingData` in `src/lib/paymob.ts`)
+uses placeholder values for the shipping-only fields Paymob's e-commerce
+form expects (apartment/floor/street/building/etc.) since this is a digital
+product with nothing to ship. Real name/email come from the account when
+available; there's no phone number field in the current signup/profile
+flow, so that's sent as a placeholder too — worth adding a real phone field
+before going live, since accurate billing data reduces fraud holds.
+
+**Important:** the exact Paymob request/response field names and HMAC field
+list were reconstructed from Paymob's public docs and several community
+reference implementations (their docs site blocked automated fetching during
+this build) — verify against your own dashboard/docs if you hit unexpected
+API errors when wiring up real credentials, particularly `PAYMOB_CURRENCY`
+and `PAYMOB_AMOUNT_CENTS`, which must exactly match what your specific
+`PAYMOB_INTEGRATION_ID` is configured to accept.
 
 The one-time 7-day free trial (`src/app/api/subscription/trial/route.ts`) is
-also server-authoritative: it checks `trialUsed` server-side so it can only
-be claimed once per account, regardless of what the client sends.
+server-authoritative: it checks `trialUsed` server-side so it can only be
+claimed once per account, regardless of what the client sends.
 
 If shipping as a native iOS/Android app instead of web, swap this for
 StoreKit / Google Play Billing (non-consumable product) as noted in the
@@ -121,10 +155,10 @@ src/
   app/
     login/, onboarding/          — public-ish auth + setup flow
     (app)/dashboard|history|setup|premium/  — protected app shell (shared TopNav)
-    api/                         — auth, profile, foods, entries, subscription, stripe webhook
+    api/                         — auth, profile, foods, entries, subscription, paymob webhook
   components/                    — design-system primitives (ui.tsx) + Calculator/History widgets
   context/                       — AuthContext (session/profile), AppDataContext (entries/foods), LangContext
-  lib/                           — db client, auth, calc, food DB, constants, validation (zod), Stripe client
+  lib/                           — db client, auth, calc, food DB, constants, validation (zod), Paymob client
 prisma/schema.prisma             — data model
 design_handoff_glucodose/        — original design/behavior reference (kept for pixel/formula fidelity)
 ```
