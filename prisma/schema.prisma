@@ -1,0 +1,113 @@
+// Prisma schema for GlucoDose.
+//
+// Dev/local uses SQLite (file-based, zero setup) via the `DATABASE_URL` env var.
+// For production, point `DATABASE_URL` at Postgres and change `provider` below
+// to "postgresql" — the schema below intentionally avoids SQLite-only features
+// so that switch is a one-line change. See README.md "Database" section.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  profile      Profile?
+  customFoods  CustomFood[]
+  logEntries   LogEntry[]
+  subscription Subscription?
+
+  @@map("users")
+}
+
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name            String
+  gender          String
+  age             Int
+  diagnosisDate   DateTime
+  diabetesType    String // type1 | type2 | gestational | other
+  units           String // mgdl | mmol
+  treatmentMode   String // insulin | pills | both
+  insulinDelivery String? // injections | pump
+
+  rapidInsulinType  String?
+  rapidUnitsPerDay  Float?
+  basalInsulinType  String?
+  basalUnitsPerDay  Float?
+  pills             String  @default("[]") // JSON-encoded string[]
+
+  carbRatio           Float?
+  isf                 Float?
+  carbRatioOverridden Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model CustomFood {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name     String
+  category String
+  portion  String
+  carbs    Float
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("custom_foods")
+}
+
+model LogEntry {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      String // meal | mealCorrection | correction | hypo | bg
+  timestamp DateTime
+
+  foods       String? // JSON-encoded [{name, qty, carbs}]
+  carbs       Float?
+  currentBG   Float?
+  targetBG    Float?
+  dose        Float?
+  carbsNeeded Float?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, timestamp])
+  @@map("log_entries")
+}
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  isPremium         Boolean   @default(false)
+  trialUsed         Boolean   @default(false)
+  trialStartedAt    DateTime?
+  purchasedAt       DateTime?
+  paymentReference  String?
+  stripeSessionId   String?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("subscriptions")
+}
