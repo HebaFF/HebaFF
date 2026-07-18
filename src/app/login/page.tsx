@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { api, ApiError } from "@/lib/api";
 
 export default function LoginPage() {
-  const { lang, setLang, strings: S } = useLang();
+  const { lang, setLang, t } = useLang();
   const { refresh } = useAuth();
   const router = useRouter();
 
@@ -23,11 +23,11 @@ export default function LoginPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!username.trim() || !password.trim()) {
-      setError("Please fill in both fields.");
+      setError(t.auth.fillBothFields);
       return;
     }
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(t.auth.passwordTooShort);
       return;
     }
     setError("");
@@ -40,7 +40,7 @@ export default function LoginPage() {
       await refresh();
       router.replace(result.hasProfile ? "/dashboard" : "/onboarding");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Something went wrong.");
+      setError(err instanceof ApiError ? err.message : t.common.somethingWrong);
     } finally {
       setSubmitting(false);
     }
@@ -90,7 +90,7 @@ export default function LoginPage() {
           GlucoDose
         </h1>
         <p style={{ fontSize: 15, color: "var(--header-text)", opacity: 0.8, margin: 0, lineHeight: 1.5, maxWidth: 320 }}>
-          {S.appTagline}
+          {t.auth.appTagline}
         </p>
       </div>
 
@@ -109,21 +109,21 @@ export default function LoginPage() {
           value={mode}
           onChange={setMode}
           options={[
-            { value: "login", label: S.login },
-            { value: "signup", label: S.signup },
+            { value: "login", label: t.auth.login },
+            { value: "signup", label: t.auth.signup },
           ]}
         />
 
         <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 22 }}>
-          <Field label="Username">
+          <Field label={t.auth.usernameLabel}>
             <TextInput
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. mona_h"
+              placeholder={t.auth.usernamePlaceholder}
               autoComplete="username"
             />
           </Field>
-          <Field label="Password">
+          <Field label={t.auth.passwordLabel}>
             <TextInput
               type="password"
               value={password}
@@ -133,33 +133,32 @@ export default function LoginPage() {
             />
           </Field>
           {mode === "signup" && (
-            <Field label="Email" hint="Optional — lets you reset your password if you forget it">
+            <Field label={t.auth.emailLabel} hint={t.auth.emailHint}>
               <TextInput
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder={t.auth.emailPlaceholder}
                 autoComplete="email"
               />
             </Field>
           )}
           {error && <div style={{ color: "var(--danger)", fontSize: 13, fontWeight: 600 }}>{error}</div>}
           <Button type="submit" full size="lg" disabled={submitting} style={{ marginTop: 8 }}>
-            {submitting ? "Please wait…" : mode === "signup" ? S.signup : S.login}
+            {submitting ? t.auth.pleaseWait : mode === "signup" ? t.auth.signup : t.auth.login}
           </Button>
           {mode === "login" && (
             <Link
               href="/forgot-password"
               style={{ textAlign: "center", fontSize: 13, fontWeight: 600, color: "var(--primary)" }}
             >
-              Forgot password?
+              {t.auth.forgotPassword}
             </Link>
           )}
         </form>
 
         <p style={{ fontSize: 12, color: "var(--text-3)", marginTop: 28, textAlign: "center", lineHeight: 1.6 }}>
-          This app supports diabetes self-management and does not replace medical advice. Always confirm
-          dosing decisions with your care team.
+          {t.auth.disclaimer}
         </p>
       </div>
     </AppShell>

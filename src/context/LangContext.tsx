@@ -3,12 +3,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { STRINGS, type Lang } from "@/lib/constants";
 
-type StringsShape = { [K in keyof (typeof STRINGS)["en"]]: string };
-
 type LangContextValue = {
   lang: Lang;
   setLang: (l: Lang) => void;
-  strings: StringsShape;
+  t: (typeof STRINGS)["en"];
 };
 
 const LangContext = createContext<LangContextValue | null>(null);
@@ -32,9 +30,7 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
   }, [lang]);
 
   return (
-    <LangContext.Provider value={{ lang, setLang: setLangState, strings: STRINGS[lang] }}>
-      {children}
-    </LangContext.Provider>
+    <LangContext.Provider value={{ lang, setLang: setLangState, t: STRINGS[lang] }}>{children}</LangContext.Provider>
   );
 }
 

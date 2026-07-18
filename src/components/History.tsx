@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Modal, Field, TextInput, Button, Card, SegmentedControl } from "@/components/ui";
 import { classifyBG, convertBG } from "@/lib/calc";
-import { RANGE_TONE, RANGE_LABEL } from "@/lib/historyMeta";
+import { RANGE_TONE } from "@/lib/historyMeta";
+import { useLang } from "@/context/LangContext";
 import type { LogEntry } from "@/lib/api";
 
 export function LogBGModal({
@@ -17,6 +18,8 @@ export function LogBGModal({
   units: "mgdl" | "mmol";
   onSave: (entry: Omit<LogEntry, "id">) => Promise<void>;
 }) {
+  const { t } = useLang();
+  const T = t.history;
   const [val, setVal] = useState("");
   async function save() {
     if (!val) return;
@@ -26,13 +29,13 @@ export function LogBGModal({
     onClose();
   }
   return (
-    <Modal open={open} onClose={onClose} title="Log a glucose reading">
+    <Modal open={open} onClose={onClose} title={T.logGlucoseTitle}>
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <Field label={`Blood glucose (${units === "mmol" ? "mmol/L" : "mg/dL"})`}>
+        <Field label={T.bloodGlucoseLabel(units === "mmol" ? "mmol/L" : "mg/dL")}>
           <TextInput type="number" value={val} onChange={(e) => setVal(e.target.value)} autoFocus placeholder={units === "mmol" ? "6.5" : "115"} />
         </Field>
         <Button full onClick={save}>
-          Save reading
+          {T.saveReadingBtn}
         </Button>
       </div>
     </Modal>
@@ -40,6 +43,8 @@ export function LogBGModal({
 }
 
 export function TrendChart({ entries, units }: { entries: LogEntry[]; units: "mgdl" | "mmol" }) {
+  const { t } = useLang();
+  const T = t.history;
   const [days, setDays] = useState(7);
   // eslint-disable-next-line react-hooks/purity -- day-granularity filter cutoff, render-time drift is inconsequential
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
@@ -51,11 +56,12 @@ export function TrendChart({ entries, units }: { entries: LogEntry[]; units: "mg
   });
   const total = readings.length;
   const pct = (k: string) => (total ? Math.round((counts[k] / total) * 100) : 0);
+  const rangeLabel: Record<string, string> = { low: T.low, inRange: T.inRange, high: T.high };
 
   return (
     <Card style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>Time in range</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>{T.timeInRangeTitle}</div>
         <SegmentedControl
           value={days}
           onChange={setDays}
@@ -67,7 +73,7 @@ export function TrendChart({ entries, units }: { entries: LogEntry[]; units: "mg
         />
       </div>
       {total === 0 ? (
-        <div style={{ fontSize: 12.5, color: "var(--text-3)" }}>No glucose readings logged in this period yet.</div>
+        <div style={{ fontSize: 12.5, color: "var(--text-3)" }}>{T.noReadingsPeriod}</div>
       ) : (
         <>
           <div style={{ display: "flex", height: 12, borderRadius: 999, overflow: "hidden" }}>
@@ -81,7 +87,7 @@ export function TrendChart({ entries, units }: { entries: LogEntry[]; units: "mg
                 <div className="num" style={{ fontSize: 17, fontWeight: 700, color: `var(--${RANGE_TONE[k]})` }}>
                   {pct(k)}%
                 </div>
-                <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, textTransform: "uppercase" }}>{RANGE_LABEL[k]}</div>
+                <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, textTransform: "uppercase" }}>{rangeLabel[k]}</div>
               </div>
             ))}
           </div>

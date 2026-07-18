@@ -3,10 +3,12 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useLang } from "@/context/LangContext";
 import { AppShell } from "@/components/ui";
 
 export default function Home() {
   const { user, loading } = useAuth();
+  const { t } = useLang();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export default function Home() {
   return (
     <AppShell>
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ color: "var(--text-3)", fontSize: 13 }}>Loading…</span>
+        <span style={{ color: "var(--text-3)", fontSize: 13 }}>{t.common.loading}</span>
       </div>
     </AppShell>
   );

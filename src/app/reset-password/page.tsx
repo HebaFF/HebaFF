@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell, TopBar, Field, TextInput, Button, Card } from "@/components/ui";
+import { useLang } from "@/context/LangContext";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 
@@ -20,6 +21,8 @@ function ResetPasswordForm() {
   const token = searchParams.get("token") ?? "";
   const router = useRouter();
   const { refresh } = useAuth();
+  const { t } = useLang();
+  const T = t.resetPassword;
 
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -30,15 +33,15 @@ function ResetPasswordForm() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!token) {
-      setError("This reset link is missing its token.");
+      setError(T.missingTokenError);
       return;
     }
     if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(t.auth.passwordTooShort);
       return;
     }
     if (password !== confirm) {
-      setError("Passwords don't match.");
+      setError(T.passwordsDontMatch);
       return;
     }
     setError("");
@@ -49,7 +52,7 @@ function ResetPasswordForm() {
       setDone(true);
       setTimeout(() => router.replace("/dashboard"), 1200);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Something went wrong.");
+      setError(err instanceof ApiError ? err.message : t.common.somethingWrong);
     } finally {
       setSubmitting(false);
     }
@@ -57,25 +60,21 @@ function ResetPasswordForm() {
 
   return (
     <AppShell>
-      <TopBar title="Set a new password" />
+      <TopBar title={T.title} />
       <div style={{ flex: 1, padding: "6px 20px 28px", display: "flex", flexDirection: "column", gap: 18 }}>
         {!token && (
           <Card style={{ background: "var(--danger-tint)", border: "none" }}>
-            <div style={{ fontSize: 13.5, color: "var(--danger)", fontWeight: 600 }}>
-              This link is missing its reset token. Request a new one from the forgot password page.
-            </div>
+            <div style={{ fontSize: 13.5, color: "var(--danger)", fontWeight: 600 }}>{T.missingTokenMessage}</div>
           </Card>
         )}
 
         {done ? (
           <Card style={{ background: "var(--good-tint)", border: "none", textAlign: "center" }}>
-            <div style={{ fontSize: 13.5, color: "var(--good)", fontWeight: 700 }}>
-              Password updated — taking you to your dashboard…
-            </div>
+            <div style={{ fontSize: 13.5, color: "var(--good)", fontWeight: 700 }}>{T.passwordUpdatedMessage}</div>
           </Card>
         ) : (
           <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <Field label="New password">
+            <Field label={T.newPasswordLabel}>
               <TextInput
                 type="password"
                 value={password}
@@ -85,7 +84,7 @@ function ResetPasswordForm() {
                 autoFocus
               />
             </Field>
-            <Field label="Confirm new password">
+            <Field label={T.confirmPasswordLabel}>
               <TextInput
                 type="password"
                 value={confirm}
@@ -96,13 +95,13 @@ function ResetPasswordForm() {
             </Field>
             {error && <div style={{ color: "var(--danger)", fontSize: 13, fontWeight: 600 }}>{error}</div>}
             <Button type="submit" full size="lg" disabled={submitting || !token}>
-              {submitting ? "Saving…" : "Reset password"}
+              {submitting ? t.common.savingBtn : T.resetPasswordBtn}
             </Button>
           </form>
         )}
 
         <Link href="/login" style={{ textAlign: "center", fontSize: 13, fontWeight: 600, color: "var(--text-2)" }}>
-          Back to log in
+          {T.backToLogin}
         </Link>
       </div>
     </AppShell>

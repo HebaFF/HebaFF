@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Card, TextInput, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
 import { FOOD_DB, type Food } from "@/lib/foodDb";
 import { useAppData } from "@/context/AppDataContext";
+import { useLang } from "@/context/LangContext";
 import { convertBG, calcCarbRise, mealDose as calcMealDose, correctionDose, hypoCarbsNeeded, round2 } from "@/lib/calc";
 import type { ProfileDTO } from "@/lib/profileDto";
 
@@ -12,20 +13,22 @@ function foodKey(f: { name: string; portion: string }) {
 }
 
 function FoodPicker({ foods, onAdd }: { foods: (Food & { custom?: boolean })[]; onAdd: (f: Food) => void }) {
+  const { t } = useLang();
+  const T = t.calculator;
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
-  const categories = useMemo(() => ["All", ...Array.from(new Set(foods.map((f) => f.category)))], [foods]);
+  const [category, setCategory] = useState(T.allCategory);
+  const categories = useMemo(() => [T.allCategory, ...Array.from(new Set(foods.map((f) => f.category)))], [foods, T.allCategory]);
   const filtered = useMemo(
     () =>
       foods
-        .filter((f) => (category === "All" || f.category === category) && f.name.toLowerCase().includes(query.toLowerCase()))
+        .filter((f) => (category === T.allCategory || f.category === category) && f.name.toLowerCase().includes(query.toLowerCase()))
         .slice(0, 40),
-    [foods, query, category],
+    [foods, query, category, T.allCategory],
   );
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <TextInput placeholder="Search food… e.g. rice, banana" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <TextInput placeholder={T.searchPlaceholder} value={query} onChange={(e) => setQuery(e.target.value)} />
       <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
         {categories.map((c) => (
           <button
@@ -48,7 +51,7 @@ function FoodPicker({ foods, onAdd }: { foods: (Food & { custom?: boolean })[]; 
         ))}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 280, overflowY: "auto" }}>
-        {filtered.length === 0 && <div style={{ fontSize: 13, color: "var(--text-3)", padding: "10px 2px" }}>No foods found.</div>}
+        {filtered.length === 0 && <div style={{ fontSize: 13, color: "var(--text-3)", padding: "10px 2px" }}>{T.noFoodsFound}</div>}
         {filtered.map((f) => (
           <button
             key={foodKey(f)}
@@ -69,14 +72,14 @@ function FoodPicker({ foods, onAdd }: { foods: (Food & { custom?: boolean })[]; 
                 {f.name}
                 {f.custom && (
                   <span style={{ marginLeft: 6 }}>
-                    <Badge tone="neutral">mine</Badge>
+                    <Badge tone="neutral">{T.mineTag}</Badge>
                   </span>
                 )}
               </div>
               <div style={{ fontSize: 12, color: "var(--text-3)" }}>{f.portion}</div>
             </div>
             <div className="num" style={{ fontSize: 14, fontWeight: 700, color: "var(--primary)" }}>
-              {f.carbs}g
+              {T.gramsShort(f.carbs)}
             </div>
           </button>
         ))}
@@ -94,31 +97,33 @@ function SuggestFoodModal({
   onClose: () => void;
   onSuggest: (f: { name: string; portion: string; carbs: number; category: string }) => void;
 }) {
+  const { t } = useLang();
+  const T = t.calculator;
   const [name, setName] = useState("");
   const [portion, setPortion] = useState("");
   const [carbs, setCarbs] = useState("");
   function submit() {
     if (!name.trim() || !carbs) return;
-    onSuggest({ name: name.trim(), category: "My Foods", portion: portion.trim() || "1 portion", carbs: Number(carbs) });
+    onSuggest({ name: name.trim(), category: T.myFoodsCategory, portion: portion.trim() || T.onePortionFallback, carbs: Number(carbs) });
     setName("");
     setPortion("");
     setCarbs("");
     onClose();
   }
   return (
-    <Modal open={open} onClose={onClose} title="Add your own food">
+    <Modal open={open} onClose={onClose} title={T.addYourOwnFoodTitle}>
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <Field label="Food name">
-          <TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Mom's stuffed cabbage" />
+        <Field label={T.foodNameLabel}>
+          <TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder={T.foodNamePlaceholder} />
         </Field>
-        <Field label="Portion size">
-          <TextInput value={portion} onChange={(e) => setPortion(e.target.value)} placeholder="e.g. 1 roll (80g)" />
+        <Field label={T.portionLabel}>
+          <TextInput value={portion} onChange={(e) => setPortion(e.target.value)} placeholder={T.portionPlaceholder} />
         </Field>
-        <Field label="Carbs (g) per portion">
-          <TextInput type="number" value={carbs} onChange={(e) => setCarbs(e.target.value)} placeholder="e.g. 18" />
+        <Field label={T.carbsPerPortionLabel}>
+          <TextInput type="number" value={carbs} onChange={(e) => setCarbs(e.target.value)} placeholder={T.carbsPlaceholder} />
         </Field>
         <Button full onClick={submit}>
-          Add to my foods
+          {T.addToMyFoods}
         </Button>
       </div>
     </Modal>
@@ -128,6 +133,8 @@ function SuggestFoodModal({
 type Mode = "meal" | "mealCorrection" | "correction" | "hypo";
 
 export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
+  const { t } = useLang();
+  const T = t.calculator;
   const { foods: customFoods, logEntry, addCustomFood } = useAppData();
   const [mode, setMode] = useState<Mode>("meal");
   const [items, setItems] = useState<{ food: Food; qty: number }[]>([]);
@@ -227,10 +234,8 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {!usesInsulin && (
         <Card style={{ background: "var(--warn-tint)", border: "none", borderRadius: "var(--radius-sm)" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "oklch(40% 0.12 75)" }}>No insulin dosing on file</div>
-          <div style={{ fontSize: 12.5, color: "oklch(40% 0.1 75)", marginTop: 2 }}>
-            You can still log carbs and glucose. Add insulin info in Setup to unlock dose calculations.
-          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "oklch(40% 0.12 75)" }}>{T.noInsulinTitle}</div>
+          <div style={{ fontSize: 12.5, color: "oklch(40% 0.1 75)", marginTop: 2 }}>{T.noInsulinDesc}</div>
         </Card>
       )}
 
@@ -238,29 +243,29 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         value={mode}
         onChange={setMode}
         options={[
-          { value: "meal", label: "Meal" },
-          { value: "mealCorrection", label: "Meal+Corr." },
+          { value: "meal", label: T.mealTab },
+          { value: "mealCorrection", label: T.mealCorrTab },
         ]}
       />
       <SegmentedControl
         value={mode}
         onChange={setMode}
         options={[
-          { value: "correction", label: "Correction only" },
-          { value: "hypo", label: "Low BG (hypo)" },
+          { value: "correction", label: T.correctionTab },
+          { value: "hypo", label: T.hypoTab },
         ]}
       />
 
       {showFoodBuilder && (
         <Card style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>Meal items</div>
-          {items.length === 0 && <div style={{ fontSize: 13, color: "var(--text-3)" }}>No items added yet.</div>}
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>{T.mealItemsTitle}</div>
+          {items.length === 0 && <div style={{ fontSize: 13, color: "var(--text-3)" }}>{T.noItemsYet}</div>}
           {items.map((it) => (
             <div key={foodKey(it.food)} style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13.5, fontWeight: 700 }}>{it.food.name}</div>
                 <div style={{ fontSize: 11.5, color: "var(--text-3)" }}>
-                  {it.food.portion} · {it.food.carbs}g carbs
+                  {it.food.portion} · {T.carbsUnit(it.food.carbs)}
                 </div>
               </div>
               <button
@@ -281,13 +286,13 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
             </div>
           ))}
           <Button variant="secondary" onClick={() => setPickerOpen(true)}>
-            + Add food from list
+            {T.addFoodFromList}
           </Button>
           <Button variant="outline" onClick={() => setSuggestOpen(true)}>
-            + Add your own food
+            {T.addYourOwnFood}
           </Button>
           <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 6, borderTop: "1px solid var(--border)" }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>Total carbs</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>{T.totalCarbsLabel}</span>
             <span className="num" style={{ fontSize: 15, fontWeight: 800 }}>
               {round2(totalCarbs)}g
             </span>
@@ -297,7 +302,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
 
       {showBGInputs && (
         <div style={{ display: "flex", gap: 12 }}>
-          <Field label={`Current BG (${unit})`}>
+          <Field label={T.currentBGLabel(unit)}>
             <TextInput
               type="number"
               value={currentBG}
@@ -305,7 +310,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
               placeholder={profile.units === "mmol" ? "13.9" : "250"}
             />
           </Field>
-          <Field label={`Target BG (${unit})`}>
+          <Field label={T.targetBGLabel(unit)}>
             <TextInput
               type="number"
               value={targetBG}
@@ -329,10 +334,10 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
           {mode === "meal" && (
             <>
               <div style={{ fontSize: 12, color: "oklch(100% 0 0 / 0.75)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                Meal dose
+                {T.mealDoseLabel}
               </div>
               <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 700, color: "white" }}>
-                {round2(mealDoseVal)} <span style={{ fontSize: 16 }}>units</span>
+                {round2(mealDoseVal)} <span style={{ fontSize: 16 }}>{T.units}</span>
               </div>
               <div style={{ fontSize: 12.5, color: "oklch(100% 0 0 / 0.8)" }}>
                 {round2(totalCarbs)}g ÷ {round2(profile.carbRatio!)} g/unit
@@ -342,23 +347,23 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
           {mode === "mealCorrection" && (
             <>
               <div style={{ fontSize: 12, color: "oklch(100% 0 0 / 0.75)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                Meal + correction dose
+                {T.mealCorrDoseLabel}
               </div>
               <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 700, color: "white" }}>
-                {round2(combinedDose)} <span style={{ fontSize: 16 }}>units</span>
+                {round2(combinedDose)} <span style={{ fontSize: 16 }}>{T.units}</span>
               </div>
               <div style={{ fontSize: 12.5, color: "oklch(100% 0 0 / 0.8)" }}>
-                Meal {round2(mealDoseVal)}u + correction {round2(correctionUnits)}u
+                {T.mealCorrSummary(String(round2(mealDoseVal)), String(round2(correctionUnits)))}
               </div>
             </>
           )}
           {mode === "correction" && (
             <>
               <div style={{ fontSize: 12, color: "oklch(100% 0 0 / 0.75)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                Correction dose
+                {T.correctionDoseLabel}
               </div>
               <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 700, color: "white" }}>
-                {round2(correctionUnits)} <span style={{ fontSize: 16 }}>units</span>
+                {round2(correctionUnits)} <span style={{ fontSize: 16 }}>{T.units}</span>
               </div>
               <div style={{ fontSize: 12.5, color: "oklch(100% 0 0 / 0.8)" }}>
                 ({currentBG || 0} − {targetBG || 0}) ÷ {round2(profile.isf!)}
@@ -368,21 +373,21 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
           {mode === "hypo" && (
             <>
               <div style={{ fontSize: 12, color: "oklch(100% 0 0 / 0.8)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                Carbs needed (low BG)
+                {T.hypoCarbsLabel}
               </div>
               <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 700, color: "white" }}>
-                {round2(hypoCarbs)} <span style={{ fontSize: 16 }}>g carbs</span>
+                {round2(hypoCarbs)} <span style={{ fontSize: 16 }}>{T.gCarbs}</span>
               </div>
-              <div style={{ fontSize: 12.5, color: "oklch(100% 0 0 / 0.85)" }}>Treat the low first — recheck BG in 15 minutes.</div>
+              <div style={{ fontSize: 12.5, color: "oklch(100% 0 0 / 0.85)" }}>{T.treatLowFirst}</div>
             </>
           )}
           <Button onClick={logResult} style={{ background: "white", color: mode === "hypo" ? "var(--danger)" : "var(--primary-dark)" }}>
-            {savedFlash ? "Saved ✓" : "Log this"}
+            {savedFlash ? T.savedBtn : T.logThisBtn}
           </Button>
         </Card>
       )}
 
-      <Modal open={pickerOpen} onClose={() => setPickerOpen(false)} title="Add a food">
+      <Modal open={pickerOpen} onClose={() => setPickerOpen(false)} title={T.addAFoodTitle}>
         <FoodPicker foods={allFoods} onAdd={addItem} />
       </Modal>
       <SuggestFoodModal open={suggestOpen} onClose={() => setSuggestOpen(false)} onSuggest={addCustomFood} />

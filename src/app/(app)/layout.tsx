@@ -5,19 +5,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { AppShell, TopNav } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
 import { AppDataProvider } from "@/context/AppDataContext";
+import { useLang } from "@/context/LangContext";
 
-const TABS = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "setup", label: "Setup" },
-  { id: "history", label: "History" },
-  { id: "premium", label: "Premium" },
-];
+const TAB_IDS = ["dashboard", "setup", "history", "premium"] as const;
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const activeTab = TABS.find((t) => pathname.startsWith(`/${t.id}`))?.id ?? "dashboard";
+  const { t } = useLang();
+  const tabs = TAB_IDS.map((id) => ({ id, label: t.nav[id] }));
+  const activeTab = tabs.find((tb) => pathname.startsWith(`/${tb.id}`))?.id ?? "dashboard";
 
   useEffect(() => {
     if (loading) return;
@@ -32,10 +30,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <AppShell>
         <TopNav
           name={user.profile.name}
-          age={user.profile.age}
+          welcomeText={t.nav.welcomeBack(user.profile.name)}
+          ageText={user.profile.age ? t.nav.age(user.profile.age) : undefined}
           tab={activeTab}
           onChange={(id) => router.push(`/${id}`)}
-          tabs={TABS}
+          tabs={tabs}
         />
         {children}
       </AppShell>

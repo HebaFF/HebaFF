@@ -6,16 +6,17 @@ import { Button, Card, Badge } from "@/components/ui";
 import { TrendChart, LogBGModal } from "@/components/History";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
+import { useLang } from "@/context/LangContext";
 import { classifyBG } from "@/lib/calc";
-import { RANGE_TONE, TYPE_META } from "@/lib/historyMeta";
+import { RANGE_TONE, TYPE_TONE } from "@/lib/historyMeta";
 
-function formatWhen(ts: number) {
+function formatWhen(ts: number, todayLabel: string, locale: string) {
   const d = new Date(ts);
   const now = new Date();
   const sameDay = d.toDateString() === now.toDateString();
-  const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  if (sameDay) return "Today · " + time;
-  return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " · " + time;
+  const time = d.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+  if (sameDay) return `${todayLabel} · ${time}`;
+  return d.toLocaleDateString(locale, { month: "short", day: "numeric" }) + " · " + time;
 }
 
 type Filter = "all" | "meals" | "doses" | "bg";
@@ -24,11 +25,22 @@ export default function HistoryPage() {
   const { user } = useAuth();
   const { entries, logEntry } = useAppData();
   const router = useRouter();
+  const { lang, t } = useLang();
+  const T = t.history;
+  const locale = lang === "ar" ? "ar" : "en";
   const [filter, setFilter] = useState<Filter>("all");
   const [bgOpen, setBgOpen] = useState(false);
 
   const profile = user?.profile;
   const isPremium = !!user?.subscription.isPremium;
+
+  const typeLabel: Record<string, string> = {
+    meal: T.mealDoseType,
+    mealCorrection: T.mealCorrType,
+    correction: T.correctionType,
+    hypo: T.hypoType,
+    bg: T.bgType,
+  };
 
   const filtered = useMemo(() => {
     const sorted = [...entries].sort((a, b) => b.timestamp - a.timestamp);
@@ -47,17 +59,17 @@ export default function HistoryPage() {
       <TrendChart entries={entries} units={profile.units} />
       <div style={{ display: "flex", gap: 10 }}>
         <Button variant="secondary" full onClick={() => setBgOpen(true)}>
-          + Log BG reading
+          {T.logBGReadingBtn}
         </Button>
       </div>
 
       <div style={{ display: "flex", gap: 6, overflowX: "auto" }}>
         {(
           [
-            { id: "all", label: "All" },
-            { id: "meals", label: "Meals" },
-            { id: "doses", label: "Doses" },
-            { id: "bg", label: "Glucose" },
+            { id: "all", label: T.filterAll },
+            { id: "meals", label: T.filterMeals },
+            { id: "doses", label: T.filterDoses },
+            { id: "bg", label: T.filterGlucose },
           ] as { id: Filter; label: string }[]
         ).map((f) => (
           <button
@@ -80,21 +92,20 @@ export default function HistoryPage() {
       </div>
 
       {visible.length === 0 && (
-        <div style={{ textAlign: "center", color: "var(--text-3)", fontSize: 13.5, padding: "40px 10px" }}>
-          Nothing logged yet. Doses and readings you log from the Calculator will show up here.
-        </div>
+        <div style={{ textAlign: "center", color: "var(--text-3)", fontSize: 13.5, padding: "40px 10px" }}>{T.nothingLoggedMessage}</div>
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {visible.map((e) => {
-          const meta = TYPE_META[e.type] || TYPE_META.bg;
+          const tone = TYPE_TONE[e.type] || TYPE_TONE.bg;
+          const label = typeLabel[e.type] || typeLabel.bg;
           const range = e.currentBG !== undefined ? classifyBG(e.currentBG, profile.units) : null;
           return (
             <Card key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
               <div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
-                  <Badge tone={meta.tone}>{meta.label}</Badge>
-                  <span style={{ fontSize: 11.5, color: "var(--text-3)" }}>{formatWhen(e.timestamp)}</span>
+                  <Badge tone={tone}>{label}</Badge>
+                  <span style={{ fontSize: 11.5, color: "var(--text-3)" }}>{formatWhen(e.timestamp, T.today, locale)}</span>
                 </div>
                 {e.foods && e.foods.length > 0 && (
                   <div style={{ fontSize: 12.5, color: "var(--text-2)" }}>{e.foods.map((f) => `${f.name}×${f.qty}`).join(", ")}</div>
@@ -102,8 +113,8 @@ export default function HistoryPage() {
                 {e.currentBG !== undefined && (
                   <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, color: "var(--text-2)" }}>
                     <span style={{ width: 8, height: 8, borderRadius: 999, background: range ? `var(--${RANGE_TONE[range]})` : "var(--text-3)", flexShrink: 0 }} />
-                    BG {e.currentBG}
-                    {e.targetBG !== undefined ? ` → target ${e.targetBG}` : ""}
+                    {T.bgReading(e.currentBG)}
+                    {e.targetBG !== undefined ? T.targetArrow(e.targetBG) : ""}
                   </div>
                 )}
               </div>
@@ -117,11 +128,9 @@ export default function HistoryPage() {
 
       {!isPremium && filtered.length > 15 && (
         <Card style={{ background: "var(--surface-2)", border: "none", textAlign: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>{filtered.length - 15} more entries hidden</div>
-          <div style={{ fontSize: 12.5, color: "var(--text-2)", marginBottom: 12 }}>
-            Free accounts see your last 15 entries. Go Premium for unlimited history and export.
-          </div>
-          <Button onClick={() => router.push("/premium")}>See Premium</Button>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>{T.hiddenEntries(filtered.length - 15)}</div>
+          <div style={{ fontSize: 12.5, color: "var(--text-2)", marginBottom: 12 }}>{T.freeAccountsMessage}</div>
+          <Button onClick={() => router.push("/premium")}>{T.seePremiumBtn}</Button>
         </Card>
       )}
 

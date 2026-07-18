@@ -34,10 +34,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 export function TopBar({
   title,
   onBack,
+  backLabel = "Back",
   right,
 }: {
   title: string;
   onBack?: () => void;
+  backLabel?: string;
   right?: React.ReactNode;
 }) {
   return (
@@ -56,7 +58,7 @@ export function TopBar({
       {onBack && (
         <button
           onClick={onBack}
-          aria-label="Back"
+          aria-label={backLabel}
           style={{
             width: 36,
             height: 36,
@@ -69,7 +71,7 @@ export function TopBar({
             flexShrink: 0,
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16">
+          <svg width="16" height="16" viewBox="0 0 16 16" className="back-chevron">
             <path
               d="M10 2 4 8l6 6"
               stroke="var(--text)"
@@ -121,13 +123,15 @@ export function Avatar({ name }: { name?: string }) {
 
 export function TopNav({
   name,
-  age,
+  welcomeText,
+  ageText,
   tab,
   onChange,
   tabs,
 }: {
   name?: string;
-  age?: number | string;
+  welcomeText: string;
+  ageText?: string;
   tab: string;
   onChange: (id: string) => void;
   tabs: { id: string; label: string }[];
@@ -157,10 +161,10 @@ export function TopNav({
               textOverflow: "ellipsis",
             }}
           >
-            Welcome back{name ? `, ${name}` : ""}!
+            {welcomeText}
           </div>
-          {age && (
-            <div style={{ fontSize: 12.5, color: "var(--header-text)", opacity: 0.8 }}>Age: {age}</div>
+          {ageText && (
+            <div style={{ fontSize: 12.5, color: "var(--header-text)", opacity: 0.8 }}>{ageText}</div>
           )}
         </div>
       </div>

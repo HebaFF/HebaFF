@@ -15,7 +15,8 @@ import {
   Button,
 } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
-import { RAPID_INSULINS, BASAL_INSULINS, PILL_OPTIONS, DIABETES_TYPES } from "@/lib/constants";
+import { useLang } from "@/context/LangContext";
+import { RAPID_INSULINS, BASAL_INSULINS, PILL_OPTIONS, diabetesTypesFor } from "@/lib/constants";
 import { calcCarbRatio, calcISF, round2 } from "@/lib/calc";
 import { api, ApiError } from "@/lib/api";
 
@@ -44,6 +45,9 @@ type FormData = {
 export default function OnboardingPage() {
   const { user, loading, refresh } = useAuth();
   const router = useRouter();
+  const { lang, t } = useLang();
+  const T = t.onboarding;
+  const diabetesTypes = diabetesTypesFor(lang);
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
@@ -136,7 +140,7 @@ export default function OnboardingPage() {
       await refresh();
       router.replace("/dashboard");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not save your profile.");
+      setError(err instanceof ApiError ? err.message : T.saveError);
     } finally {
       setSubmitting(false);
     }
@@ -153,36 +157,36 @@ export default function OnboardingPage() {
 
   return (
     <AppShell>
-      <TopBar title="Set up your profile" onBack={step > 0 ? back : undefined} />
+      <TopBar title={T.title} onBack={step > 0 ? back : undefined} backLabel={t.common.back} />
       <ProgressDots total={STEPS.length} current={step} />
       <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 20px", display: "flex", flexDirection: "column", gap: 18 }}>
         {step === 0 && (
           <>
-            <Field label="Full name">
-              <TextInput value={data.name} onChange={(e) => set({ name: e.target.value })} placeholder="Your name" />
+            <Field label={T.fullNameLabel}>
+              <TextInput value={data.name} onChange={(e) => set({ name: e.target.value })} placeholder={T.fullNamePlaceholder} />
             </Field>
-            <Field label="Gender">
+            <Field label={T.genderLabel}>
               <SegmentedControl
                 value={data.gender}
                 onChange={(g) => set({ gender: g as Gender })}
                 options={[
-                  { value: "female", label: "Female" },
-                  { value: "male", label: "Male" },
-                  { value: "other", label: "Other" },
+                  { value: "female", label: T.female },
+                  { value: "male", label: T.male },
+                  { value: "other", label: T.other },
                 ]}
               />
             </Field>
-            <Field label="Age">
+            <Field label={T.ageLabel}>
               <TextInput
                 type="number"
                 min="1"
                 max="120"
                 value={data.age}
                 onChange={(e) => set({ age: e.target.value })}
-                placeholder="e.g. 29"
+                placeholder={T.agePlaceholder}
               />
             </Field>
-            <Field label="Preferred glucose units">
+            <Field label={T.unitsLabel}>
               <SegmentedControl
                 value={data.units}
                 onChange={(u) => set({ units: u as "mgdl" | "mmol" })}
@@ -197,26 +201,26 @@ export default function OnboardingPage() {
 
         {step === 1 && (
           <>
-            <Field label="When were you diagnosed?">
+            <Field label={T.diagnosisDateLabel}>
               <TextInput type="date" value={data.diagnosisDate} onChange={(e) => set({ diagnosisDate: e.target.value })} />
             </Field>
-            <Field label="Type of diabetes">
+            <Field label={T.diabetesTypeLabel}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {DIABETES_TYPES.map((t) => (
+                {diabetesTypes.map((dt) => (
                   <button
-                    key={t.id}
-                    onClick={() => set({ diabetesType: t.id })}
+                    key={dt.id}
+                    onClick={() => set({ diabetesType: dt.id })}
                     style={{
                       padding: "10px 16px",
                       borderRadius: 999,
                       fontSize: 13.5,
                       fontWeight: 700,
-                      border: data.diabetesType === t.id ? "1.5px solid var(--primary)" : "1px solid var(--border)",
-                      background: data.diabetesType === t.id ? "var(--primary-tint)" : "var(--surface)",
-                      color: data.diabetesType === t.id ? "var(--primary-dark)" : "var(--text)",
+                      border: data.diabetesType === dt.id ? "1.5px solid var(--primary)" : "1px solid var(--border)",
+                      background: data.diabetesType === dt.id ? "var(--primary-tint)" : "var(--surface)",
+                      color: data.diabetesType === dt.id ? "var(--primary-dark)" : "var(--text)",
                     }}
                   >
-                    {t.label}
+                    {dt.label}
                   </button>
                 ))}
               </div>
@@ -226,83 +230,80 @@ export default function OnboardingPage() {
 
         {step === 2 && (
           <>
-            <Field label="How do you manage your diabetes?">
+            <Field label={T.treatmentModeLabel}>
               <SegmentedControl
                 value={data.treatmentMode}
                 onChange={(m) => set({ treatmentMode: m as TreatmentMode })}
                 options={[
-                  { value: "insulin", label: "Insulin" },
-                  { value: "pills", label: "Pills" },
-                  { value: "both", label: "Both" },
+                  { value: "insulin", label: T.insulin },
+                  { value: "pills", label: T.pills },
+                  { value: "both", label: T.both },
                 ]}
               />
             </Field>
 
             {usesInsulin && (
               <Card style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>Insulin regimen</div>
-                <Field label="How is your insulin delivered?">
+                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>{T.insulinRegimenTitle}</div>
+                <Field label={T.deliveryLabel}>
                   <SegmentedControl
                     value={data.insulinDelivery}
                     onChange={(v) => set({ insulinDelivery: v as Delivery })}
                     options={[
-                      { value: "injections", label: "Injections (MDI)" },
-                      { value: "pump", label: "Insulin pump" },
+                      { value: "injections", label: T.injections },
+                      { value: "pump", label: T.pump },
                     ]}
                   />
                 </Field>
 
                 {data.insulinDelivery === "pump" ? (
                   <>
-                    <Field label="Insulin used in pump" hint="Pumps use rapid-acting insulin only">
+                    <Field label={T.pumpInsulinLabel} hint={T.pumpInsulinHint}>
                       <Select value={data.rapidType} onChange={(v) => set({ rapidType: v })} options={[...RAPID_INSULINS]} />
                     </Field>
-                    <Field
-                      label="Bolus (meal) units per day"
-                      hint="Optional — from your pump history, total meal/correction boluses in a typical day"
-                    >
+                    <Field label={T.bolusUnitsLabel} hint={T.bolusUnitsHint}>
                       <TextInput
                         type="number"
                         min="0"
                         value={data.rapidUnits}
                         onChange={(e) => set({ rapidUnits: e.target.value })}
-                        placeholder="e.g. 40 (optional)"
+                        placeholder={T.bolusPlaceholder}
                       />
                     </Field>
-                    <Field label="Basal (background) units per day" hint="Total basal delivered by the pump in a typical day">
+                    <Field label={T.basalBackgroundLabel} hint={T.basalBackgroundHint}>
                       <TextInput
                         type="number"
                         min="0"
                         value={data.basalUnits}
                         onChange={(e) => set({ basalUnits: e.target.value })}
-                        placeholder="e.g. 20"
+                        placeholder={T.basalPumpPlaceholder}
                       />
                     </Field>
                   </>
                 ) : (
                   <>
-                    <Field label="Rapid-acting (mealtime) insulin">
+                    <Field label={T.rapidInsulinLabel}>
                       <Select value={data.rapidType} onChange={(v) => set({ rapidType: v })} options={[...RAPID_INSULINS]} />
                     </Field>
-                    <Field label="Total rapid units per day" hint="Sum of all mealtime doses across a typical day">
+                    <Field label={T.rapidUnitsLabel} hint={T.rapidUnitsHint}>
                       <TextInput
                         type="number"
                         min="0"
                         value={data.rapidUnits}
                         onChange={(e) => set({ rapidUnits: e.target.value })}
-                        placeholder="e.g. 60"
+                        placeholder={T.rapidPlaceholder}
                       />
                     </Field>
-                    <Field label="Basal (long-acting) insulin">
+                    <Field label={T.basalInsulinLabel}>
                       <Select value={data.basalType} onChange={(v) => set({ basalType: v })} options={[...BASAL_INSULINS]} />
                     </Field>
-                    <Field label="Total basal units per day">
+                    <Field label={T.basalUnitsLabel}>
                       <TextInput
                         type="number"
                         min="0"
                         value={data.basalUnits}
                         onChange={(e) => set({ basalUnits: e.target.value })}
-                        placeholder="e.g. 35"
+                        placeholder={T.basalPlaceholder}
                       />
                     </Field>
                   </>
@@ -312,7 +313,7 @@ export default function OnboardingPage() {
 
             {usesPills && (
               <Card style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>Oral medication(s)</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>{T.oralMedicationTitle}</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {PILL_OPTIONS.map((p) => (
                     <button
@@ -339,26 +340,23 @@ export default function OnboardingPage() {
 
         {step === 3 && (
           <>
-            <div style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.6 }}>
-              Based on your total daily insulin dose, here are your calculated ratios (500 rule for carb ratio,
-              1500 rule for insulin sensitivity):
-            </div>
+            <div style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.6 }}>{T.reviewIntro}</div>
             {usesInsulin ? (
               <>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <StatTile label="Total daily dose" value={tdd} unit="u" tone="neutral" />
-                  <StatTile label="Carb ratio" value={displayCarbRatio ? round2(displayCarbRatio) : "—"} unit="g/u" tone="primary" />
-                  <StatTile label="Sensitivity (ISF)" value={displayISF ? round2(displayISF) : "—"} unit="mg/dL/u" tone="neutral" />
+                  <StatTile label={T.totalDailyDoseLabel} value={tdd} unit="u" tone="neutral" />
+                  <StatTile label={T.carbRatioLabel} value={displayCarbRatio ? round2(displayCarbRatio) : t.common.dash} unit="g/u" tone="primary" />
+                  <StatTile label={T.sensitivityLabel} value={displayISF ? round2(displayISF) : t.common.dash} unit="mg/dL/u" tone="neutral" />
                 </div>
                 <div style={{ fontSize: 12.5, color: "var(--text-3)", lineHeight: 1.6 }}>
-                  1 unit of rapid insulin covers about <b>{displayCarbRatio ? round2(displayCarbRatio) : "—"}g</b> of
-                  carbohydrate, and lowers blood glucose by about <b>{displayISF ? round2(displayISF) : "—"} mg/dL</b>.
+                  {T.reviewSummary(
+                    displayCarbRatio ? String(round2(displayCarbRatio)) : t.common.dash,
+                    displayISF ? String(round2(displayISF)) : t.common.dash,
+                  )}
                 </div>
                 <Card style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>
-                      My doctor gave me different numbers
-                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>{T.doctorOverrideLabel}</div>
                     <button
                       onClick={() => setManualOverride((v) => !v)}
                       style={{
@@ -371,12 +369,12 @@ export default function OnboardingPage() {
                         color: manualOverride ? "white" : "var(--text-2)",
                       }}
                     >
-                      {manualOverride ? "On" : "Off"}
+                      {manualOverride ? T.on : T.off}
                     </button>
                   </div>
                   {manualOverride && (
                     <div style={{ display: "flex", gap: 12 }}>
-                      <Field label="Carb ratio (g per unit)">
+                      <Field label={T.carbRatioManualLabel}>
                         <TextInput
                           type="number"
                           value={manualCarbRatio}
@@ -384,7 +382,7 @@ export default function OnboardingPage() {
                           placeholder={carbRatio ? String(round2(carbRatio)) : ""}
                         />
                       </Field>
-                      <Field label="ISF (mg/dL per unit)">
+                      <Field label={T.isfManualLabel}>
                         <TextInput
                           type="number"
                           value={manualISF}
@@ -398,8 +396,7 @@ export default function OnboardingPage() {
               </>
             ) : (
               <div style={{ fontSize: 13.5, color: "var(--text-2)", background: "var(--surface-2)", borderRadius: 12, padding: 14 }}>
-                Since you&apos;re managing with oral medication only, dose calculations are skipped — you can still
-                log meals and glucose readings for your history.
+                {T.pillsOnlyNotice}
               </div>
             )}
           </>
@@ -410,7 +407,7 @@ export default function OnboardingPage() {
 
       <div style={{ padding: 20, borderTop: "1px solid var(--border)" }}>
         <Button full size="lg" disabled={!canNext() || submitting} onClick={next}>
-          {submitting ? "Saving…" : step === STEPS.length - 1 ? "Finish setup" : "Continue"}
+          {submitting ? t.common.savingBtn : step === STEPS.length - 1 ? T.finishSetup : t.common.continueBtn}
         </Button>
       </div>
     </AppShell>

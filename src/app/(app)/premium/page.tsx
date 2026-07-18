@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, Button } from "@/components/ui";
 import { useAuth } from "@/context/AuthContext";
+import { useLang } from "@/context/LangContext";
 import { api, ApiError } from "@/lib/api";
-import { ONE_TIME_PRICE_DISPLAY, PREMIUM_FEATURES, TRIAL_DAYS } from "@/lib/constants";
+import { ONE_TIME_PRICE_DISPLAY, TRIAL_DAYS } from "@/lib/constants";
 
 export default function PremiumPage() {
   const { user, refresh } = useAuth();
+  const { t } = useLang();
+  const T = t.premium;
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,7 +44,7 @@ export default function PremiumPage() {
       await api.startTrial();
       await refresh();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not start trial.");
+      setError(err instanceof ApiError ? err.message : T.startTrialError);
     } finally {
       setBusy(false);
     }
@@ -54,7 +57,7 @@ export default function PremiumPage() {
       const { url } = await api.checkout();
       window.location.href = url;
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not start checkout.");
+      setError(err instanceof ApiError ? err.message : T.checkoutError);
       setBusy(false);
     }
   }
@@ -64,8 +67,8 @@ export default function PremiumPage() {
       <div style={{ flex: 1, padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
         <Card style={{ background: "var(--good-tint)", border: "none", textAlign: "center", padding: 28 }}>
           <div style={{ fontSize: 30 }}>✓</div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: "var(--good)", marginTop: 8 }}>You&apos;re Premium</div>
-          <div style={{ fontSize: 13, color: "var(--text-2)", marginTop: 4 }}>Unlocked for life — unlimited history, export, and more.</div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: "var(--good)", marginTop: 8 }}>{T.premiumUnlockedTitle}</div>
+          <div style={{ fontSize: 13, color: "var(--text-2)", marginTop: 4 }}>{T.premiumUnlockedDesc}</div>
         </Card>
       </div>
     );
@@ -90,37 +93,35 @@ export default function PremiumPage() {
             <path d="M4 8l3 3 5-6 5 6 3-3-2 11H6L4 8Z" fill="white" />
           </svg>
         </div>
-        <div style={{ fontSize: 20, fontWeight: 800 }}>GlucoDose Premium</div>
-        <div style={{ fontSize: 13.5, color: "var(--text-2)", marginTop: 4 }}>Everything you need to manage diabetes with confidence.</div>
+        <div style={{ fontSize: 20, fontWeight: 800 }}>{T.title}</div>
+        <div style={{ fontSize: 13.5, color: "var(--text-2)", marginTop: 4 }}>{T.subtitle}</div>
       </div>
 
       {checkoutStatus === "success" && !isPremium && (
         <Card style={{ background: "var(--primary-tint)", border: "none", textAlign: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>Payment received — confirming…</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>{T.paymentReceived}</div>
         </Card>
       )}
       {checkoutStatus === "cancelled" && (
         <Card style={{ background: "var(--surface-2)", border: "none", textAlign: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700 }}>Checkout cancelled</div>
+          <div style={{ fontSize: 13, fontWeight: 700 }}>{T.checkoutCancelled}</div>
         </Card>
       )}
 
       {trialActive && (
         <Card style={{ background: "var(--primary-tint)", border: "none", textAlign: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>
-            Free trial active — {daysLeft} day{daysLeft === 1 ? "" : "s"} left
-          </div>
-          <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>Subscribe below to keep Premium after your trial ends.</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>{T.trialActive(daysLeft)}</div>
+          <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>{T.trialSubtitle}</div>
         </Card>
       )}
       {trialUsed && !trialActive && (
         <Card style={{ background: "var(--surface-2)", border: "none", textAlign: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700 }}>Your free trial has ended</div>
+          <div style={{ fontSize: 13, fontWeight: 700 }}>{T.trialEnded}</div>
         </Card>
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {PREMIUM_FEATURES.map((f) => (
+        {T.features.map((f) => (
           <div key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <div
               style={{
@@ -145,26 +146,24 @@ export default function PremiumPage() {
       </div>
 
       <Card style={{ textAlign: "center", background: "var(--primary-tint)", border: "none" }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>One-time purchase</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>{T.onetimePurchaseLabel}</div>
         <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 700, marginTop: 4 }}>
           {ONE_TIME_PRICE_DISPLAY}
         </div>
-        <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>Pay once, keep Premium forever</div>
+        <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>{T.payOnceMessage}</div>
       </Card>
 
       {error && <div style={{ color: "var(--danger)", fontSize: 13, fontWeight: 600, textAlign: "center" }}>{error}</div>}
 
       {!trialUsed && (
         <Button size="lg" full variant="secondary" onClick={startTrial} disabled={busy}>
-          Start {TRIAL_DAYS}-day free trial
+          {T.startTrialBtn(TRIAL_DAYS)}
         </Button>
       )}
       <Button size="lg" full onClick={subscribe} disabled={busy}>
-        Unlock Premium
+        {T.unlockPremiumBtn}
       </Button>
-      <div style={{ fontSize: 11.5, color: "var(--text-3)", textAlign: "center", lineHeight: 1.5 }}>
-        Payments are processed securely by Stripe.
-      </div>
+      <div style={{ fontSize: 11.5, color: "var(--text-3)", textAlign: "center", lineHeight: 1.5 }}>{T.paymentsSecureNote}</div>
     </div>
   );
 }

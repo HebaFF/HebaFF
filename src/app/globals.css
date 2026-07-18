@@ -87,3 +87,9 @@ html[dir="rtl"] body {
 html[dir="rtl"] .num {
   font-family: var(--font-tajawal), var(--font-num);
 }
+
+/* Directional icons: a "back" chevron should point toward the reading
+   direction's origin — right in RTL, left in LTR. */
+html[dir="rtl"] .back-chevron {
+  transform: scaleX(-1);
+}

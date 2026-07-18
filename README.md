@@ -135,10 +135,13 @@ design_handoff_glucodose/        — original design/behavior reference (kept fo
   internal `postcss@8.4.31` (build-tooling, not exposed to user input) with a
   known XSS-in-stringifier CVE; will resolve itself in a future Next.js patch
   release. Not fixable from this project's `package.json`.
-- i18n: only nav/auth chrome strings are translated (EN/AR); screen body copy
-  is English-only, matching the prototype's stated scope — full i18n +
-  RTL-testing every screen is called out as follow-up work in the original
-  handoff.
+- i18n: full UI-chrome translation (EN/AR) across every screen — labels,
+  buttons, hints, error messages, badges — RTL-verified end-to-end in a real
+  browser (mirrored layout, directional back-chevron, correct pluralization).
+  Deliberately out of scope, matching the original handoff: the 100+ item
+  food database and insulin/pill brand names, which are a content-catalog
+  translation project, not UI chrome (brand names in particular are kept in
+  Latin script since that's what's on the box regardless of locale).
 - Test coverage is limited to the dosing/ratio math and rate limiter (the
   safety-critical / security-critical parts); API routes and UI flows are
   verified manually but not covered by automated integration/e2e tests yet.
