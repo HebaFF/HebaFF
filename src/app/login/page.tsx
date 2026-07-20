@@ -22,8 +22,8 @@ export default function LoginPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!username.trim() || !password.trim()) {
-      setError(t.auth.fillBothFields);
+    if (!username.trim() || !password.trim() || (mode === "signup" && !email.trim())) {
+      setError(t.auth.fillRequiredFields);
       return;
     }
     if (password.length < 8) {
@@ -35,7 +35,7 @@ export default function LoginPage() {
     try {
       const result =
         mode === "signup"
-          ? await api.signup(username.trim(), password, email.trim() || undefined)
+          ? await api.signup(username.trim(), password, email.trim())
           : await api.login(username.trim(), password);
       await refresh();
       router.replace(result.hasProfile ? "/dashboard" : "/onboarding");

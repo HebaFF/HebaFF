@@ -3,7 +3,7 @@ import type { ProfileDTO } from "./profileDto";
 export type MeUser = {
   id: string;
   username: string;
-  email: string | null;
+  email: string;
   profile: ProfileDTO | null;
   subscription: { isPremium: boolean; trialUsed: boolean; trialStartedAt: number | null };
 };
@@ -36,7 +36,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   me: () => request<{ user: MeUser | null }>("/api/auth/me"),
-  signup: (username: string, password: string, email?: string) =>
+  signup: (username: string, password: string, email: string) =>
     request<{ id: string; username: string; hasProfile: boolean }>("/api/auth/signup", {
       method: "POST",
       body: JSON.stringify({ username, password, email }),

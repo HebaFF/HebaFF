@@ -193,7 +193,14 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
   async function logResult() {
     const foodsPayload = items.map((it) => ({ name: it.food.name, qty: it.qty, carbs: it.food.carbs }));
     if (mode === "meal") {
-      await logEntry({ type: "meal", timestamp: Date.now(), foods: foodsPayload, carbs: round2(totalCarbs), dose: round2(mealDoseVal) });
+      await logEntry({
+        type: "meal",
+        timestamp: Date.now(),
+        foods: foodsPayload,
+        carbs: round2(totalCarbs),
+        dose: round2(mealDoseVal),
+        ...(curBGmgdl ? { currentBG: fromInternalDisplay(curBGmgdl) } : {}),
+      });
     } else if (mode === "mealCorrection") {
       await logEntry({
         type: "mealCorrection",
@@ -224,6 +231,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 1800);
     if (mode === "meal" || mode === "mealCorrection") setItems([]);
+    if (mode === "meal") setCurrentBG("");
   }
   /* eslint-enable react-hooks/purity */
 
@@ -319,6 +327,17 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
             />
           </Field>
         </div>
+      )}
+
+      {mode === "meal" && (
+        <Field label={T.currentBGLabel(unit)} hint={T.currentBGOptionalHint}>
+          <TextInput
+            type="number"
+            value={currentBG}
+            onChange={(e) => setCurrentBG(e.target.value)}
+            placeholder={profile.units === "mmol" ? "7.2" : "130"}
+          />
+        </Field>
       )}
 
       {usesInsulin && (

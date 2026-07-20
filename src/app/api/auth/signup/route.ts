@@ -22,18 +22,16 @@ export async function POST(req: NextRequest) {
   if (existing) {
     return NextResponse.json({ error: "That username is taken — try logging in instead." }, { status: 409 });
   }
-  if (email) {
-    const emailTaken = await prisma.user.findUnique({ where: { email } });
-    if (emailTaken) {
-      return NextResponse.json({ error: "That email is already in use." }, { status: 409 });
-    }
+  const emailTaken = await prisma.user.findUnique({ where: { email } });
+  if (emailTaken) {
+    return NextResponse.json({ error: "That email is already in use." }, { status: 409 });
   }
 
   const passwordHash = await hashPassword(password);
   const user = await prisma.user.create({
     data: {
       username,
-      email: email || null,
+      email,
       passwordHash,
       subscription: { create: {} },
     },

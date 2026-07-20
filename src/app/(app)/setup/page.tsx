@@ -147,9 +147,7 @@ export default function SetupPage() {
               ? t.onboarding.female
               : profile.gender === "male"
                 ? t.onboarding.male
-                : profile.gender === "other"
-                  ? t.onboarding.other
-                  : t.common.dash
+                : t.common.dash
           }
         />
         <InfoRow label={T.ageLabel} value={profile.age || t.common.dash} />

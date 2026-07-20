@@ -22,7 +22,7 @@ import { api, ApiError } from "@/lib/api";
 
 const STEPS = ["profile", "diagnosis", "treatment", "review"] as const;
 
-type Gender = "" | "female" | "male" | "other";
+type Gender = "" | "female" | "male";
 type TreatmentMode = "insulin" | "pills" | "both";
 type Delivery = "injections" | "pump";
 
@@ -108,6 +108,9 @@ export default function OnboardingPage() {
       if (usesPills && data.pills.length === 0) return false;
       return true;
     }
+    if (step === 3 && usesInsulin && manualOverride) {
+      return manualCarbRatio.trim() !== "" && manualISF.trim() !== "";
+    }
     return true;
   }
 
@@ -172,7 +175,6 @@ export default function OnboardingPage() {
                 options={[
                   { value: "female", label: T.female },
                   { value: "male", label: T.male },
-                  { value: "other", label: T.other },
                 ]}
               />
             </Field>
@@ -373,24 +375,29 @@ export default function OnboardingPage() {
                     </button>
                   </div>
                   {manualOverride && (
-                    <div style={{ display: "flex", gap: 12 }}>
-                      <Field label={T.carbRatioManualLabel}>
-                        <TextInput
-                          type="number"
-                          value={manualCarbRatio}
-                          onChange={(e) => setManualCarbRatio(e.target.value)}
-                          placeholder={carbRatio ? String(round2(carbRatio)) : ""}
-                        />
-                      </Field>
-                      <Field label={T.isfManualLabel}>
-                        <TextInput
-                          type="number"
-                          value={manualISF}
-                          onChange={(e) => setManualISF(e.target.value)}
-                          placeholder={isf ? String(round2(isf)) : ""}
-                        />
-                      </Field>
-                    </div>
+                    <>
+                      <div style={{ display: "flex", gap: 12 }}>
+                        <Field label={T.carbRatioManualLabel}>
+                          <TextInput
+                            type="number"
+                            value={manualCarbRatio}
+                            onChange={(e) => setManualCarbRatio(e.target.value)}
+                            placeholder={carbRatio ? String(round2(carbRatio)) : ""}
+                          />
+                        </Field>
+                        <Field label={T.isfManualLabel}>
+                          <TextInput
+                            type="number"
+                            value={manualISF}
+                            onChange={(e) => setManualISF(e.target.value)}
+                            placeholder={isf ? String(round2(isf)) : ""}
+                          />
+                        </Field>
+                      </div>
+                      {(!manualCarbRatio.trim() || !manualISF.trim()) && (
+                        <div style={{ fontSize: 12, color: "var(--danger)", fontWeight: 600 }}>{T.doctorOverrideRequired}</div>
+                      )}
+                    </>
                   )}
                 </Card>
               </>
