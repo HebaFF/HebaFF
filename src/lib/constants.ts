@@ -133,6 +133,8 @@ export const STRINGS = {
       saveError: "Could not save your profile.",
     },
     dashboard: {
+      overviewTab: "Overview",
+      calculatorTab: "Calculator",
       logYourDayTitle: "Log Your Day",
       timeInRangeLabel: "Today's Time in Range",
       green: "Green",
@@ -143,7 +145,6 @@ export const STRINGS = {
       logBGBtn: "+ Log BG",
       currentBGLabel: "Current BG",
       insulinTakenLabel: "Insulin Taken",
-      carbCalculatorTitle: "Carb Calculator",
       yourHistoryTitle: "Your History",
       viewAllBtn: "View all",
       nothingLoggedYet: "Nothing logged yet.",
@@ -389,6 +390,8 @@ export const STRINGS = {
       saveError: "تعذر حفظ ملفك الشخصي.",
     },
     dashboard: {
+      overviewTab: "نظرة عامة",
+      calculatorTab: "الحاسبة",
       logYourDayTitle: "سجّلي يومك",
       timeInRangeLabel: "الوقت ضمن النطاق اليوم",
       green: "جيد",
@@ -399,7 +402,6 @@ export const STRINGS = {
       logBGBtn: "+ تسجيل السكر",
       currentBGLabel: "السكر الحالي",
       insulinTakenLabel: "الأنسولين المأخوذ",
-      carbCalculatorTitle: "حاسبة الكارب",
       yourHistoryTitle: "سجلك",
       viewAllBtn: "عرض الكل",
       nothingLoggedYet: "لم يتم تسجيل أي شيء بعد.",
