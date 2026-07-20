@@ -26,6 +26,7 @@ model User {
   logEntries         LogEntry[]
   subscription       Subscription?
   passwordResetTokens PasswordResetToken[]
+  communityPosts     CommunityPost[]
 
   @@map("users")
 }
@@ -108,6 +109,19 @@ model LogEntry {
 
   @@index([userId, timestamp])
   @@map("log_entries")
+}
+
+model CommunityPost {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  content String
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("community_posts")
 }
 
 model Subscription {

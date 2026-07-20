@@ -9,8 +9,10 @@
   --text-2: oklch(45% 0.018 250);
   --text-3: oklch(60% 0.014 250);
 
-  --header: oklch(90% 0.035 255);
-  --header-text: oklch(28% 0.05 255);
+  --header: oklch(70% 0.17 45);
+  --header-text: oklch(99% 0 0);
+  --header-grad-1: oklch(78% 0.15 55);
+  --header-grad-2: oklch(66% 0.19 27);
 
   --primary: oklch(55% 0.18 255);
   --primary-dark: oklch(45% 0.17 255);
@@ -23,8 +25,8 @@
   --danger: oklch(58% 0.19 25);
   --danger-tint: oklch(93% 0.05 25);
 
-  --radius: 22px;
-  --radius-sm: 14px;
+  --radius: 26px;
+  --radius-sm: 18px;
   --shadow: 0 2px 6px oklch(0% 0 0 / 0.04), 0 10px 26px oklch(0% 0 0 / 0.07);
 
   --font-ui: var(--font-jakarta), Helvetica, Arial, sans-serif;

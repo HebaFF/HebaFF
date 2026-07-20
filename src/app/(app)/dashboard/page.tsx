@@ -10,6 +10,7 @@ import { useAppData } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 import { classifyBG } from "@/lib/calc";
 import { RANGE_TONE } from "@/lib/historyMeta";
+import { computeStreak, computePoints } from "@/lib/gamification";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -34,9 +35,11 @@ export default function DashboardPage() {
   const lastDose = [...entries].reverse().find((e) => e.dose !== undefined);
 
   const recentEntries = [...entries].sort((a, b) => b.timestamp - a.timestamp).slice(0, 2);
+  const streak = computeStreak(entries);
+  const points = computePoints(entries);
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 100px", display: "flex", flexDirection: "column", gap: 16 }}>
       <SegmentedControl
         value={tab}
         onChange={setTab}
@@ -56,6 +59,23 @@ export default function DashboardPage() {
               color={tirPct >= 70 ? "var(--good)" : tirPct >= 40 ? "var(--warn)" : "var(--danger)"}
             />
           </DashboardCard>
+
+          <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
+              <div style={{ fontSize: 26 }}>🔥</div>
+              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>
+                {streak}
+              </div>
+              <div style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 700, marginTop: 2 }}>{T.streakLabel}</div>
+            </div>
+            <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
+              <div style={{ fontSize: 26 }}>⭐</div>
+              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>
+                {points}
+              </div>
+              <div style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 700, marginTop: 2 }}>{T.pointsLabel}</div>
+            </div>
+          </div>
 
           <DashboardCard
             icon="🩸"

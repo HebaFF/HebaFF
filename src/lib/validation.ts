@@ -76,6 +76,10 @@ const foodItemSchema = z.object({
   carbs: z.number(),
 });
 
+export const communityPostSchema = z.object({
+  content: z.string().trim().min(1, "Write something before posting.").max(500, "Posts are limited to 500 characters."),
+});
+
 export const logEntrySchema = z.object({
   type: z.enum(["meal", "mealCorrection", "correction", "hypo", "bg"]),
   timestamp: z.coerce.number().optional(),

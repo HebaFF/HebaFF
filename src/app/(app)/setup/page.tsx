@@ -132,7 +132,7 @@ export default function SetupPage() {
   }
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 28px", display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 104px", display: "flex", flexDirection: "column", gap: 16 }}>
       <DashboardCard
         icon="📋"
         title={T.setupRatiosTitle}

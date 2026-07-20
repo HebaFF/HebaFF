@@ -22,6 +22,13 @@ export type LogEntry = {
   carbsNeeded?: number;
 };
 
+export type CommunityPost = {
+  id: string;
+  username: string;
+  content: string;
+  createdAt: number;
+};
+
 class ApiError extends Error {}
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
@@ -70,6 +77,9 @@ export const api = {
       { method: "POST" },
     ),
   checkout: () => request<{ url: string }>("/api/subscription/checkout", { method: "POST" }),
+  listCommunityPosts: () => request<{ posts: CommunityPost[] }>("/api/community"),
+  createCommunityPost: (content: string) =>
+    request<{ post: CommunityPost }>("/api/community", { method: "POST", body: JSON.stringify({ content }) }),
 };
 
 export { ApiError };

@@ -67,7 +67,7 @@ export default function PremiumPage() {
 
   if (isPremium) {
     return (
-      <div style={{ flex: 1, padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
+      <div style={{ flex: 1, padding: "6px 20px 100px", display: "flex", flexDirection: "column", gap: 18 }}>
         <Card style={{ background: "var(--good-tint)", border: "none", textAlign: "center", padding: 28 }}>
           <div style={{ fontSize: 30 }}>✓</div>
           <div style={{ fontSize: 16, fontWeight: 800, color: "var(--good)", marginTop: 8 }}>{T.premiumUnlockedTitle}</div>
@@ -78,7 +78,7 @@ export default function PremiumPage() {
   }
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 104px", display: "flex", flexDirection: "column", gap: 20 }}>
       <div style={{ textAlign: "center", padding: "10px 0" }}>
         <div
           style={{

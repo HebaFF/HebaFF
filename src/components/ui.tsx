@@ -121,35 +121,66 @@ export function Avatar({ name }: { name?: string }) {
   );
 }
 
+function HeaderIconButton({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      style={{
+        width: 38,
+        height: 38,
+        borderRadius: 999,
+        border: "none",
+        background: "oklch(100% 0 0 / 0.3)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 18,
+        flexShrink: 0,
+      }}
+    >
+      {icon}
+    </button>
+  );
+}
+
 export function TopNav({
   name,
   welcomeText,
   ageText,
-  tab,
-  onChange,
-  tabs,
+  onHome,
+  onSetup,
+  onPremium,
+  homeLabel,
+  setupLabel,
+  premiumLabel,
 }: {
   name?: string;
   welcomeText: string;
   ageText?: string;
-  tab: string;
-  onChange: (id: string) => void;
-  tabs: { id: string; label: string }[];
+  onHome: () => void;
+  onSetup: () => void;
+  onPremium: () => void;
+  homeLabel: string;
+  setupLabel: string;
+  premiumLabel: string;
 }) {
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--bg)" }}>
       <div
         style={{
-          background: "var(--header)",
+          background: "linear-gradient(135deg, var(--header-grad-1), var(--header-grad-2))",
           margin: "14px 14px 0",
           borderRadius: "var(--radius)",
           padding: "16px 18px",
           display: "flex",
           alignItems: "center",
-          gap: 12,
+          gap: 10,
         }}
       >
-        <Avatar name={name} />
+        <button onClick={onHome} aria-label={homeLabel} style={{ border: "none", background: "none", padding: 0, flexShrink: 0 }}>
+          <Avatar name={name} />
+        </button>
         <div style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
           <div
             style={{
@@ -167,27 +198,59 @@ export function TopNav({
             <div style={{ fontSize: 12.5, color: "var(--header-text)", opacity: 0.8 }}>{ageText}</div>
           )}
         </div>
+        <HeaderIconButton icon="⚙️" label={setupLabel} onClick={onSetup} />
+        <HeaderIconButton icon="👑" label={premiumLabel} onClick={onPremium} />
       </div>
-      <div style={{ display: "flex", gap: 0, padding: "12px 20px 12px", background: "var(--bg)" }}>
-        {tabs.map((t, i) => (
-          <React.Fragment key={t.id}>
-            <button
-              onClick={() => onChange(t.id)}
-              style={{
-                border: "none",
-                background: "none",
-                padding: "4px 0",
-                fontSize: 13.5,
-                fontWeight: tab === t.id ? 800 : 600,
-                color: tab === t.id ? "var(--primary)" : "var(--text-3)",
-              }}
-            >
-              {t.label}
-            </button>
-            {i < tabs.length - 1 && <span style={{ color: "var(--border)", padding: "0 10px" }}>|</span>}
-          </React.Fragment>
-        ))}
-      </div>
+    </div>
+  );
+}
+
+export function BottomNav({
+  tab,
+  onChange,
+  tabs,
+}: {
+  tab: string;
+  onChange: (id: string) => void;
+  tabs: { id: string; icon: string; label: string }[];
+}) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%",
+        maxWidth: 480,
+        zIndex: 6,
+        background: "var(--surface)",
+        borderTop: "1px solid var(--border)",
+        display: "flex",
+        padding: "8px 10px calc(8px + env(safe-area-inset-bottom, 0px))",
+        gap: 4,
+      }}
+    >
+      {tabs.map((t) => (
+        <button
+          key={t.id}
+          onClick={() => onChange(t.id)}
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 3,
+            border: "none",
+            background: tab === t.id ? "var(--primary-tint)" : "none",
+            borderRadius: "var(--radius-sm)",
+            padding: "8px 4px",
+          }}
+        >
+          <span style={{ fontSize: 20 }}>{t.icon}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: tab === t.id ? "var(--primary-dark)" : "var(--text-3)" }}>{t.label}</span>
+        </button>
+      ))}
     </div>
   );
 }
@@ -209,7 +272,7 @@ export function DashboardCard({
     <Card style={{ display: "flex", flexDirection: "column", gap: 14, ...style }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {icon && <span style={{ fontSize: 20, lineHeight: 1 }}>{icon}</span>}
+          {icon && <span style={{ fontSize: 26, lineHeight: 1 }}>{icon}</span>}
           <span style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700 }}>{title}</span>
         </div>
         {right}
@@ -399,6 +462,18 @@ const inputBase: React.CSSProperties = {
 export const TextInput = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   function TextInput(props, ref) {
     return <input ref={ref} {...props} style={{ ...inputBase, ...(props.style || {}) }} />;
+  },
+);
+
+export const TextArea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(
+  function TextArea(props, ref) {
+    return (
+      <textarea
+        ref={ref}
+        {...props}
+        style={{ ...inputBase, resize: "vertical", minHeight: 90, fontFamily: "inherit", ...(props.style || {}) }}
+      />
+    );
   },
 );
 
