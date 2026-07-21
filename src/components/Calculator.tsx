@@ -19,10 +19,7 @@ function FoodPicker({ foods, onAdd }: { foods: (Food & { custom?: boolean })[]; 
   const [category, setCategory] = useState(T.allCategory);
   const categories = useMemo(() => [T.allCategory, ...Array.from(new Set(foods.map((f) => f.category)))], [foods, T.allCategory]);
   const filtered = useMemo(
-    () =>
-      foods
-        .filter((f) => (category === T.allCategory || f.category === category) && f.name.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 40),
+    () => foods.filter((f) => (category === T.allCategory || f.category === category) && f.name.toLowerCase().includes(query.toLowerCase())),
     [foods, query, category, T.allCategory],
   );
 
