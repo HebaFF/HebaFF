@@ -9,12 +9,15 @@ import { useLang } from "@/context/LangContext";
 import { convertBG, calcCarbRise, mealDose as calcMealDose, correctionDose, hypoCarbsNeeded, round2 } from "@/lib/calc";
 import type { ProfileDTO } from "@/lib/profileDto";
 
-function foodKey(f: { name: string; portion: string }) {
-  return f.name + "|" + f.portion;
+// Prefer the stable id when present — some distinct foods (curated DB entries or, in
+// principle, two custom foods) can share the same localized name+portion text, which
+// would otherwise collide as a React key and as the cart merge key.
+function foodKey(f: { id?: string; name: string; portion: string }) {
+  return f.id ?? f.name + "|" + f.portion;
 }
 
 function localizeFood(f: RawFood, lang: "en" | "ar"): Food {
-  return { name: f.name[lang], category: f.category[lang], portion: f.portion[lang], carbs: f.carbs };
+  return { id: f.id, name: f.name[lang], category: f.category[lang], portion: f.portion[lang], carbs: f.carbs };
 }
 
 function FoodPicker({ foods, onAdd }: { foods: (Food & { custom?: boolean })[]; onAdd: (f: Food) => void }) {

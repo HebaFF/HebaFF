@@ -8,7 +8,7 @@ export type MeUser = {
   subscription: { isPremium: boolean; trialUsed: boolean; trialStartedAt: number | null };
 };
 
-export type Food = { name: string; category: string; portion: string; carbs: number; custom?: boolean };
+export type Food = { id?: string; name: string; category: string; portion: string; carbs: number; custom?: boolean };
 
 export type LogEntry = {
   id: string;

@@ -13,6 +13,7 @@ export async function GET() {
   });
   return NextResponse.json({
     foods: foods.map((f) => ({
+      id: f.id,
       name: f.name,
       category: f.category,
       portion: f.portion,
@@ -34,6 +35,6 @@ export async function POST(req: NextRequest) {
 
   const food = await prisma.customFood.create({ data: { userId, ...parsed.data } });
   return NextResponse.json({
-    food: { name: food.name, category: food.category, portion: food.portion, carbs: food.carbs, custom: true },
+    food: { id: food.id, name: food.name, category: food.category, portion: food.portion, carbs: food.carbs, custom: true },
   });
 }
