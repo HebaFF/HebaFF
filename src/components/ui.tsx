@@ -99,28 +99,6 @@ export function TopBar({
   );
 }
 
-export function Avatar({ name }: { name?: string }) {
-  return (
-    <div
-      style={{
-        width: 44,
-        height: 44,
-        borderRadius: 999,
-        background: "oklch(100% 0 0 / 0.6)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 17,
-        fontWeight: 800,
-        color: "var(--header-text)",
-        flexShrink: 0,
-      }}
-    >
-      {(name || "?").slice(0, 1).toUpperCase()}
-    </div>
-  );
-}
-
 function HeaderIconButton({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
   return (
     <button
@@ -130,28 +108,15 @@ function HeaderIconButton({ icon, label, onClick }: { icon: string; label: strin
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 3,
+        gap: 2,
         border: "none",
         background: "none",
         flexShrink: 0,
-        padding: 0,
+        padding: "4px 8px",
       }}
     >
-      <span
-        style={{
-          width: 38,
-          height: 38,
-          borderRadius: 999,
-          background: "oklch(100% 0 0 / 0.3)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 18,
-        }}
-      >
-        {icon}
-      </span>
-      <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--header-text)", whiteSpace: "nowrap" }}>{label}</span>
+      <span style={{ fontSize: 19, lineHeight: 1 }}>{icon}</span>
+      <span style={{ fontSize: 9.5, fontWeight: 700, color: "var(--text-3)", whiteSpace: "nowrap" }}>{label}</span>
     </button>
   );
 }
@@ -178,54 +143,23 @@ export function TopNav({
   premiumLabel: string;
 }) {
   return (
-    <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--bg)" }}>
-      <div
-        style={{
-          background: "linear-gradient(135deg, var(--header-grad-1), var(--header-grad-2))",
-          margin: "14px 14px 0",
-          borderRadius: "var(--radius)",
-          padding: "16px 18px",
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <button
-          onClick={onHome}
-          aria-label={homeLabel}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 3,
-            border: "none",
-            background: "none",
-            padding: 0,
-            flexShrink: 0,
-          }}
-        >
-          <Avatar name={name} />
-          <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--header-text)", whiteSpace: "nowrap" }}>{homeLabel}</span>
-        </button>
-        <div style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-          <div
-            style={{
-              fontSize: 16,
-              fontWeight: 800,
-              color: "var(--header-text)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {welcomeText}
+    <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
+      <div style={{ padding: "16px 20px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+        <button onClick={onHome} aria-label={homeLabel} style={{ border: "none", background: "none", padding: 0, textAlign: "left", minWidth: 0 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, color: "var(--primary-dark)", letterSpacing: "-0.01em" }}>
+            GlucoDose
           </div>
-          {ageText && (
-            <div style={{ fontSize: 12.5, color: "var(--header-text)", opacity: 0.8 }}>{ageText}</div>
+          {name && (
+            <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {welcomeText}
+              {ageText ? ` · ${ageText}` : ""}
+            </div>
           )}
+        </button>
+        <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+          <HeaderIconButton icon="⚙️" label={setupLabel} onClick={onSetup} />
+          <HeaderIconButton icon="👑" label={premiumLabel} onClick={onPremium} />
         </div>
-        <HeaderIconButton icon="⚙️" label={setupLabel} onClick={onSetup} />
-        <HeaderIconButton icon="👑" label={premiumLabel} onClick={onPremium} />
       </div>
     </div>
   );
@@ -268,15 +202,56 @@ export function BottomNav({
             alignItems: "center",
             gap: 3,
             border: "none",
-            background: tab === t.id ? "var(--primary-tint)" : "none",
-            borderRadius: "var(--radius-sm)",
+            background: "none",
             padding: "8px 4px",
+            opacity: tab === t.id ? 1 : 0.55,
           }}
         >
-          <span style={{ fontSize: 20 }}>{t.icon}</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: tab === t.id ? "var(--primary-dark)" : "var(--text-3)" }}>{t.label}</span>
+          <span style={{ fontSize: 20, filter: tab === t.id ? "none" : "grayscale(1)" }}>{t.icon}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: tab === t.id ? "var(--primary)" : "var(--text-3)" }}>{t.label}</span>
         </button>
       ))}
+    </div>
+  );
+}
+
+export function FAB({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        bottom: 78,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%",
+        maxWidth: 480,
+        display: "flex",
+        justifyContent: "flex-end",
+        padding: "0 20px",
+        pointerEvents: "none",
+        zIndex: 6,
+      }}
+    >
+      <button
+        onClick={onClick}
+        aria-label={label}
+        style={{
+          pointerEvents: "auto",
+          width: 56,
+          height: 56,
+          borderRadius: 999,
+          border: "none",
+          background: "var(--primary)",
+          color: "white",
+          fontSize: 24,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 4px 14px oklch(0% 0 0 / 0.18)",
+        }}
+      >
+        {icon}
+      </button>
     </div>
   );
 }

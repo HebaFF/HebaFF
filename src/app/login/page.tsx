@@ -50,9 +50,9 @@ export default function LoginPage() {
     <AppShell>
       <div
         style={{
-          background: "var(--header)",
+          background: "var(--primary-tint)",
           padding: "56px 28px 40px",
-          borderRadius: "0 0 40px 40px",
+          borderRadius: "0 0 32px 32px",
           display: "flex",
           flexDirection: "column",
           gap: 10,
@@ -63,7 +63,7 @@ export default function LoginPage() {
             width: 52,
             height: 52,
             borderRadius: 16,
-            background: "oklch(100% 0 0 / 0.55)",
+            background: "var(--primary)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -71,10 +71,7 @@ export default function LoginPage() {
           }}
         >
           <svg width="26" height="26" viewBox="0 0 24 24">
-            <path
-              d="M12 2c4 5 7 8.5 7 12.5A7 7 0 0 1 5 14.5C5 10.5 8 7 12 2Z"
-              fill="var(--header-text)"
-            />
+            <path d="M12 2c4 5 7 8.5 7 12.5A7 7 0 0 1 5 14.5C5 10.5 8 7 12 2Z" fill="white" />
           </svg>
         </div>
         <h1
@@ -83,15 +80,13 @@ export default function LoginPage() {
             fontSize: 32,
             fontWeight: 700,
             margin: 0,
-            color: "var(--header-text)",
+            color: "var(--primary-dark)",
             letterSpacing: "-0.01em",
           }}
         >
           GlucoDose
         </h1>
-        <p style={{ fontSize: 15, color: "var(--header-text)", opacity: 0.8, margin: 0, lineHeight: 1.5, maxWidth: 320 }}>
-          {t.auth.appTagline}
-        </p>
+        <p style={{ fontSize: 15, color: "var(--text-2)", margin: 0, lineHeight: 1.5, maxWidth: 320 }}>{t.auth.appTagline}</p>
       </div>
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "28px 28px 40px" }}>

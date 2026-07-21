@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { DashboardCard, RingProgress, Button, Badge, SegmentedControl } from "@/components/ui";
+import { DashboardCard, RingProgress, Button, Badge, SegmentedControl, FAB } from "@/components/ui";
 import { CalculatorWidget } from "@/components/Calculator";
 import { LogBGModal } from "@/components/History";
 import { useAuth } from "@/context/AuthContext";
@@ -61,19 +61,23 @@ export default function DashboardPage() {
           </DashboardCard>
 
           <div style={{ display: "flex", gap: 12 }}>
-            <div style={{ flex: 1, textAlign: "center", background: "var(--pink-tint)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
-              <div style={{ fontSize: 26 }}>🔥</div>
-              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2, color: "var(--pink)" }}>
+            <div style={{ flex: 1, textAlign: "center", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
+              <div style={{ fontSize: 20 }}>🔥</div>
+              <div className="num" style={{ fontSize: 20, fontWeight: 800, marginTop: 4 }}>
                 {streak}
               </div>
-              <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.streakLabel}</div>
+              <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                {T.streakLabel}
+              </div>
             </div>
-            <div style={{ flex: 1, textAlign: "center", background: "var(--warn-tint)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
-              <div style={{ fontSize: 26 }}>⭐</div>
-              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2, color: "var(--warn)" }}>
+            <div style={{ flex: 1, textAlign: "center", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
+              <div style={{ fontSize: 20 }}>⭐</div>
+              <div className="num" style={{ fontSize: 20, fontWeight: 800, marginTop: 4 }}>
                 {points}
               </div>
-              <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.pointsLabel}</div>
+              <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                {T.pointsLabel}
+              </div>
             </div>
           </div>
 
@@ -88,17 +92,21 @@ export default function DashboardPage() {
             }
           >
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1, textAlign: "center", background: "var(--pink-tint)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-                <div className="num" style={{ fontSize: 22, fontWeight: 700, color: "var(--pink)" }}>
+              <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
+                <div className="num" style={{ fontSize: 22, fontWeight: 800 }}>
                   {lastBG ? lastBG.currentBG : t.common.dash}
                 </div>
-                <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.currentBGLabel}</div>
+                <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  {T.currentBGLabel}
+                </div>
               </div>
-              <div style={{ flex: 1, textAlign: "center", background: "var(--primary-tint)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-                <div className="num" style={{ fontSize: 22, fontWeight: 700, color: "var(--primary-dark)" }}>
+              <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
+                <div className="num" style={{ fontSize: 22, fontWeight: 800 }}>
                   {lastDose ? `${lastDose.dose}u` : t.common.dash}
                 </div>
-                <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.insulinTakenLabel}</div>
+                <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
+                  {T.insulinTakenLabel}
+                </div>
               </div>
             </div>
           </DashboardCard>
@@ -152,6 +160,8 @@ export default function DashboardPage() {
       )}
 
       {tab === "calculator" && <CalculatorWidget profile={profile} />}
+
+      {tab === "overview" && <FAB icon="+" label={T.calculatorTab} onClick={() => setTab("calculator")} />}
 
       <LogBGModal open={bgOpen} onClose={() => setBgOpen(false)} units={profile.units} onSave={logEntry} />
     </div>
