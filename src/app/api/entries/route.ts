@@ -13,6 +13,7 @@ function toEntryDTO(e: {
   targetBG: number | null;
   dose: number | null;
   carbsNeeded: number | null;
+  notes: string | null;
 }) {
   return {
     id: e.id,
@@ -24,6 +25,7 @@ function toEntryDTO(e: {
     targetBG: e.targetBG ?? undefined,
     dose: e.dose ?? undefined,
     carbsNeeded: e.carbsNeeded ?? undefined,
+    notes: e.notes ?? undefined,
   };
 }
 
@@ -60,6 +62,7 @@ export async function POST(req: NextRequest) {
       targetBG: input.targetBG ?? null,
       dose: input.dose ?? null,
       carbsNeeded: input.carbsNeeded ?? null,
+      notes: input.notes || null,
     },
   });
 

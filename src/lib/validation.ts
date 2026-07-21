@@ -89,4 +89,5 @@ export const logEntrySchema = z.object({
   targetBG: z.coerce.number().optional(),
   dose: z.coerce.number().optional(),
   carbsNeeded: z.coerce.number().optional(),
+  notes: z.string().trim().max(280).optional(),
 });

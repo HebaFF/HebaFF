@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Card, TextInput, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
+import { Card, TextInput, TextArea, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
 import { FOOD_DB, type Food as RawFood } from "@/lib/foodDb";
 import type { Food } from "@/lib/api";
 import { useAppData } from "@/context/AppDataContext";
@@ -18,6 +18,39 @@ function foodKey(f: { id?: string; name: string; portion: string }) {
 
 function localizeFood(f: RawFood, lang: "en" | "ar"): Food {
   return { id: f.id, name: f.name[lang], category: f.category[lang], portion: f.portion[lang], carbs: f.carbs };
+}
+
+function LogRow({
+  icon,
+  label,
+  children,
+  divider = true,
+}: {
+  icon: string;
+  label: string;
+  children: React.ReactNode;
+  divider?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        paddingBottom: divider ? 14 : 0,
+        marginBottom: divider ? 14 : 0,
+        borderBottom: divider ? "1px solid var(--border)" : "none",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 16, lineHeight: 1 }}>{icon}</span>
+        <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+          {label}
+        </span>
+      </div>
+      {children}
+    </div>
+  );
 }
 
 function FoodPicker({ foods, onAdd }: { foods: (Food & { custom?: boolean })[]; onAdd: (f: Food) => void }) {
@@ -145,6 +178,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
   const [items, setItems] = useState<{ food: Food; qty: number }[]>([]);
   const [currentBG, setCurrentBG] = useState("");
   const [targetBG, setTargetBG] = useState(profile.units === "mmol" ? "7.2" : "130");
+  const [notes, setNotes] = useState("");
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
@@ -200,6 +234,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
   /* eslint-disable react-hooks/purity -- event handler, not render */
   async function logResult() {
     const foodsPayload = items.map((it) => ({ name: it.food.name, qty: it.qty, carbs: it.food.carbs }));
+    const notesPayload = notes.trim() ? { notes: notes.trim() } : {};
     if (mode === "meal") {
       await logEntry({
         type: "meal",
@@ -208,6 +243,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         carbs: round2(totalCarbs),
         dose: round2(mealDoseVal),
         ...(curBGmgdl ? { currentBG: fromInternalDisplay(curBGmgdl) } : {}),
+        ...notesPayload,
       });
     } else if (mode === "mealCorrection") {
       await logEntry({
@@ -218,6 +254,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         currentBG: fromInternalDisplay(curBGmgdl),
         targetBG: fromInternalDisplay(tgtBGmgdl),
         dose: round2(combinedDose),
+        ...notesPayload,
       });
     } else if (mode === "correction") {
       await logEntry({
@@ -226,6 +263,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         currentBG: fromInternalDisplay(curBGmgdl),
         targetBG: fromInternalDisplay(tgtBGmgdl),
         dose: round2(correctionUnits),
+        ...notesPayload,
       });
     } else if (mode === "hypo") {
       await logEntry({
@@ -234,12 +272,14 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         currentBG: fromInternalDisplay(curBGmgdl),
         targetBG: fromInternalDisplay(tgtBGmgdl),
         carbsNeeded: round2(hypoCarbs),
+        ...notesPayload,
       });
     }
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 1800);
     if (mode === "meal" || mode === "mealCorrection") setItems([]);
     if (mode === "meal") setCurrentBG("");
+    setNotes("");
   }
   /* eslint-enable react-hooks/purity */
 
@@ -316,37 +356,32 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         </Card>
       )}
 
-      {showBGInputs && (
-        <div style={{ display: "flex", gap: 12 }}>
-          <Field label={T.currentBGLabel(unit)}>
-            <TextInput
-              type="number"
-              value={currentBG}
-              onChange={(e) => setCurrentBG(e.target.value)}
-              placeholder={profile.units === "mmol" ? "13.9" : "250"}
-            />
-          </Field>
-          <Field label={T.targetBGLabel(unit)}>
+      <Card style={{ display: "flex", flexDirection: "column" }}>
+        <LogRow icon="🩸" label={T.currentBGLabel(unit)}>
+          <TextInput
+            type="number"
+            value={currentBG}
+            onChange={(e) => setCurrentBG(e.target.value)}
+            placeholder={profile.units === "mmol" ? (showBGInputs ? "13.9" : "7.2") : showBGInputs ? "250" : "130"}
+          />
+          {mode === "meal" && <span style={{ fontSize: 12, color: "var(--text-3)" }}>{T.currentBGOptionalHint}</span>}
+        </LogRow>
+
+        {showBGInputs && (
+          <LogRow icon="🎯" label={T.targetBGLabel(unit)}>
             <TextInput
               type="number"
               value={targetBG}
               onChange={(e) => setTargetBG(e.target.value)}
               placeholder={profile.units === "mmol" ? "7.2" : "130"}
             />
-          </Field>
-        </div>
-      )}
+          </LogRow>
+        )}
 
-      {mode === "meal" && (
-        <Field label={T.currentBGLabel(unit)} hint={T.currentBGOptionalHint}>
-          <TextInput
-            type="number"
-            value={currentBG}
-            onChange={(e) => setCurrentBG(e.target.value)}
-            placeholder={profile.units === "mmol" ? "7.2" : "130"}
-          />
-        </Field>
-      )}
+        <LogRow icon="📝" label={T.notesLabel} divider={false}>
+          <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={T.notesPlaceholder} maxLength={280} />
+        </LogRow>
+      </Card>
 
       {usesInsulin && (
         <Card

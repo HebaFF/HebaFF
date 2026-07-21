@@ -104,6 +104,7 @@ model LogEntry {
   targetBG    Float?
   dose        Float?
   carbsNeeded Float?
+  notes       String?
 
   createdAt DateTime @default(now())
 

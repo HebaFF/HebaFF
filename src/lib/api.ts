@@ -20,6 +20,7 @@ export type LogEntry = {
   targetBG?: number;
   dose?: number;
   carbsNeeded?: number;
+  notes?: string;
 };
 
 export type CommunityPost = {

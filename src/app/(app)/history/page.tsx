@@ -117,6 +117,7 @@ export default function HistoryPage() {
                     {e.targetBG !== undefined ? T.targetArrow(e.targetBG) : ""}
                   </div>
                 )}
+                {e.notes && <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 4, fontStyle: "italic" }}>“{e.notes}”</div>}
               </div>
               <div className="num" style={{ fontSize: 16, fontWeight: 800, color: "var(--text)", whiteSpace: "nowrap" }}>
                 {e.dose !== undefined ? `${e.dose}u` : e.carbsNeeded !== undefined ? `${e.carbsNeeded}g` : e.carbs !== undefined ? `${e.carbs}g` : `${e.currentBG}`}
