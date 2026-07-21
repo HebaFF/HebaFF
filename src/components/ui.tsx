@@ -127,19 +127,31 @@ function HeaderIconButton({ icon, label, onClick }: { icon: string; label: strin
       onClick={onClick}
       aria-label={label}
       style={{
-        width: 38,
-        height: 38,
-        borderRadius: 999,
-        border: "none",
-        background: "oklch(100% 0 0 / 0.3)",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        fontSize: 18,
+        gap: 3,
+        border: "none",
+        background: "none",
         flexShrink: 0,
+        padding: 0,
       }}
     >
-      {icon}
+      <span
+        style={{
+          width: 38,
+          height: 38,
+          borderRadius: 999,
+          background: "oklch(100% 0 0 / 0.3)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 18,
+        }}
+      >
+        {icon}
+      </span>
+      <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--header-text)", whiteSpace: "nowrap" }}>{label}</span>
     </button>
   );
 }
@@ -178,8 +190,22 @@ export function TopNav({
           gap: 10,
         }}
       >
-        <button onClick={onHome} aria-label={homeLabel} style={{ border: "none", background: "none", padding: 0, flexShrink: 0 }}>
+        <button
+          onClick={onHome}
+          aria-label={homeLabel}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 3,
+            border: "none",
+            background: "none",
+            padding: 0,
+            flexShrink: 0,
+          }}
+        >
           <Avatar name={name} />
+          <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--header-text)", whiteSpace: "nowrap" }}>{homeLabel}</span>
         </button>
         <div style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
           <div
