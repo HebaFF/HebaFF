@@ -692,18 +692,20 @@ export function Modal({
           overflowY: "auto",
         }}
       >
+        <div style={{ width: 40, height: 5, borderRadius: 999, background: "var(--border)", margin: "0 auto 16px" }} />
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <div style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700 }}>{title}</div>
           <button
             onClick={onClose}
             style={{
               border: "none",
-              background: "var(--surface-2)",
+              background: "var(--primary-tint)",
               borderRadius: 999,
               width: 32,
               height: 32,
               fontSize: 17,
-              color: "var(--text-2)",
+              fontWeight: 700,
+              color: "var(--primary-dark)",
             }}
           >
             ×

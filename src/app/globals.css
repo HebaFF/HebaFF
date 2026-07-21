@@ -14,9 +14,9 @@
   --header-grad-1: oklch(78% 0.15 55);
   --header-grad-2: oklch(66% 0.19 27);
 
-  --primary: oklch(55% 0.18 255);
-  --primary-dark: oklch(45% 0.17 255);
-  --primary-tint: oklch(93% 0.035 255);
+  --primary: oklch(56% 0.22 296);
+  --primary-dark: oklch(46% 0.2 296);
+  --primary-tint: oklch(93% 0.05 296);
 
   --good: oklch(62% 0.15 150);
   --good-tint: oklch(93% 0.05 150);
