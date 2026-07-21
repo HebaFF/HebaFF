@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardCard, Badge, Button, Modal, Field, TextInput } from "@/components/ui";
+import { ClipboardIcon, CalculatorIcon, CrownIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LangContext";
 import { diabetesTypesFor } from "@/lib/constants";
@@ -134,7 +135,7 @@ export default function SetupPage() {
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 104px", display: "flex", flexDirection: "column", gap: 16 }}>
       <DashboardCard
-        icon="📋"
+        icon={<ClipboardIcon />}
         title={T.setupRatiosTitle}
         tone="teal"
         right={isPremium ? <Badge tone="good">{T.premiumBadge}</Badge> : <Badge tone="neutral">{T.freeBadge}</Badge>}
@@ -170,7 +171,7 @@ export default function SetupPage() {
       </DashboardCard>
 
       {usesInsulin && (
-        <DashboardCard icon="🧮" title={T.autoRatiosTitle} tone="primary">
+        <DashboardCard icon={<CalculatorIcon />} title={T.autoRatiosTitle} tone="primary">
           <div style={{ display: "flex", gap: 10 }}>
             <RatioCard
               label={T.carbRatioTDDLabel}
@@ -194,7 +195,7 @@ export default function SetupPage() {
       )}
 
       {!isPremium && (
-        <DashboardCard icon="👑" title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
+        <DashboardCard icon={<CrownIcon />} title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
           <div style={{ fontSize: 13, color: "var(--text-2)" }}>{T.unlockPremiumDesc}</div>
           <Button onClick={() => router.push("/premium")}>{T.subscribeBtn}</Button>
         </DashboardCard>

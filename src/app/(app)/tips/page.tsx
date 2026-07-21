@@ -1,24 +1,25 @@
 "use client";
 
 import { Card } from "@/components/ui";
+import { WarningIcon, UtensilsIcon, CalendarIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 import { generateTips, type Tip } from "@/lib/tips";
 
-function tipText(tip: Tip, T: ReturnType<typeof useLang>["t"]["tips"]): { icon: string; text: string } {
+function tipText(tip: Tip, T: ReturnType<typeof useLang>["t"]["tips"]): { icon: React.ReactNode; text: string } {
   switch (tip.kind) {
     case "timeInRangeHigh":
-      return { icon: "⚠️", text: T.timeInRangeHighTip(tip.pct) };
+      return { icon: <WarningIcon color="var(--warn)" />, text: T.timeInRangeHighTip(tip.pct) };
     case "timeInRangeLow":
-      return { icon: "⚠️", text: T.timeInRangeLowTip(tip.pct) };
+      return { icon: <WarningIcon color="var(--danger)" />, text: T.timeInRangeLowTip(tip.pct) };
     case "timeOfDay": {
       const windowLabel =
         tip.window === "breakfast" ? T.windowBreakfast : tip.window === "lunch" ? T.windowLunch : tip.window === "dinner" ? T.windowDinner : T.windowOther;
-      return { icon: "🍽️", text: T.timeOfDayTip(windowLabel, tip.pct) };
+      return { icon: <UtensilsIcon color="var(--primary)" />, text: T.timeOfDayTip(windowLabel, tip.pct) };
     }
     case "loggingGap":
-      return { icon: "📆", text: T.loggingGapTip };
+      return { icon: <CalendarIcon color="var(--text-3)" />, text: T.loggingGapTip };
   }
 }
 
@@ -49,7 +50,7 @@ export default function TipsPage() {
             const { icon, text } = tipText(tip, T);
             return (
               <Card key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                <span style={{ fontSize: 22 }}>{icon}</span>
+                <span style={{ display: "flex", flexShrink: 0 }}>{icon}</span>
                 <span style={{ fontSize: 14, color: "var(--text)", lineHeight: 1.5 }}>{text}</span>
               </Card>
             );

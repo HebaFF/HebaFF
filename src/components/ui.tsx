@@ -3,6 +3,7 @@
 // Shared UI primitives — ported 1:1 from design_handoff_glucodose/components.jsx.
 // Keep styling pixel-for-pixel; this is the single source of design truth.
 import React from "react";
+import { SettingsIcon, CrownIcon, PlusIcon } from "@/components/icons";
 
 const shellStyles: Record<string, React.CSSProperties> = {
   page: {
@@ -99,7 +100,7 @@ export function TopBar({
   );
 }
 
-function HeaderIconButton({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+function HeaderIconButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
@@ -113,9 +114,10 @@ function HeaderIconButton({ icon, label, onClick }: { icon: string; label: strin
         background: "none",
         flexShrink: 0,
         padding: "4px 8px",
+        color: "var(--text-2)",
       }}
     >
-      <span style={{ fontSize: 19, lineHeight: 1 }}>{icon}</span>
+      {icon}
       <span style={{ fontSize: 9.5, fontWeight: 700, color: "var(--text-3)", whiteSpace: "nowrap" }}>{label}</span>
     </button>
   );
@@ -157,8 +159,8 @@ export function TopNav({
           )}
         </button>
         <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
-          <HeaderIconButton icon="⚙️" label={setupLabel} onClick={onSetup} />
-          <HeaderIconButton icon="👑" label={premiumLabel} onClick={onPremium} />
+          <HeaderIconButton icon={<SettingsIcon size={19} />} label={setupLabel} onClick={onSetup} />
+          <HeaderIconButton icon={<CrownIcon size={19} />} label={premiumLabel} onClick={onPremium} />
         </div>
       </div>
     </div>
@@ -172,7 +174,7 @@ export function BottomNav({
 }: {
   tab: string;
   onChange: (id: string) => void;
-  tabs: { id: string; icon: string; label: string }[];
+  tabs: { id: string; icon: (props: { size?: number; color?: string }) => React.ReactNode; label: string }[];
 }) {
   return (
     <div
@@ -191,36 +193,39 @@ export function BottomNav({
         gap: 4,
       }}
     >
-      {tabs.map((t) => (
-        <button
-          key={t.id}
-          onClick={() => onChange(t.id)}
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 3,
-            border: "none",
-            background: "none",
-            padding: "8px 4px",
-            opacity: tab === t.id ? 1 : 0.55,
-          }}
-        >
-          <span style={{ fontSize: 20, filter: tab === t.id ? "none" : "grayscale(1)" }}>{t.icon}</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: tab === t.id ? "var(--primary)" : "var(--text-3)" }}>{t.label}</span>
-        </button>
-      ))}
+      {tabs.map((t) => {
+        const active = tab === t.id;
+        const color = active ? "var(--primary)" : "var(--text-3)";
+        return (
+          <button
+            key={t.id}
+            onClick={() => onChange(t.id)}
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 3,
+              border: "none",
+              background: "none",
+              padding: "8px 4px",
+            }}
+          >
+            <t.icon size={21} color={color} />
+            <span style={{ fontSize: 11, fontWeight: 700, color }}>{t.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-export function FAB({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+export function FAB({ icon, label, onClick }: { icon?: React.ReactNode; label: string; onClick: () => void }) {
   return (
     <div
       style={{
         position: "fixed",
-        bottom: 78,
+        bottom: "calc(74px + env(safe-area-inset-bottom, 0px))",
         left: "50%",
         transform: "translateX(-50%)",
         width: "100%",
@@ -243,22 +248,21 @@ export function FAB({ icon, label, onClick }: { icon: string; label: string; onC
           border: "none",
           background: "var(--primary)",
           color: "white",
-          fontSize: 24,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           boxShadow: "0 4px 14px oklch(0% 0 0 / 0.18)",
         }}
       >
-        {icon}
+        {icon ?? <PlusIcon size={26} strokeWidth={2.6} />}
       </button>
     </div>
   );
 }
 
-export type CardTone = "primary" | "good" | "warn" | "danger" | "pink" | "teal" | "surface";
+export type CardTone = "primary" | "good" | "warn" | "danger" | "pink" | "teal" | "surface" | "neutral";
 
-const TONE_TINT: Record<CardTone, string> = {
+export const TONE_TINT: Record<CardTone, string> = {
   primary: "var(--primary-tint)",
   good: "var(--good-tint)",
   warn: "var(--warn-tint)",
@@ -266,6 +270,18 @@ const TONE_TINT: Record<CardTone, string> = {
   pink: "var(--pink-tint)",
   teal: "var(--teal-tint)",
   surface: "var(--surface)",
+  neutral: "var(--surface-2)",
+};
+
+export const TONE_ICON_COLOR: Record<CardTone, string> = {
+  primary: "var(--primary-dark)",
+  good: "var(--good)",
+  warn: "oklch(45% 0.13 75)",
+  danger: "var(--danger)",
+  pink: "var(--pink)",
+  teal: "var(--teal)",
+  surface: "var(--text-2)",
+  neutral: "var(--text-2)",
 };
 
 export function DashboardCard({
@@ -294,10 +310,10 @@ export function DashboardCard({
                 height: 42,
                 borderRadius: 999,
                 background: TONE_TINT[tone],
+                color: TONE_ICON_COLOR[tone],
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                fontSize: 21,
                 lineHeight: 1,
                 flexShrink: 0,
               }}
@@ -316,24 +332,29 @@ export function DashboardCard({
 
 export function RingProgress({
   pct,
-  label,
-  sublabel,
+  value,
+  unit,
+  status,
   color = "var(--good)",
+  size = 148,
 }: {
   pct: number;
-  label?: string;
-  sublabel?: string;
+  value: React.ReactNode;
+  unit?: string;
+  status?: string;
   color?: string;
+  size?: number;
 }) {
   const deg = Math.max(0, Math.min(100, pct)) * 3.6;
+  const inner = size - 32;
   return (
     <div
       style={{
-        width: 148,
-        height: 148,
+        width: size,
+        height: size,
         borderRadius: "999px",
         margin: "0 auto",
-        background: `conic-gradient(${color} ${deg}deg, var(--surface-2) 0deg)`,
+        background: `conic-gradient(${color} ${deg}deg, var(--warn) ${deg}deg 360deg)`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -341,8 +362,8 @@ export function RingProgress({
     >
       <div
         style={{
-          width: 116,
-          height: 116,
+          width: inner,
+          height: inner,
           borderRadius: 999,
           background: "var(--surface)",
           display: "flex",
@@ -352,15 +373,13 @@ export function RingProgress({
           gap: 2,
         }}
       >
-        {label && (
-          <div style={{ fontSize: 11.5, fontWeight: 700, color: "var(--text-2)", textAlign: "center" }}>
-            {label}
-          </div>
-        )}
-        <div className="num" style={{ fontSize: 28, fontWeight: 700 }}>
-          {Math.round(pct)}%
+        <div className="num" style={{ fontSize: 36, fontWeight: 800, lineHeight: 1 }}>
+          {value}
         </div>
-        {sublabel && <div style={{ fontSize: 11.5, fontWeight: 700, color }}>{sublabel}</div>}
+        {unit && <div style={{ fontSize: 12.5, color: "var(--text-3)", fontWeight: 600 }}>{unit}</div>}
+        {status && (
+          <div style={{ fontSize: 11.5, fontWeight: 700, color, marginTop: 4, textAlign: "center" }}>{status}</div>
+        )}
       </div>
     </div>
   );
@@ -608,21 +627,19 @@ export function Badge({ children, tone = "primary" }: { children: React.ReactNod
   );
 }
 
-const CHIP_LETTERS: Record<string, string> = { primary: "R", good: "S", warn: "C", neutral: "•" };
-
 export function StatTile({
+  icon,
   label,
   value,
   unit,
   tone = "primary",
 }: {
+  icon?: React.ReactNode;
   label: string;
   value: React.ReactNode;
   unit?: string;
-  tone?: "primary" | "good" | "neutral";
+  tone?: CardTone;
 }) {
-  const colorVar = tone === "neutral" ? "var(--text-2)" : `var(--${tone})`;
-  const tintVar = tone === "neutral" ? "var(--surface-2)" : `var(--${tone}-tint)`;
   return (
     <div
       style={{
@@ -638,23 +655,22 @@ export function StatTile({
         gap: 8,
       }}
     >
-      <div
-        style={{
-          width: 26,
-          height: 26,
-          borderRadius: 999,
-          background: tintVar,
-          color: colorVar,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 12,
-          fontWeight: 800,
-          fontFamily: "var(--font-display)",
-        }}
-      >
-        {CHIP_LETTERS[tone] || "•"}
-      </div>
+      {icon && (
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 999,
+            background: TONE_TINT[tone],
+            color: TONE_ICON_COLOR[tone],
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {icon}
+        </div>
+      )}
       <div className="num" style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", lineHeight: 1 }}>
         {value}
         <span style={{ fontSize: 11, fontWeight: 600, marginLeft: 2, color: "var(--text-3)" }}>{unit}</span>

@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { DashboardCard, RingProgress, Button, Badge, SegmentedControl, FAB } from "@/components/ui";
+import { DashboardCard, RingProgress, StatTile, Button, Badge, SegmentedControl, FAB } from "@/components/ui";
+import { DropIcon, SyringeIcon, ClipboardIcon, CrownIcon, FireIcon, StarIcon, TrendUpIcon } from "@/components/icons";
 import { CalculatorWidget } from "@/components/Calculator";
 import { LogBGModal } from "@/components/History";
 import { useAuth } from "@/context/AuthContext";
@@ -51,38 +52,40 @@ export default function DashboardPage() {
 
       {tab === "overview" && (
         <>
-          <DashboardCard icon="📅" title={T.logYourDayTitle} tone="primary">
+          <div
+            style={{
+              margin: "-6px -20px 0",
+              padding: "32px 20px 22px",
+              background: "linear-gradient(180deg, var(--primary-tint) 0%, var(--bg) 100%)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
             <RingProgress
               pct={tirPct}
-              label={T.timeInRangeLabel}
-              sublabel={readings.length ? (tirPct >= 70 ? T.green : tirPct >= 40 ? T.fair : T.needsAttention) : T.noData}
+              value={lastBG ? lastBG.currentBG : t.common.dash}
+              unit={lastBG ? (profile.units === "mmol" ? "mmol/L" : "mg/dL") : undefined}
+              status={readings.length ? (tirPct >= 70 ? T.green : tirPct >= 40 ? T.fair : T.needsAttention) : T.noData}
               color={tirPct >= 70 ? "var(--good)" : tirPct >= 40 ? "var(--warn)" : "var(--danger)"}
+              size={176}
             />
-          </DashboardCard>
-
-          <div style={{ display: "flex", gap: 12 }}>
-            <div style={{ flex: 1, textAlign: "center", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-              <div style={{ fontSize: 20 }}>🔥</div>
-              <div className="num" style={{ fontSize: 20, fontWeight: 800, marginTop: 4 }}>
-                {streak}
-              </div>
-              <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
-                {T.streakLabel}
-              </div>
-            </div>
-            <div style={{ flex: 1, textAlign: "center", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-              <div style={{ fontSize: 20 }}>⭐</div>
-              <div className="num" style={{ fontSize: 20, fontWeight: 800, marginTop: 4 }}>
-                {points}
-              </div>
-              <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
-                {T.pointsLabel}
-              </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, color: "var(--text-3)", fontWeight: 700 }}>
+              <TrendUpIcon size={14} />
+              <span>
+                {T.timeInRangeLabel}: {tirPct}%
+              </span>
             </div>
           </div>
 
+          <div style={{ display: "flex", gap: 12 }}>
+            <StatTile icon={<FireIcon size={16} />} tone="warn" label={T.streakLabel} value={streak} />
+            <StatTile icon={<StarIcon size={16} />} tone="primary" label={T.pointsLabel} value={points} />
+          </div>
+
           <DashboardCard
-            icon="🩸"
+            icon={<DropIcon />}
             title={T.quickLogTitle}
             tone="pink"
             right={
@@ -92,27 +95,13 @@ export default function DashboardPage() {
             }
           >
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-                <div className="num" style={{ fontSize: 22, fontWeight: 800 }}>
-                  {lastBG ? lastBG.currentBG : t.common.dash}
-                </div>
-                <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
-                  {T.currentBGLabel}
-                </div>
-              </div>
-              <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-                <div className="num" style={{ fontSize: 22, fontWeight: 800 }}>
-                  {lastDose ? `${lastDose.dose}u` : t.common.dash}
-                </div>
-                <div style={{ fontSize: 10.5, color: "var(--text-3)", fontWeight: 700, marginTop: 2, textTransform: "uppercase", letterSpacing: "0.02em" }}>
-                  {T.insulinTakenLabel}
-                </div>
-              </div>
+              <StatTile icon={<DropIcon size={16} />} tone="pink" label={T.currentBGLabel} value={lastBG ? lastBG.currentBG : t.common.dash} />
+              <StatTile icon={<SyringeIcon size={16} />} tone="neutral" label={T.insulinTakenLabel} value={lastDose ? `${lastDose.dose}u` : t.common.dash} />
             </div>
           </DashboardCard>
 
           <DashboardCard
-            icon="📋"
+            icon={<ClipboardIcon />}
             title={T.yourHistoryTitle}
             tone="teal"
             right={
@@ -151,7 +140,7 @@ export default function DashboardPage() {
           </DashboardCard>
 
           {!isPremium && (
-            <DashboardCard icon="👑" title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
+            <DashboardCard icon={<CrownIcon />} title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
               <div style={{ fontSize: 13, color: "var(--text-2)" }}>{T.unlockPremiumDesc}</div>
               <Button onClick={() => router.push("/premium")}>{T.subscribeBtn}</Button>
             </DashboardCard>
@@ -161,7 +150,7 @@ export default function DashboardPage() {
 
       {tab === "calculator" && <CalculatorWidget profile={profile} />}
 
-      {tab === "overview" && <FAB icon="+" label={T.calculatorTab} onClick={() => setTab("calculator")} />}
+      {tab === "overview" && <FAB label={T.calculatorTab} onClick={() => setTab("calculator")} />}
 
       <LogBGModal open={bgOpen} onClose={() => setBgOpen(false)} units={profile.units} onSave={logEntry} />
     </div>

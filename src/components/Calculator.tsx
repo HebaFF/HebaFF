@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Card, TextInput, TextArea, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
+import { DropIcon, TargetIcon, NoteIcon } from "@/components/icons";
 import { FOOD_DB, type Food as RawFood } from "@/lib/foodDb";
 import type { Food } from "@/lib/api";
 import { useAppData } from "@/context/AppDataContext";
@@ -26,7 +27,7 @@ function LogRow({
   children,
   divider = true,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   children: React.ReactNode;
   divider?: boolean;
@@ -42,9 +43,9 @@ function LogRow({
         borderBottom: divider ? "1px solid var(--border)" : "none",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 16, lineHeight: 1 }}>{icon}</span>
-        <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--text-2)", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-2)" }}>
+        <span style={{ display: "flex", lineHeight: 1 }}>{icon}</span>
+        <span style={{ fontSize: 12.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.03em" }}>
           {label}
         </span>
       </div>
@@ -357,7 +358,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
       )}
 
       <Card style={{ display: "flex", flexDirection: "column" }}>
-        <LogRow icon="🩸" label={T.currentBGLabel(unit)}>
+        <LogRow icon={<DropIcon size={17} />} label={T.currentBGLabel(unit)}>
           <TextInput
             type="number"
             value={currentBG}
@@ -368,7 +369,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         </LogRow>
 
         {showBGInputs && (
-          <LogRow icon="🎯" label={T.targetBGLabel(unit)}>
+          <LogRow icon={<TargetIcon size={17} />} label={T.targetBGLabel(unit)}>
             <TextInput
               type="number"
               value={targetBG}
@@ -378,7 +379,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
           </LogRow>
         )}
 
-        <LogRow icon="📝" label={T.notesLabel} divider={false}>
+        <LogRow icon={<NoteIcon size={17} />} label={T.notesLabel} divider={false}>
           <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={T.notesPlaceholder} maxLength={280} />
         </LogRow>
       </Card>

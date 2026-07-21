@@ -3,16 +3,17 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppShell, TopNav, BottomNav } from "@/components/ui";
+import { ClipboardIcon, LightbulbIcon, ShareIcon, UsersIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { AppDataProvider } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 
 const BOTTOM_TAB_IDS = ["history", "tips", "share", "community"] as const;
-const BOTTOM_TAB_ICONS: Record<(typeof BOTTOM_TAB_IDS)[number], string> = {
-  history: "📖",
-  tips: "💡",
-  share: "📤",
-  community: "👥",
+const BOTTOM_TAB_ICONS: Record<(typeof BOTTOM_TAB_IDS)[number], (props: { size?: number; color?: string }) => React.ReactNode> = {
+  history: ClipboardIcon,
+  tips: LightbulbIcon,
+  share: ShareIcon,
+  community: UsersIcon,
 };
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
