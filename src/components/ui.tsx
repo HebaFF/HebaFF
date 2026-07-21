@@ -291,6 +291,7 @@ export function DashboardCard({
   children,
   style,
   tone = "primary",
+  tinted = false,
 }: {
   icon?: React.ReactNode;
   title: string;
@@ -298,9 +299,12 @@ export function DashboardCard({
   children?: React.ReactNode;
   style?: React.CSSProperties;
   tone?: CardTone;
+  tinted?: boolean;
 }) {
+  const cardBg = tinted ? { background: TONE_TINT[tone], border: "none" } : {};
+  const chipBg = tinted ? "var(--surface)" : TONE_TINT[tone];
   return (
-    <Card style={{ display: "flex", flexDirection: "column", gap: 14, ...style }}>
+    <Card style={{ display: "flex", flexDirection: "column", gap: 14, ...cardBg, ...style }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {icon && (
@@ -309,7 +313,7 @@ export function DashboardCard({
                 width: 42,
                 height: 42,
                 borderRadius: 999,
-                background: TONE_TINT[tone],
+                background: chipBg,
                 color: TONE_ICON_COLOR[tone],
                 display: "flex",
                 alignItems: "center",
@@ -633,19 +637,21 @@ export function StatTile({
   value,
   unit,
   tone = "primary",
+  tinted = false,
 }: {
   icon?: React.ReactNode;
   label: string;
   value: React.ReactNode;
   unit?: string;
   tone?: CardTone;
+  tinted?: boolean;
 }) {
   return (
     <div
       style={{
         flex: 1,
-        background: "var(--surface)",
-        border: "1px solid var(--border)",
+        background: tinted ? TONE_TINT[tone] : "var(--surface)",
+        border: tinted ? "none" : "1px solid var(--border)",
         borderRadius: "var(--radius-sm)",
         padding: "14px 10px",
         textAlign: "center",
@@ -661,7 +667,7 @@ export function StatTile({
             width: 30,
             height: 30,
             borderRadius: 999,
-            background: TONE_TINT[tone],
+            background: tinted ? "var(--surface)" : TONE_TINT[tone],
             color: TONE_ICON_COLOR[tone],
             display: "flex",
             alignItems: "center",

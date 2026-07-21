@@ -34,12 +34,13 @@ function RatioCard({
   recalculateLabel: string;
   onRecalculate: () => void;
 }) {
-  const colorVar = tone === "neutral" ? "var(--text)" : `var(--${tone})`;
+  const colorVar = tone === "neutral" ? "var(--teal)" : `var(--${tone})`;
+  const bgVar = tone === "neutral" ? "var(--teal-tint)" : "var(--primary-tint)";
   return (
     <div
       style={{
         flex: 1,
-        background: "var(--surface-2)",
+        background: bgVar,
         borderRadius: "var(--radius-sm)",
         padding: 14,
         display: "flex",
@@ -195,7 +196,7 @@ export default function SetupPage() {
       )}
 
       {!isPremium && (
-        <DashboardCard icon={<CrownIcon />} title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
+        <DashboardCard icon={<CrownIcon />} title={T.unlockPremiumTitle} tone="warn" tinted>
           <div style={{ fontSize: 13, color: "var(--text-2)" }}>{T.unlockPremiumDesc}</div>
           <Button onClick={() => router.push("/premium")}>{T.subscribeBtn}</Button>
         </DashboardCard>

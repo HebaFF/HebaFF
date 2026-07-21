@@ -33,6 +33,7 @@ export default function HomePage() {
         icon={<DropIcon />}
         title={T.quickLogTitle}
         tone="pink"
+        tinted
         right={
           <Button size="sm" variant="secondary" onClick={() => setBgOpen(true)}>
             {T.logBGBtn}
@@ -40,8 +41,8 @@ export default function HomePage() {
         }
       >
         <div style={{ display: "flex", gap: 12 }}>
-          <StatTile icon={<DropIcon size={16} />} tone="pink" label={T.currentBGLabel} value={lastBG ? lastBG.currentBG : t.common.dash} />
-          <StatTile icon={<SyringeIcon size={16} />} tone="neutral" label={T.insulinTakenLabel} value={lastDose ? `${lastDose.dose}u` : t.common.dash} />
+          <StatTile icon={<DropIcon size={16} />} tone="pink" tinted label={T.currentBGLabel} value={lastBG ? lastBG.currentBG : t.common.dash} />
+          <StatTile icon={<SyringeIcon size={16} />} tone="primary" tinted label={T.insulinTakenLabel} value={lastDose ? `${lastDose.dose}u` : t.common.dash} />
         </div>
       </DashboardCard>
 
@@ -49,6 +50,7 @@ export default function HomePage() {
         icon={<ClipboardIcon />}
         title={T.yourHistoryTitle}
         tone="teal"
+        tinted
         right={
           <button onClick={() => router.push("/history")} style={{ border: "none", background: "none", color: "var(--primary)", fontSize: 12.5, fontWeight: 700 }}>
             {T.viewAllBtn}
@@ -91,8 +93,8 @@ export default function HomePage() {
           alignItems: "center",
           justifyContent: "center",
           gap: 8,
-          border: "1px solid var(--border)",
-          background: "var(--surface)",
+          border: "none",
+          background: "var(--primary-tint)",
           borderRadius: "var(--radius-sm)",
           padding: "12px 16px",
           fontSize: 13.5,
@@ -105,7 +107,7 @@ export default function HomePage() {
       </button>
 
       {!isPremium && (
-        <DashboardCard icon={<CrownIcon />} title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
+        <DashboardCard icon={<CrownIcon />} title={T.unlockPremiumTitle} tone="warn" tinted>
           <div style={{ fontSize: 13, color: "var(--text-2)" }}>{T.unlockPremiumDesc}</div>
           <Button onClick={() => router.push("/premium")}>{T.subscribeBtn}</Button>
         </DashboardCard>

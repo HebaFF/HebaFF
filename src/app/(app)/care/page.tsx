@@ -9,19 +9,19 @@ import { useLang } from "@/context/LangContext";
 import { generateTips, type Tip } from "@/lib/tips";
 import { api, ApiError, type CommunityPost } from "@/lib/api";
 
-function tipText(tip: Tip, T: ReturnType<typeof useLang>["t"]["tips"]): { icon: React.ReactNode; text: string } {
+function tipText(tip: Tip, T: ReturnType<typeof useLang>["t"]["tips"]): { icon: React.ReactNode; text: string; bg: string } {
   switch (tip.kind) {
     case "timeInRangeHigh":
-      return { icon: <WarningIcon color="var(--warn)" />, text: T.timeInRangeHighTip(tip.pct) };
+      return { icon: <WarningIcon color="var(--warn)" />, text: T.timeInRangeHighTip(tip.pct), bg: "var(--warn-tint)" };
     case "timeInRangeLow":
-      return { icon: <WarningIcon color="var(--danger)" />, text: T.timeInRangeLowTip(tip.pct) };
+      return { icon: <WarningIcon color="var(--danger)" />, text: T.timeInRangeLowTip(tip.pct), bg: "var(--danger-tint)" };
     case "timeOfDay": {
       const windowLabel =
         tip.window === "breakfast" ? T.windowBreakfast : tip.window === "lunch" ? T.windowLunch : tip.window === "dinner" ? T.windowDinner : T.windowOther;
-      return { icon: <UtensilsIcon color="var(--primary)" />, text: T.timeOfDayTip(windowLabel, tip.pct) };
+      return { icon: <UtensilsIcon color="var(--primary)" />, text: T.timeOfDayTip(windowLabel, tip.pct), bg: "var(--primary-tint)" };
     }
     case "loggingGap":
-      return { icon: <CalendarIcon color="var(--text-3)" />, text: T.loggingGapTip };
+      return { icon: <CalendarIcon color="var(--teal)" />, text: T.loggingGapTip, bg: "var(--teal-tint)" };
   }
 }
 
@@ -107,9 +107,9 @@ export default function CarePage() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {tips.map((tip, i) => {
-              const { icon, text } = tipText(tip, T);
+              const { icon, text, bg } = tipText(tip, T);
               return (
-                <Card key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <Card key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", background: bg, border: "none" }}>
                   <span style={{ display: "flex", flexShrink: 0 }}>{icon}</span>
                   <span style={{ fontSize: 14, color: "var(--text)", lineHeight: 1.5 }}>{text}</span>
                 </Card>

@@ -32,8 +32,8 @@ export default function OverviewPage() {
       <div
         style={{
           margin: "-6px -20px 0",
-          padding: "32px 20px 22px",
-          background: "linear-gradient(180deg, var(--primary-tint) 0%, var(--bg) 100%)",
+          padding: "36px 20px 26px",
+          background: "linear-gradient(160deg, var(--teal-tint) 0%, var(--primary-tint) 55%, var(--bg) 100%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -57,8 +57,8 @@ export default function OverviewPage() {
       </div>
 
       <div style={{ display: "flex", gap: 12 }}>
-        <StatTile icon={<FireIcon size={16} />} tone="warn" label={T.streakLabel} value={streak} />
-        <StatTile icon={<StarIcon size={16} />} tone="primary" label={T.pointsLabel} value={points} />
+        <StatTile icon={<FireIcon size={16} />} tone="warn" tinted label={T.streakLabel} value={streak} />
+        <StatTile icon={<StarIcon size={16} />} tone="primary" tinted label={T.pointsLabel} value={points} />
       </div>
     </div>
   );
