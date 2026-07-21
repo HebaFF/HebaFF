@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Card, TextInput, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
-import { FOOD_DB, type Food } from "@/lib/foodDb";
+import { FOOD_DB, type Food as RawFood } from "@/lib/foodDb";
+import type { Food } from "@/lib/api";
 import { useAppData } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 import { convertBG, calcCarbRise, mealDose as calcMealDose, correctionDose, hypoCarbsNeeded, round2 } from "@/lib/calc";
@@ -10,6 +11,10 @@ import type { ProfileDTO } from "@/lib/profileDto";
 
 function foodKey(f: { name: string; portion: string }) {
   return f.name + "|" + f.portion;
+}
+
+function localizeFood(f: RawFood, lang: "en" | "ar"): Food {
+  return { name: f.name[lang], category: f.category[lang], portion: f.portion[lang], carbs: f.carbs };
 }
 
 function FoodPicker({ foods, onAdd }: { foods: (Food & { custom?: boolean })[]; onAdd: (f: Food) => void }) {
@@ -130,7 +135,7 @@ function SuggestFoodModal({
 type Mode = "meal" | "mealCorrection" | "correction" | "hypo";
 
 export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const T = t.calculator;
   const { foods: customFoods, logEntry, addCustomFood } = useAppData();
   const [mode, setMode] = useState<Mode>("meal");
@@ -141,7 +146,10 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
 
-  const allFoods = useMemo(() => [...customFoods, ...FOOD_DB], [customFoods]);
+  const allFoods = useMemo(
+    () => [...customFoods, ...FOOD_DB.map((f) => localizeFood(f, lang))],
+    [customFoods, lang],
+  );
   const usesInsulin = profile.tdd > 0 && !!profile.carbRatio && !!profile.isf;
 
   const unit = profile.units === "mmol" ? "mmol/L" : "mg/dL";
