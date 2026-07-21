@@ -8,12 +8,12 @@ import { useAuth } from "@/context/AuthContext";
 import { AppDataProvider } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 
-const BOTTOM_TAB_IDS = ["home", "overview", "calculator", "analytics", "care"] as const;
+const BOTTOM_TAB_IDS = ["home", "overview", "calculator", "history", "care"] as const;
 const BOTTOM_TAB_ICONS: Record<(typeof BOTTOM_TAB_IDS)[number], (props: IconProps) => React.ReactNode> = {
   home: HomeIcon,
   overview: PulseIcon,
   calculator: CalculatorIcon,
-  analytics: ChartIcon,
+  history: ChartIcon,
   care: HeartIcon,
 };
 

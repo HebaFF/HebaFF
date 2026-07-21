@@ -50,7 +50,7 @@ export default function HomePage() {
         title={T.yourHistoryTitle}
         tone="teal"
         right={
-          <button onClick={() => router.push("/analytics")} style={{ border: "none", background: "none", color: "var(--primary)", fontSize: 12.5, fontWeight: 700 }}>
+          <button onClick={() => router.push("/history")} style={{ border: "none", background: "none", color: "var(--primary)", fontSize: 12.5, fontWeight: 700 }}>
             {T.viewAllBtn}
           </button>
         }
@@ -113,7 +113,15 @@ export default function HomePage() {
 
       <FAB label={T.calculatorTab} onClick={() => router.push("/calculator")} />
 
-      <LogBGModal open={bgOpen} onClose={() => setBgOpen(false)} units={profile.units} onSave={logEntry} />
+      <LogBGModal
+        open={bgOpen}
+        onClose={() => setBgOpen(false)}
+        units={profile.units}
+        onSave={async (entry) => {
+          await logEntry(entry);
+          router.push("/history");
+        }}
+      />
     </div>
   );
 }

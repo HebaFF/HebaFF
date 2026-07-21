@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, TextInput, TextArea, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
 import { DropIcon, TargetIcon, NoteIcon } from "@/components/icons";
 import { FOOD_DB, type Food as RawFood } from "@/lib/foodDb";
@@ -174,6 +175,7 @@ type Mode = "meal" | "mealCorrection" | "correction" | "hypo";
 export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
   const { t, lang } = useLang();
   const T = t.calculator;
+  const router = useRouter();
   const { foods: customFoods, logEntry, addCustomFood } = useAppData();
   const [mode, setMode] = useState<Mode>("meal");
   const [items, setItems] = useState<{ food: Food; qty: number }[]>([]);
@@ -281,6 +283,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     if (mode === "meal" || mode === "mealCorrection") setItems([]);
     if (mode === "meal") setCurrentBG("");
     setNotes("");
+    router.push("/history");
   }
   /* eslint-enable react-hooks/purity */
 
