@@ -136,6 +136,7 @@ export default function SetupPage() {
       <DashboardCard
         icon="📋"
         title={T.setupRatiosTitle}
+        tone="teal"
         right={isPremium ? <Badge tone="good">{T.premiumBadge}</Badge> : <Badge tone="neutral">{T.freeBadge}</Badge>}
       >
         <InfoRow label={T.usernameLabel} value={`@${user.username}`} />
@@ -169,7 +170,7 @@ export default function SetupPage() {
       </DashboardCard>
 
       {usesInsulin && (
-        <DashboardCard icon="🧮" title={T.autoRatiosTitle}>
+        <DashboardCard icon="🧮" title={T.autoRatiosTitle} tone="primary">
           <div style={{ display: "flex", gap: 10 }}>
             <RatioCard
               label={T.carbRatioTDDLabel}
@@ -193,7 +194,7 @@ export default function SetupPage() {
       )}
 
       {!isPremium && (
-        <DashboardCard icon="👑" title={T.unlockPremiumTitle} style={{ background: "var(--surface-2)", border: "none" }}>
+        <DashboardCard icon="👑" title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
           <div style={{ fontSize: 13, color: "var(--text-2)" }}>{T.unlockPremiumDesc}</div>
           <Button onClick={() => router.push("/premium")}>{T.subscribeBtn}</Button>
         </DashboardCard>

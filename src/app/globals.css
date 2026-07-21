@@ -1,7 +1,7 @@
 /* Design tokens ported from design_handoff_glucodose/styles.css — do not
    change values without design sign-off. */
 :root {
-  --bg: oklch(97% 0.012 250);
+  --bg: oklch(96.5% 0.015 70);
   --surface: oklch(100% 0 0);
   --surface-2: oklch(95% 0.025 250);
   --border: oklch(90% 0.016 250);
@@ -20,10 +20,14 @@
 
   --good: oklch(62% 0.15 150);
   --good-tint: oklch(93% 0.05 150);
-  --warn: oklch(78% 0.13 80);
-  --warn-tint: oklch(93% 0.06 80);
+  --warn: oklch(60% 0.15 75);
+  --warn-tint: oklch(93% 0.07 80);
   --danger: oklch(58% 0.19 25);
-  --danger-tint: oklch(93% 0.05 25);
+  --danger-tint: oklch(93% 0.06 25);
+  --pink: oklch(58% 0.19 355);
+  --pink-tint: oklch(93% 0.045 355);
+  --teal: oklch(56% 0.11 200);
+  --teal-tint: oklch(93% 0.04 200);
 
   --radius: 26px;
   --radius-sm: 18px;

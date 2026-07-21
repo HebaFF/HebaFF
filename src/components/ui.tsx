@@ -281,24 +281,55 @@ export function BottomNav({
   );
 }
 
+export type CardTone = "primary" | "good" | "warn" | "danger" | "pink" | "teal" | "surface";
+
+const TONE_TINT: Record<CardTone, string> = {
+  primary: "var(--primary-tint)",
+  good: "var(--good-tint)",
+  warn: "var(--warn-tint)",
+  danger: "var(--danger-tint)",
+  pink: "var(--pink-tint)",
+  teal: "var(--teal-tint)",
+  surface: "var(--surface)",
+};
+
 export function DashboardCard({
   icon,
   title,
   right,
   children,
   style,
+  tone = "primary",
 }: {
   icon?: React.ReactNode;
   title: string;
   right?: React.ReactNode;
   children?: React.ReactNode;
   style?: React.CSSProperties;
+  tone?: CardTone;
 }) {
   return (
     <Card style={{ display: "flex", flexDirection: "column", gap: 14, ...style }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {icon && <span style={{ fontSize: 26, lineHeight: 1 }}>{icon}</span>}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {icon && (
+            <span
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 999,
+                background: TONE_TINT[tone],
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 21,
+                lineHeight: 1,
+                flexShrink: 0,
+              }}
+            >
+              {icon}
+            </span>
+          )}
           <span style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700 }}>{title}</span>
         </div>
         {right}

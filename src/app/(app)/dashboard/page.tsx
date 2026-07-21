@@ -51,7 +51,7 @@ export default function DashboardPage() {
 
       {tab === "overview" && (
         <>
-          <DashboardCard icon="📅" title={T.logYourDayTitle}>
+          <DashboardCard icon="📅" title={T.logYourDayTitle} tone="primary">
             <RingProgress
               pct={tirPct}
               label={T.timeInRangeLabel}
@@ -61,25 +61,26 @@ export default function DashboardPage() {
           </DashboardCard>
 
           <div style={{ display: "flex", gap: 12 }}>
-            <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
+            <div style={{ flex: 1, textAlign: "center", background: "var(--pink-tint)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
               <div style={{ fontSize: 26 }}>🔥</div>
-              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>
+              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2, color: "var(--pink)" }}>
                 {streak}
               </div>
-              <div style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 700, marginTop: 2 }}>{T.streakLabel}</div>
+              <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.streakLabel}</div>
             </div>
-            <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
+            <div style={{ flex: 1, textAlign: "center", background: "var(--warn-tint)", borderRadius: "var(--radius-sm)", padding: "16px 8px" }}>
               <div style={{ fontSize: 26 }}>⭐</div>
-              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>
+              <div className="num" style={{ fontSize: 22, fontWeight: 700, marginTop: 2, color: "var(--warn)" }}>
                 {points}
               </div>
-              <div style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 700, marginTop: 2 }}>{T.pointsLabel}</div>
+              <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.pointsLabel}</div>
             </div>
           </div>
 
           <DashboardCard
             icon="🩸"
             title={T.quickLogTitle}
+            tone="pink"
             right={
               <Button size="sm" variant="secondary" onClick={() => setBgOpen(true)}>
                 {T.logBGBtn}
@@ -87,17 +88,17 @@ export default function DashboardPage() {
             }
           >
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-                <div className="num" style={{ fontSize: 22, fontWeight: 700 }}>
+              <div style={{ flex: 1, textAlign: "center", background: "var(--pink-tint)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
+                <div className="num" style={{ fontSize: 22, fontWeight: 700, color: "var(--pink)" }}>
                   {lastBG ? lastBG.currentBG : t.common.dash}
                 </div>
-                <div style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 700, marginTop: 2 }}>{T.currentBGLabel}</div>
+                <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.currentBGLabel}</div>
               </div>
-              <div style={{ flex: 1, textAlign: "center", background: "var(--surface-2)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
-                <div className="num" style={{ fontSize: 22, fontWeight: 700 }}>
+              <div style={{ flex: 1, textAlign: "center", background: "var(--primary-tint)", borderRadius: "var(--radius-sm)", padding: "14px 8px" }}>
+                <div className="num" style={{ fontSize: 22, fontWeight: 700, color: "var(--primary-dark)" }}>
                   {lastDose ? `${lastDose.dose}u` : t.common.dash}
                 </div>
-                <div style={{ fontSize: 11, color: "var(--text-3)", fontWeight: 700, marginTop: 2 }}>{T.insulinTakenLabel}</div>
+                <div style={{ fontSize: 11, color: "var(--text-2)", fontWeight: 700, marginTop: 2 }}>{T.insulinTakenLabel}</div>
               </div>
             </div>
           </DashboardCard>
@@ -105,6 +106,7 @@ export default function DashboardPage() {
           <DashboardCard
             icon="📋"
             title={T.yourHistoryTitle}
+            tone="teal"
             right={
               <button onClick={() => router.push("/history")} style={{ border: "none", background: "none", color: "var(--primary)", fontSize: 12.5, fontWeight: 700 }}>
                 {T.viewAllBtn}
@@ -141,7 +143,7 @@ export default function DashboardPage() {
           </DashboardCard>
 
           {!isPremium && (
-            <DashboardCard icon="👑" title={T.unlockPremiumTitle} style={{ background: "var(--surface-2)", border: "none" }}>
+            <DashboardCard icon="👑" title={T.unlockPremiumTitle} tone="surface" style={{ background: "var(--warn-tint)", border: "none" }}>
               <div style={{ fontSize: 13, color: "var(--text-2)" }}>{T.unlockPremiumDesc}</div>
               <Button onClick={() => router.push("/premium")}>{T.subscribeBtn}</Button>
             </DashboardCard>
