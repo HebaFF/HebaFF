@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
 const SESSION_COOKIE = "gd_session";
-const PROTECTED_PREFIXES = ["/dashboard", "/setup", "/history", "/premium", "/onboarding"];
+const PROTECTED_PREFIXES = ["/home", "/overview", "/calculator", "/analytics", "/care", "/setup", "/premium", "/onboarding"];
 
 async function isValidSession(token: string | undefined): Promise<boolean> {
   if (!token) return false;
@@ -32,5 +32,14 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/setup/:path*", "/history/:path*", "/premium/:path*", "/onboarding/:path*"],
+  matcher: [
+    "/home/:path*",
+    "/overview/:path*",
+    "/calculator/:path*",
+    "/analytics/:path*",
+    "/care/:path*",
+    "/setup/:path*",
+    "/premium/:path*",
+    "/onboarding/:path*",
+  ],
 };

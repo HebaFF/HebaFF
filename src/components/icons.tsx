@@ -207,6 +207,41 @@ export function SyringeIcon({ size = 22, color = "currentColor", strokeWidth = 2
   );
 }
 
+export function PulseIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path
+        d="M3 12h3.5l2-5.5 3.5 11 2.5-8 1.5 2.5H21"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function ChartIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="M4 20V10M10 20V4M16 20v-7M20.5 20H3.5" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function HeartIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path
+        d="M12 20.3S4 15.4 4 9.6C4 6.5 6.4 4.5 9 4.5c1.6 0 2.8.8 3 2 .2-1.2 1.4-2 3-2 2.6 0 5 2 5 5.1 0 5.8-8 10.7-8 10.7Z"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function TrendUpIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
   return (
     <svg {...base(size)} style={style}>

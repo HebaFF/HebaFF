@@ -38,7 +38,7 @@ export default function LoginPage() {
           ? await api.signup(username.trim(), password, email.trim())
           : await api.login(username.trim(), password);
       await refresh();
-      router.replace(result.hasProfile ? "/dashboard" : "/onboarding");
+      router.replace(result.hasProfile ? "/home" : "/onboarding");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t.common.somethingWrong);
     } finally {

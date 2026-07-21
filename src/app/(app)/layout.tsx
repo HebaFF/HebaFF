@@ -3,17 +3,18 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppShell, TopNav, BottomNav } from "@/components/ui";
-import { ClipboardIcon, LightbulbIcon, ShareIcon, UsersIcon } from "@/components/icons";
+import { HomeIcon, PulseIcon, CalculatorIcon, ChartIcon, HeartIcon, type IconProps } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { AppDataProvider } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 
-const BOTTOM_TAB_IDS = ["history", "tips", "share", "community"] as const;
-const BOTTOM_TAB_ICONS: Record<(typeof BOTTOM_TAB_IDS)[number], (props: { size?: number; color?: string }) => React.ReactNode> = {
-  history: ClipboardIcon,
-  tips: LightbulbIcon,
-  share: ShareIcon,
-  community: UsersIcon,
+const BOTTOM_TAB_IDS = ["home", "overview", "calculator", "analytics", "care"] as const;
+const BOTTOM_TAB_ICONS: Record<(typeof BOTTOM_TAB_IDS)[number], (props: IconProps) => React.ReactNode> = {
+  home: HomeIcon,
+  overview: PulseIcon,
+  calculator: CalculatorIcon,
+  analytics: ChartIcon,
+  care: HeartIcon,
 };
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -39,7 +40,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           name={user.profile.name}
           welcomeText={t.nav.welcomeBack(user.profile.name)}
           ageText={user.profile.age ? t.nav.age(user.profile.age) : undefined}
-          onHome={() => router.push("/dashboard")}
+          onHome={() => router.push("/home")}
           onSetup={() => router.push("/setup")}
           onPremium={() => router.push("/premium")}
           homeLabel={t.nav.home}

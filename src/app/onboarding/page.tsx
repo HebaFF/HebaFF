@@ -141,7 +141,7 @@ export default function OnboardingPage() {
         manualISF: manualISF || undefined,
       });
       await refresh();
-      router.replace("/dashboard");
+      router.replace("/home");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : T.saveError);
     } finally {

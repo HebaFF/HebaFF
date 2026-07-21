@@ -21,7 +21,7 @@ function formatWhen(ts: number, todayLabel: string, locale: string) {
 
 type Filter = "all" | "meals" | "doses" | "bg";
 
-export default function HistoryPage() {
+export default function AnalyticsPage() {
   const { user } = useAuth();
   const { entries, logEntry } = useAppData();
   const router = useRouter();

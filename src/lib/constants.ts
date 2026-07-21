@@ -45,14 +45,15 @@ export const TRIAL_DAYS = 7;
 export const STRINGS = {
   en: {
     nav: {
-      dashboard: "Dashboard",
       setup: "Setup",
-      history: "History",
       premium: "Premium",
       tips: "Tips",
       community: "Community",
-      share: "Share",
       home: "Home",
+      overview: "Overview",
+      calculator: "Calculator",
+      analytics: "Analytics",
+      care: "Care",
       welcomeBack: (name: string) => (name ? `Welcome back, ${name}!` : "Welcome back!"),
       age: (age: number | string) => `Age: ${age}`,
     },
@@ -350,14 +351,15 @@ export const STRINGS = {
   },
   ar: {
     nav: {
-      dashboard: "الرئيسية",
       setup: "الإعدادات",
-      history: "السجل",
       premium: "بريميوم",
       tips: "نصائح",
       community: "المجتمع",
-      share: "مشاركة",
       home: "الرئيسية",
+      overview: "نظرة عامة",
+      calculator: "الحاسبة",
+      analytics: "التحليلات",
+      care: "الرعاية",
       welcomeBack: (name: string) => (name ? `أهلاً بعودتك، ${name}!` : "أهلاً بعودتك!"),
       age: (age: number | string) => `العمر: ${age}`,
     },

@@ -50,7 +50,7 @@ function ResetPasswordForm() {
       await api.resetPassword(token, password);
       await refresh();
       setDone(true);
-      setTimeout(() => router.replace("/dashboard"), 1200);
+      setTimeout(() => router.replace("/home"), 1200);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t.common.somethingWrong);
     } finally {
