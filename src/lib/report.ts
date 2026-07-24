@@ -15,7 +15,7 @@ const TYPE_LABEL: Record<LogEntry["type"], string> = {
   bg: "Glucose reading",
 };
 
-const NAVY: [number, number, number] = [30, 41, 59];
+const NAVY: [number, number, number] = [37, 99, 235];
 const SLATE: [number, number, number] = [100, 116, 139];
 
 export function buildReportPdf({
