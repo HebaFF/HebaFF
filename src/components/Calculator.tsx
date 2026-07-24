@@ -294,8 +294,8 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       {!usesInsulin && (
         <Card style={{ background: "var(--warn-tint)", border: "none", borderRadius: "var(--radius-sm)" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "oklch(40% 0.12 75)" }}>{T.noInsulinTitle}</div>
-          <div style={{ fontSize: 12.5, color: "oklch(40% 0.1 75)", marginTop: 2 }}>{T.noInsulinDesc}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--warn)" }}>{T.noInsulinTitle}</div>
+          <div style={{ fontSize: 12.5, color: "var(--warn)", marginTop: 2 }}>{T.noInsulinDesc}</div>
         </Card>
       )}
 

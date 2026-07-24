@@ -205,6 +205,9 @@ export default function SetupPage() {
       <Button variant="secondary" full onClick={() => router.push("/onboarding")}>
         {T.editTreatmentBtn}
       </Button>
+      <Button variant="secondary" full onClick={() => router.push("/share")}>
+        {t.share.title}
+      </Button>
       <Button variant="ghost" onClick={handleLogout}>
         {T.logoutBtn}
       </Button>

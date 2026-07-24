@@ -1,6 +1,7 @@
 "use client";
 
 import { RingProgress, StatTile } from "@/components/ui";
+import { GlucoseTrend24h } from "@/components/History";
 import { FireIcon, StarIcon, TrendUpIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
@@ -47,6 +48,7 @@ export default function OverviewPage() {
           status={readings.length ? (tirPct >= 70 ? T.green : tirPct >= 40 ? T.fair : T.needsAttention) : T.noData}
           color={tirPct >= 70 ? "var(--good)" : tirPct >= 40 ? "var(--warn)" : "var(--danger)"}
           size={176}
+          spectrum
         />
         <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, color: "var(--text-3)", fontWeight: 700 }}>
           <TrendUpIcon size={14} />
@@ -58,8 +60,10 @@ export default function OverviewPage() {
 
       <div style={{ display: "flex", gap: 12 }}>
         <StatTile icon={<FireIcon size={16} />} tone="warn" tinted label={T.streakLabel} value={streak} />
-        <StatTile icon={<StarIcon size={16} />} tone="primary" tinted label={T.pointsLabel} value={points} />
+        <StatTile icon={<StarIcon size={16} />} tone="good" tinted label={T.pointsLabel} value={points} />
       </div>
+
+      <GlucoseTrend24h entries={entries} units={profile.units} />
     </div>
   );
 }

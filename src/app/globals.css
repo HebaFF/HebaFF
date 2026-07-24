@@ -1,28 +1,28 @@
 /* Design tokens ported from design_handoff_glucodose/styles.css — do not
    change values without design sign-off. */
 :root {
-  --bg: oklch(97% 0.004 255);
-  --surface: oklch(100% 0 0);
-  --surface-2: oklch(95% 0.006 255);
-  --border: oklch(88% 0.008 255);
-  --text: oklch(20% 0.018 260);
-  --text-2: oklch(42% 0.016 260);
-  --text-3: oklch(58% 0.013 260);
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-2: #64748b;
+  --text-3: #94a3b8;
 
-  --primary: oklch(56% 0.19 258);
-  --primary-dark: oklch(42% 0.18 258);
-  --primary-tint: oklch(94% 0.035 258);
+  --primary: #0d9488;
+  --primary-dark: #0f766e;
+  --primary-tint: #ccfbf1;
 
-  --good: oklch(55% 0.13 155);
-  --good-tint: oklch(93% 0.032 155);
-  --warn: oklch(65% 0.12 75);
-  --warn-tint: oklch(93% 0.035 78);
-  --danger: oklch(53% 0.16 25);
-  --danger-tint: oklch(93% 0.035 25);
-  --pink: oklch(48% 0.03 300);
-  --pink-tint: oklch(94% 0.012 300);
-  --teal: oklch(46% 0.045 220);
-  --teal-tint: oklch(94% 0.016 220);
+  --good: #16a34a;
+  --good-tint: #dcfce7;
+  --warn: #d97706;
+  --warn-tint: #fef3c7;
+  --danger: #dc2626;
+  --danger-tint: #fee2e2;
+  --indigo: #4338ca;
+  --indigo-tint: #e0e7ff;
+  --sky: #0284c7;
+  --sky-tint: #e0f2fe;
 
   --radius: 20px;
   --radius-sm: 14px;

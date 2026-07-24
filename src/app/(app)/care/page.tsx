@@ -8,6 +8,7 @@ import { useAppData } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 import { generateTips, type Tip } from "@/lib/tips";
 import { api, ApiError, type CommunityPost } from "@/lib/api";
+import { formatRelativeTime } from "@/lib/relativeTime";
 
 function tipText(tip: Tip, T: ReturnType<typeof useLang>["t"]["tips"]): { icon: React.ReactNode; text: string; bg: string } {
   switch (tip.kind) {
@@ -25,16 +26,6 @@ function tipText(tip: Tip, T: ReturnType<typeof useLang>["t"]["tips"]): { icon: 
   }
 }
 
-function formatRelative(ts: number, T: ReturnType<typeof useLang>["t"]["community"]) {
-  const diffMs = Date.now() - ts;
-  const minutes = Math.floor(diffMs / 60000);
-  if (minutes < 1) return T.justNow;
-  if (minutes < 60) return T.minutesAgo(minutes);
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return T.hoursAgo(hours);
-  return T.daysAgo(Math.floor(hours / 24));
-}
-
 export default function CarePage() {
   const { user } = useAuth();
   const { entries } = useAppData();
@@ -42,6 +33,8 @@ export default function CarePage() {
   const T = t.tips;
   const TC = t.community;
   const [section, setSection] = useState<"tips" | "community">("tips");
+  // eslint-disable-next-line react-hooks/purity -- minute-granularity relative-time display, render-time drift is inconsequential
+  const now = Date.now();
 
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
@@ -133,7 +126,7 @@ export default function CarePage() {
               <Card key={p.id} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: 13, fontWeight: 700 }}>@{p.username}</span>
-                  <span style={{ fontSize: 11.5, color: "var(--text-3)" }}>{formatRelative(p.createdAt, TC)}</span>
+                  <span style={{ fontSize: 11.5, color: "var(--text-3)" }}>{formatRelativeTime(p.createdAt, now, TC)}</span>
                 </div>
                 <div style={{ fontSize: 14, color: "var(--text)", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{p.content}</div>
               </Card>

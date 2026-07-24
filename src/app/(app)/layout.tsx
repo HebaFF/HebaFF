@@ -3,17 +3,18 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppShell, TopNav, BottomNav } from "@/components/ui";
-import { HomeIcon, PulseIcon, CalculatorIcon, ChartIcon, HeartIcon, type IconProps } from "@/components/icons";
+import { HomeIcon, TrendUpIcon, CalculatorIcon, ListIcon, HeartIcon, type IconProps } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { AppDataProvider } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
+import { diabetesTypesFor } from "@/lib/constants";
 
 const BOTTOM_TAB_IDS = ["home", "overview", "calculator", "history", "care"] as const;
 const BOTTOM_TAB_ICONS: Record<(typeof BOTTOM_TAB_IDS)[number], (props: IconProps) => React.ReactNode> = {
   home: HomeIcon,
-  overview: PulseIcon,
+  overview: TrendUpIcon,
   calculator: CalculatorIcon,
-  history: ChartIcon,
+  history: ListIcon,
   care: HeartIcon,
 };
 
@@ -21,7 +22,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const bottomTabs = BOTTOM_TAB_IDS.map((id) => ({ id, icon: BOTTOM_TAB_ICONS[id], label: t.nav[id] }));
   const activeBottomTab = bottomTabs.find((tb) => pathname.startsWith(`/${tb.id}`))?.id ?? "";
 
@@ -33,19 +34,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (loading || !user || !user.profile) return null;
 
+  const typeLabel = diabetesTypesFor(lang).find((dt) => dt.id === user.profile!.diabetesType)?.label;
+  const subtitle = [user.profile.age ? t.nav.age(user.profile.age) : null, typeLabel].filter(Boolean).join(" · ");
+
   return (
     <AppDataProvider>
       <AppShell>
         <TopNav
           name={user.profile.name}
-          welcomeText={t.nav.welcomeBack(user.profile.name)}
-          ageText={user.profile.age ? t.nav.age(user.profile.age) : undefined}
+          subtitle={subtitle || undefined}
+          isPremium={user.subscription.isPremium}
           onHome={() => router.push("/home")}
           onSetup={() => router.push("/setup")}
           onPremium={() => router.push("/premium")}
           homeLabel={t.nav.home}
           setupLabel={t.nav.setup}
-          premiumLabel={t.nav.premium}
+          proLabel={t.nav.pro}
+          freeLabel={t.nav.free}
         />
         {children}
         <BottomNav tab={activeBottomTab} onChange={(id) => router.push(`/${id}`)} tabs={bottomTabs} />

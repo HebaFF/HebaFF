@@ -221,6 +221,14 @@ export function PulseIcon({ size = 22, color = "currentColor", strokeWidth = 2, 
   );
 }
 
+export function ListIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h9.5" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function ChartIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
   return (
     <svg {...base(size)} style={style}>

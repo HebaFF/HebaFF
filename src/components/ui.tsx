@@ -100,67 +100,114 @@ export function TopBar({
   );
 }
 
-function HeaderIconButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      aria-label={label}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 2,
-        border: "none",
-        background: "none",
-        flexShrink: 0,
-        padding: "4px 8px",
-        color: "var(--text-2)",
-      }}
-    >
-      {icon}
-      <span style={{ fontSize: 9.5, fontWeight: 700, color: "var(--text-3)", whiteSpace: "nowrap" }}>{label}</span>
-    </button>
-  );
-}
-
 export function TopNav({
   name,
-  welcomeText,
-  ageText,
+  subtitle,
+  isPremium,
   onHome,
   onSetup,
   onPremium,
   homeLabel,
   setupLabel,
-  premiumLabel,
+  proLabel,
+  freeLabel,
 }: {
   name?: string;
-  welcomeText: string;
-  ageText?: string;
+  subtitle?: string;
+  isPremium: boolean;
   onHome: () => void;
   onSetup: () => void;
   onPremium: () => void;
   homeLabel: string;
   setupLabel: string;
-  premiumLabel: string;
+  proLabel: string;
+  freeLabel: string;
 }) {
+  const initial = (name?.trim()?.[0] ?? "G").toUpperCase();
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
       <div style={{ padding: "16px 20px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-        <button onClick={onHome} aria-label={homeLabel} style={{ border: "none", background: "none", padding: 0, textAlign: "left", minWidth: 0 }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, color: "var(--primary-dark)", letterSpacing: "-0.01em" }}>
-            GlucoDose
-          </div>
-          {name && (
-            <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {welcomeText}
-              {ageText ? ` · ${ageText}` : ""}
+        <button
+          onClick={onHome}
+          aria-label={homeLabel}
+          style={{ display: "flex", alignItems: "center", gap: 10, border: "none", background: "none", padding: 0, textAlign: "left", minWidth: 0 }}
+        >
+          <span
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 999,
+              background: "var(--primary-tint)",
+              color: "var(--primary-dark)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 800,
+              fontSize: 16,
+              flexShrink: 0,
+            }}
+          >
+            {initial}
+          </span>
+          <span style={{ minWidth: 0 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 16.5,
+                fontWeight: 800,
+                color: "var(--text)",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {name || "GlucoDose"}
             </div>
-          )}
+            {subtitle && (
+              <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {subtitle}
+              </div>
+            )}
+          </span>
         </button>
-        <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
-          <HeaderIconButton icon={<SettingsIcon size={19} />} label={setupLabel} onClick={onSetup} />
-          <HeaderIconButton icon={<CrownIcon size={19} />} label={premiumLabel} onClick={onPremium} />
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          <button
+            onClick={onPremium}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              border: "none",
+              borderRadius: 999,
+              padding: "6px 12px",
+              fontSize: 12,
+              fontWeight: 800,
+              background: isPremium ? "var(--warn-tint)" : "var(--surface-2)",
+              color: isPremium ? "var(--warn)" : "var(--text-2)",
+              flexShrink: 0,
+            }}
+          >
+            <CrownIcon size={13} />
+            {isPremium ? proLabel : freeLabel}
+          </button>
+          <button
+            onClick={onSetup}
+            aria-label={setupLabel}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 999,
+              border: "none",
+              background: "var(--surface-2)",
+              color: "var(--text-2)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <SettingsIcon size={17} />
+          </button>
         </div>
       </div>
     </div>
@@ -260,15 +307,15 @@ export function FAB({ icon, label, onClick }: { icon?: React.ReactNode; label: s
   );
 }
 
-export type CardTone = "primary" | "good" | "warn" | "danger" | "pink" | "teal" | "surface" | "neutral";
+export type CardTone = "primary" | "good" | "warn" | "danger" | "indigo" | "sky" | "surface" | "neutral";
 
 export const TONE_TINT: Record<CardTone, string> = {
   primary: "var(--primary-tint)",
   good: "var(--good-tint)",
   warn: "var(--warn-tint)",
   danger: "var(--danger-tint)",
-  pink: "var(--pink-tint)",
-  teal: "var(--teal-tint)",
+  indigo: "var(--indigo-tint)",
+  sky: "var(--sky-tint)",
   surface: "var(--surface)",
   neutral: "var(--surface-2)",
 };
@@ -276,10 +323,10 @@ export const TONE_TINT: Record<CardTone, string> = {
 export const TONE_ICON_COLOR: Record<CardTone, string> = {
   primary: "var(--primary-dark)",
   good: "var(--good)",
-  warn: "oklch(45% 0.13 75)",
+  warn: "var(--warn)",
   danger: "var(--danger)",
-  pink: "var(--pink)",
-  teal: "var(--teal)",
+  indigo: "var(--indigo)",
+  sky: "var(--sky)",
   surface: "var(--text-2)",
   neutral: "var(--text-2)",
 };
@@ -341,6 +388,7 @@ export function RingProgress({
   status,
   color = "var(--good)",
   size = 148,
+  spectrum = false,
 }: {
   pct: number;
   value: React.ReactNode;
@@ -348,9 +396,15 @@ export function RingProgress({
   status?: string;
   color?: string;
   size?: number;
+  spectrum?: boolean;
 }) {
   const deg = Math.max(0, Math.min(100, pct)) * 3.6;
   const inner = size - 32;
+  const seg1 = (deg / 3).toFixed(1);
+  const seg2 = ((deg * 2) / 3).toFixed(1);
+  const background = spectrum
+    ? `conic-gradient(from -90deg, var(--good) 0deg ${seg1}deg, var(--warn) ${seg1}deg ${seg2}deg, var(--danger) ${seg2}deg ${deg}deg, var(--border) ${deg}deg 360deg)`
+    : `conic-gradient(${color} ${deg}deg, var(--border) ${deg}deg 360deg)`;
   return (
     <div
       style={{
@@ -358,7 +412,7 @@ export function RingProgress({
         height: size,
         borderRadius: "999px",
         margin: "0 auto",
-        background: `conic-gradient(${color} ${deg}deg, var(--warn) ${deg}deg 360deg)`,
+        background,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -605,7 +659,7 @@ export function Badge({ children, tone = "primary" }: { children: React.ReactNod
   const tones: Record<BadgeTone, { bg: string; fg: string }> = {
     primary: { bg: "var(--primary-tint)", fg: "var(--primary-dark)" },
     good: { bg: "var(--good-tint)", fg: "var(--good)" },
-    warn: { bg: "var(--warn-tint)", fg: "oklch(45% 0.13 75)" },
+    warn: { bg: "var(--warn-tint)", fg: "var(--warn)" },
     danger: { bg: "var(--danger-tint)", fg: "var(--danger)" },
     neutral: { bg: "var(--surface-2)", fg: "var(--text-2)" },
   };
