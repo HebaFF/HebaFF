@@ -111,6 +111,8 @@ export function TopNav({
   setupLabel,
   proLabel,
   freeLabel,
+  lang,
+  onChangeLang,
 }: {
   name?: string;
   subtitle?: string;
@@ -122,6 +124,8 @@ export function TopNav({
   setupLabel: string;
   proLabel: string;
   freeLabel: string;
+  lang: "en" | "ar";
+  onChangeLang: (l: "en" | "ar") => void;
 }) {
   const initial = (name?.trim()?.[0] ?? "G").toUpperCase();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -197,6 +201,8 @@ export function TopNav({
               aria-label={setupLabel}
               aria-expanded={menuOpen}
               style={{
+                position: "relative",
+                zIndex: 11,
                 width: 34,
                 height: 34,
                 borderRadius: 999,
@@ -222,7 +228,7 @@ export function TopNav({
                     border: "1px solid var(--border)",
                     borderRadius: "var(--radius-sm)",
                     boxShadow: "var(--shadow)",
-                    minWidth: 150,
+                    minWidth: 168,
                     zIndex: 10,
                     overflow: "hidden",
                   }}
@@ -244,11 +250,35 @@ export function TopNav({
                       fontWeight: 600,
                       color: "var(--text)",
                       textAlign: "start",
+                      borderBottom: "1px solid var(--border)",
                     }}
                   >
                     <SettingsIcon size={16} />
                     {setupLabel}
                   </button>
+                  <div style={{ display: "flex", padding: 8, gap: 4 }}>
+                    {(["en", "ar"] as const).map((l) => (
+                      <button
+                        key={l}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          onChangeLang(l);
+                        }}
+                        style={{
+                          flex: 1,
+                          border: "none",
+                          borderRadius: 999,
+                          padding: "8px 0",
+                          fontSize: 12.5,
+                          fontWeight: 700,
+                          background: lang === l ? "var(--primary-tint)" : "var(--surface-2)",
+                          color: lang === l ? "var(--primary-dark)" : "var(--text-2)",
+                        }}
+                      >
+                        {l === "en" ? "EN" : "AR"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </>
             )}

@@ -22,7 +22,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const { t, lang } = useLang();
+  const { t, lang, setLang } = useLang();
   const bottomTabs = BOTTOM_TAB_IDS.map((id) => ({ id, icon: BOTTOM_TAB_ICONS[id], label: t.nav[id] }));
   const activeBottomTab = bottomTabs.find((tb) => pathname.startsWith(`/${tb.id}`))?.id ?? "";
 
@@ -51,6 +51,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           setupLabel={t.nav.setup}
           proLabel={t.nav.pro}
           freeLabel={t.nav.free}
+          lang={lang}
+          onChangeLang={setLang}
         />
         {children}
         <BottomNav tab={activeBottomTab} onChange={(id) => router.push(`/${id}`)} tabs={bottomTabs} />
