@@ -2,8 +2,8 @@
 
 // Shared UI primitives — ported 1:1 from design_handoff_glucodose/components.jsx.
 // Keep styling pixel-for-pixel; this is the single source of design truth.
-import React from "react";
-import { MoreIcon, CrownIcon, PlusIcon } from "@/components/icons";
+import React, { useState } from "react";
+import { MoreIcon, SettingsIcon, CrownIcon, PlusIcon } from "@/components/icons";
 
 const shellStyles: Record<string, React.CSSProperties> = {
   page: {
@@ -124,6 +124,7 @@ export function TopNav({
   freeLabel: string;
 }) {
   const initial = (name?.trim()?.[0] ?? "G").toUpperCase();
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
       <div style={{ padding: "16px 20px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
@@ -190,24 +191,68 @@ export function TopNav({
             <CrownIcon size={13} />
             {isPremium ? proLabel : freeLabel}
           </button>
-          <button
-            onClick={onSetup}
-            aria-label={setupLabel}
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: 999,
-              border: "none",
-              background: "var(--surface-2)",
-              color: "var(--text-2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <MoreIcon size={19} />
-          </button>
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label={setupLabel}
+              aria-expanded={menuOpen}
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 999,
+                border: "none",
+                background: "var(--surface-2)",
+                color: "var(--text-2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MoreIcon size={19} />
+            </button>
+            {menuOpen && (
+              <>
+                <div onClick={() => setMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 9 }} />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 40,
+                    insetInlineEnd: 0,
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-sm)",
+                    boxShadow: "var(--shadow)",
+                    minWidth: 150,
+                    zIndex: 10,
+                    overflow: "hidden",
+                  }}
+                >
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      onSetup();
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 9,
+                      width: "100%",
+                      padding: "12px 14px",
+                      border: "none",
+                      background: "none",
+                      fontSize: 13.5,
+                      fontWeight: 600,
+                      color: "var(--text)",
+                      textAlign: "start",
+                    }}
+                  >
+                    <SettingsIcon size={16} />
+                    {setupLabel}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -226,12 +271,9 @@ export function BottomNav({
   return (
     <div
       style={{
-        position: "fixed",
+        position: "sticky",
         bottom: 0,
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "100%",
-        maxWidth: 480,
+        flexShrink: 0,
         zIndex: 6,
         background: "var(--surface)",
         borderTop: "1px solid var(--border)",

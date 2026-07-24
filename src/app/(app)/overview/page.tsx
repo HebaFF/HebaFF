@@ -29,7 +29,7 @@ export default function OverviewPage() {
   const points = computePoints(entries);
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 100px", display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
       <div
         style={{
           margin: "-6px -20px 0",

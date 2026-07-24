@@ -62,7 +62,7 @@ export default function HistoryPage() {
   }
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 100px", display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
       <TrendChart entries={entries} units={profile.units} />
       <div style={{ display: "flex", gap: 10 }}>
         <Button variant="secondary" full onClick={() => setBgOpen(true)}>

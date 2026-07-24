@@ -79,7 +79,7 @@ export default function CarePage() {
   const tips = generateTips(entries, user.profile.units);
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 100px", display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800 }}>{t.nav.care}</div>
 
       <SegmentedControl

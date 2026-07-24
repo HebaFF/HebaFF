@@ -44,7 +44,7 @@ export default function SharePage() {
   }
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 100px", display: "flex", flexDirection: "column", gap: 16 }}>
+    <div style={{ padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
       <div>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800 }}>{T.title}</div>
         <div style={{ fontSize: 13, color: "var(--text-2)", marginTop: 2 }}>{T.subtitle}</div>

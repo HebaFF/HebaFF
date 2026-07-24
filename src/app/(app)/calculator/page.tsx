@@ -7,7 +7,7 @@ export default function CalculatorPage() {
   const { user } = useAuth();
   if (!user?.profile) return null;
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 100px" }}>
+    <div style={{ padding: "6px 20px 24px" }}>
       <CalculatorWidget profile={user.profile} />
     </div>
   );
