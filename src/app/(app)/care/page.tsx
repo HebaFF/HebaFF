@@ -21,7 +21,7 @@ function tipText(tip: Tip, T: ReturnType<typeof useLang>["t"]["tips"]): { icon: 
       return { icon: <UtensilsIcon color="var(--primary)" />, text: T.timeOfDayTip(windowLabel, tip.pct), bg: "var(--primary-tint)" };
     }
     case "loggingGap":
-      return { icon: <CalendarIcon color="var(--teal)" />, text: T.loggingGapTip, bg: "var(--teal-tint)" };
+      return { icon: <CalendarIcon color="var(--text-2)" />, text: T.loggingGapTip, bg: "var(--surface-2)" };
   }
 }
 

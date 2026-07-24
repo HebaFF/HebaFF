@@ -34,8 +34,8 @@ function RatioCard({
   recalculateLabel: string;
   onRecalculate: () => void;
 }) {
-  const colorVar = tone === "neutral" ? "var(--teal)" : `var(--${tone})`;
-  const bgVar = tone === "neutral" ? "var(--teal-tint)" : "var(--primary-tint)";
+  const colorVar = tone === "neutral" ? "var(--text-2)" : `var(--${tone})`;
+  const bgVar = tone === "neutral" ? "var(--surface-2)" : "var(--primary-tint)";
   return (
     <div
       style={{
@@ -138,7 +138,7 @@ export default function SetupPage() {
       <DashboardCard
         icon={<ClipboardIcon />}
         title={T.setupRatiosTitle}
-        tone="teal"
+        tone="primary"
         right={isPremium ? <Badge tone="good">{T.premiumBadge}</Badge> : <Badge tone="neutral">{T.freeBadge}</Badge>}
       >
         <InfoRow label={T.usernameLabel} value={`@${user.username}`} />

@@ -3,12 +3,14 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Badge } from "@/components/ui";
+import { DownloadIcon } from "@/components/icons";
 import { TrendChart, LogBGModal } from "@/components/History";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 import { classifyBG } from "@/lib/calc";
 import { RANGE_TONE, TYPE_TONE } from "@/lib/historyMeta";
+import { buildReportPdf } from "@/lib/report";
 
 function formatWhen(ts: number, todayLabel: string, locale: string) {
   const d = new Date(ts);
@@ -54,12 +56,21 @@ export default function HistoryPage() {
   if (!profile) return null;
   const visible = isPremium ? filtered : filtered.slice(0, 15);
 
+  function downloadReport() {
+    const doc = buildReportPdf({ patientName: user?.profile?.name ?? "", units: profile!.units, entries });
+    doc.save(`GlucoDose-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+  }
+
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 100px", display: "flex", flexDirection: "column", gap: 16 }}>
       <TrendChart entries={entries} units={profile.units} />
       <div style={{ display: "flex", gap: 10 }}>
         <Button variant="secondary" full onClick={() => setBgOpen(true)}>
           {T.logBGReadingBtn}
+        </Button>
+        <Button variant="outline" full onClick={downloadReport}>
+          <DownloadIcon size={16} />
+          {T.downloadReportBtn}
         </Button>
       </div>
 

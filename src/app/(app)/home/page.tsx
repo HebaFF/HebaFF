@@ -32,7 +32,7 @@ export default function HomePage() {
       <DashboardCard
         icon={<DropIcon />}
         title={T.quickLogTitle}
-        tone="pink"
+        tone="primary"
         right={
           <Button size="sm" variant="secondary" onClick={() => setBgOpen(true)}>
             {T.logBGBtn}
@@ -40,15 +40,15 @@ export default function HomePage() {
         }
       >
         <div style={{ display: "flex", gap: 12 }}>
-          <StatTile icon={<DropIcon size={16} />} tone="pink" label={T.currentBGLabel} value={lastBG ? lastBG.currentBG : t.common.dash} />
-          <StatTile icon={<SyringeIcon size={16} />} tone="primary" label={T.insulinTakenLabel} value={lastDose ? `${lastDose.dose}u` : t.common.dash} />
+          <StatTile icon={<DropIcon size={16} />} tone="neutral" label={T.currentBGLabel} value={lastBG ? lastBG.currentBG : t.common.dash} />
+          <StatTile icon={<SyringeIcon size={16} />} tone="neutral" label={T.insulinTakenLabel} value={lastDose ? `${lastDose.dose}u` : t.common.dash} />
         </div>
       </DashboardCard>
 
       <DashboardCard
         icon={<ClipboardIcon />}
         title={T.yourHistoryTitle}
-        tone="teal"
+        tone="neutral"
         right={
           <button onClick={() => router.push("/history")} style={{ border: "none", background: "none", color: "var(--primary)", fontSize: 12.5, fontWeight: 700 }}>
             {T.viewAllBtn}

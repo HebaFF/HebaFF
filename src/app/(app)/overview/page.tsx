@@ -33,7 +33,7 @@ export default function OverviewPage() {
         style={{
           margin: "-6px -20px 0",
           padding: "36px 20px 26px",
-          background: "linear-gradient(160deg, var(--teal-tint) 0%, var(--primary-tint) 55%, var(--bg) 100%)",
+          background: "linear-gradient(160deg, var(--primary-tint) 0%, var(--bg) 100%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",

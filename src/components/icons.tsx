@@ -242,6 +242,15 @@ export function HeartIcon({ size = 22, color = "currentColor", strokeWidth = 2, 
   );
 }
 
+export function DownloadIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="M12 3.5v11.5M7.5 11l4.5 4.5L16.5 11" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4.5 17v2.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V17" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function TrendUpIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
   return (
     <svg {...base(size)} style={style}>
