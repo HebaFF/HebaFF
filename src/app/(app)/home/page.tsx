@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Card, StatTile, Button, Badge } from "@/components/ui";
-import { DropIcon, SyringeIcon, UtensilsIcon, DownloadIcon, TrendUpIcon } from "@/components/icons";
+import { DropIcon, SyringeIcon, UtensilsIcon, DownloadIcon, TrendUpIcon, PlusIcon } from "@/components/icons";
 import { LogBGModal } from "@/components/History";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
@@ -38,7 +38,7 @@ export default function HomePage() {
   const activeInsulin = computeActiveInsulin(entries, now);
   const activeCarbs = computeActiveCarbs(entries, now);
 
-  const recentEntries = [...entries].sort((a, b) => b.timestamp - a.timestamp).slice(0, 4);
+  const recentEntries = [...entries].sort((a, b) => b.timestamp - a.timestamp).slice(0, 2);
 
   function downloadReport() {
     const doc = buildReportPdf({ patientName: profile.name, units: profile.units, entries });
@@ -84,7 +84,7 @@ export default function HomePage() {
       </Card>
 
       <div style={{ display: "flex", gap: 12 }}>
-        <StatTile icon={<SyringeIcon size={16} />} tone="sky" tinted label={T.activeInsulinLabel} value={activeInsulin} unit={T.unitsShort} />
+        <StatTile icon={<PlusIcon size={16} />} tone="sky" tinted label={T.activeInsulinLabel} value={activeInsulin} unit={T.unitsShort} />
         <StatTile icon={<UtensilsIcon size={16} />} tone="warn" tinted label={T.carbsOnBoardLabel} value={activeCarbs} unit={T.gramsUnitLabel} />
       </div>
 
@@ -92,7 +92,7 @@ export default function HomePage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontSize: 16, fontWeight: 700 }}>{T.recentActivityTitle}</span>
           <button onClick={() => router.push("/history")} style={{ border: "none", background: "none", color: "var(--primary)", fontSize: 12.5, fontWeight: 700 }}>
-            {T.viewAllBtn}
+            {T.viewAllArrow}
           </button>
         </div>
 
@@ -122,12 +122,16 @@ export default function HomePage() {
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13.5, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {e.currentBG !== undefined ? `${e.currentBG} ${profile.units === "mmol" ? "mmol/L" : "mg/dL"}` : `${e.dose}u`}
+                    {isDoseOnly ? `${e.dose}U ${T.rapidInsulinLabel}` : `${e.currentBG} ${profile.units === "mmol" ? "mmol/L" : "mg/dL"} ${T.glucoseLabel}`}
                   </div>
-                  <div style={{ fontSize: 11.5, color: "var(--text-3)" }}>{new Date(e.timestamp).toLocaleString([], { hour: "numeric", minute: "2-digit" })}</div>
+                  <div style={{ fontSize: 11.5, color: "var(--text-3)" }}>
+                    {new Date(e.timestamp).toLocaleString([], { hour: "numeric", minute: "2-digit" })} · {isDoseOnly ? T.bolusDoseLabel : T.fingerstickLabel}
+                  </div>
                 </div>
                 {e.carbs !== undefined && <Badge tone={TYPE_TONE[e.type] ?? "neutral"}>{T.carbsBadge(e.carbs)}</Badge>}
-                {e.currentBG !== undefined && entryRange && <Badge tone={RANGE_TONE[entryRange] ?? "neutral"}>{entryRange === "inRange" ? t.history.inRange : entryRange === "low" ? t.history.low : t.history.high}</Badge>}
+                {e.currentBG !== undefined && entryRange && (
+                  <Badge tone={RANGE_TONE[entryRange] ?? "neutral"}>{entryRange === "inRange" ? T.normalBadge : entryRange === "low" ? t.history.low : t.history.high}</Badge>
+                )}
               </Card>
             );
           })

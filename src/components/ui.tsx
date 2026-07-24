@@ -3,7 +3,7 @@
 // Shared UI primitives — ported 1:1 from design_handoff_glucodose/components.jsx.
 // Keep styling pixel-for-pixel; this is the single source of design truth.
 import React from "react";
-import { SettingsIcon, CrownIcon, PlusIcon } from "@/components/icons";
+import { MoreIcon, CrownIcon, PlusIcon } from "@/components/icons";
 
 const shellStyles: Record<string, React.CSSProperties> = {
   page: {
@@ -206,7 +206,7 @@ export function TopNav({
               flexShrink: 0,
             }}
           >
-            <SettingsIcon size={17} />
+            <MoreIcon size={19} />
           </button>
         </div>
       </div>
@@ -669,15 +669,13 @@ export function Badge({ children, tone = "primary" }: { children: React.ReactNod
       style={{
         background: t.bg,
         color: t.fg,
-        fontSize: 11.5,
-        fontWeight: 800,
+        fontSize: 12,
+        fontWeight: 700,
         padding: "4px 11px",
         borderRadius: 999,
         display: "inline-flex",
         alignItems: "center",
         gap: 4,
-        textTransform: "uppercase",
-        letterSpacing: "0.02em",
       }}
     >
       {children}

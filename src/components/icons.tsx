@@ -221,6 +221,16 @@ export function PulseIcon({ size = 22, color = "currentColor", strokeWidth = 2, 
   );
 }
 
+export function MoreIcon({ size = 22, color = "currentColor", style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <circle cx="12" cy="5.5" r="1.6" fill={color} />
+      <circle cx="12" cy="12" r="1.6" fill={color} />
+      <circle cx="12" cy="18.5" r="1.6" fill={color} />
+    </svg>
+  );
+}
+
 export function ListIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
   return (
     <svg {...base(size)} style={style}>
