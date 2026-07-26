@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AppShell, SegmentedControl, Field, TextInput, Button } from "@/components/ui";
+import { AppShell, SegmentedControl, Field, TextInput, PasswordInput, Button } from "@/components/ui";
 import { useLang } from "@/context/LangContext";
 import { useAuth } from "@/context/AuthContext";
 import { api, ApiError } from "@/lib/api";
@@ -119,8 +119,7 @@ export default function LoginPage() {
             />
           </Field>
           <Field label={t.auth.passwordLabel}>
-            <TextInput
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"

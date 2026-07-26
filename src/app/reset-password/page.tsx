@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AppShell, TopBar, Field, TextInput, Button, Card } from "@/components/ui";
+import { AppShell, TopBar, Field, PasswordInput, Button, Card } from "@/components/ui";
 import { useLang } from "@/context/LangContext";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -75,8 +75,7 @@ function ResetPasswordForm() {
         ) : (
           <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Field label={T.newPasswordLabel}>
-              <TextInput
-                type="password"
+              <PasswordInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -85,8 +84,7 @@ function ResetPasswordForm() {
               />
             </Field>
             <Field label={T.confirmPasswordLabel}>
-              <TextInput
-                type="password"
+              <PasswordInput
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="••••••••"

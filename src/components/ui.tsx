@@ -3,7 +3,7 @@
 // Shared UI primitives — ported 1:1 from design_handoff_glucodose/components.jsx.
 // Keep styling pixel-for-pixel; this is the single source of design truth.
 import React, { useState } from "react";
-import { MoreIcon, SettingsIcon, CrownIcon, PlusIcon, ChevronLeftIcon, CloseIcon } from "@/components/icons";
+import { MoreIcon, SettingsIcon, CrownIcon, PlusIcon, ChevronLeftIcon, CloseIcon, EyeIcon, EyeOffIcon } from "@/components/icons";
 
 const shellStyles: Record<string, React.CSSProperties> = {
   page: {
@@ -635,6 +635,45 @@ const inputBase: React.CSSProperties = {
 export const TextInput = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   function TextInput(props, ref) {
     return <input ref={ref} {...props} style={{ ...inputBase, ...(props.style || {}) }} />;
+  },
+);
+
+export const PasswordInput = React.forwardRef<HTMLInputElement, Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">>(
+  function PasswordInput(props, ref) {
+    const [visible, setVisible] = useState(false);
+    return (
+      <div style={{ position: "relative" }}>
+        <input
+          ref={ref}
+          {...props}
+          type={visible ? "text" : "password"}
+          style={{ ...inputBase, paddingInlineEnd: 44, ...(props.style || {}) }}
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? "Hide password" : "Show password"}
+          style={{
+            position: "absolute",
+            insetInlineEnd: 4,
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: 36,
+            height: 36,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "transparent",
+            border: "none",
+            padding: 0,
+            color: "var(--text-3)",
+            cursor: "pointer",
+          }}
+        >
+          {visible ? <EyeOffIcon size={19} /> : <EyeIcon size={19} />}
+        </button>
+      </div>
+    );
   },
 );
 

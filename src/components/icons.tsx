@@ -309,3 +309,22 @@ export function TrendUpIcon({ size = 22, color = "currentColor", strokeWidth = 2
     </svg>
   );
 }
+
+export function EyeIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="3" stroke={color} strokeWidth={strokeWidth} />
+    </svg>
+  );
+}
+
+export function EyeOffIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="M3.5 3.5l17 17" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" />
+      <path d="M10.6 5.65A10.6 10.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a15.6 15.6 0 0 1-3.24 4.06M7.3 7.3C4.53 9.05 2.5 12 2.5 12S6 18.5 12 18.5a9.9 9.9 0 0 0 4.7-1.2" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
