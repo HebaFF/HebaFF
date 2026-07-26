@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
   appName: "GlucoDose",
   webDir: "public",
   server: {
-    url: process.env.CAPACITOR_SERVER_URL || "https://REPLACE-WITH-YOUR-VERCEL-URL.vercel.app",
+    url: process.env.CAPACITOR_SERVER_URL || "https://tradition-sharpie-gurgling.ngrok-free.dev",
     cleartext: false,
   },
   ios: {
