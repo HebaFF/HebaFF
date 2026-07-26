@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, TextInput, TextArea, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
-import { DropIcon, TargetIcon, NoteIcon } from "@/components/icons";
+import { DropIcon, TargetIcon, NoteIcon, PlusIcon, MinusIcon } from "@/components/icons";
 import { FOOD_DB, type Food as RawFood } from "@/lib/foodDb";
 import type { Food } from "@/lib/api";
 import { useAppData } from "@/context/AppDataContext";
@@ -330,18 +330,40 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
               </div>
               <button
                 onClick={() => setQty(it.food, it.qty - 1)}
-                style={{ width: 26, height: 26, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface)" }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 999,
+                  border: "1px solid var(--border)",
+                  background: "var(--surface)",
+                  color: "var(--text)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
               >
-                −
+                <MinusIcon size={14} strokeWidth={2.2} />
               </button>
               <span className="num" style={{ minWidth: 16, textAlign: "center", fontWeight: 700 }}>
                 {it.qty}
               </span>
               <button
                 onClick={() => setQty(it.food, it.qty + 1)}
-                style={{ width: 26, height: 26, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface)" }}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 999,
+                  border: "1px solid var(--border)",
+                  background: "var(--surface)",
+                  color: "var(--text)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
               >
-                +
+                <PlusIcon size={14} strokeWidth={2.2} />
               </button>
             </div>
           ))}

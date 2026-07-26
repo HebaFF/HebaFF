@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DashboardCard, Badge, Button, Modal, Field, TextInput } from "@/components/ui";
+import { DashboardCard, Button, Modal, Field, TextInput } from "@/components/ui";
 import { ClipboardIcon, CalculatorIcon, CrownIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LangContext";
@@ -135,12 +135,7 @@ export default function SetupPage() {
 
   return (
     <div style={{ padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-      <DashboardCard
-        icon={<ClipboardIcon />}
-        title={T.setupRatiosTitle}
-        tone="primary"
-        right={isPremium ? <Badge tone="good">{T.premiumBadge}</Badge> : <Badge tone="neutral">{T.freeBadge}</Badge>}
-      >
+      <DashboardCard icon={<ClipboardIcon />} title={T.setupRatiosTitle} tone="primary">
         <InfoRow label={T.usernameLabel} value={`@${user.username}`} />
         <EmailRow email={user.email} onSaved={refresh} />
         <InfoRow

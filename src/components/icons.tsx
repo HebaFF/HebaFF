@@ -221,6 +221,38 @@ export function PulseIcon({ size = 22, color = "currentColor", strokeWidth = 2, 
   );
 }
 
+export function MinusIcon({ size = 22, color = "currentColor", strokeWidth = 2.4, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="M5 12h14" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function CloseIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="M6 6l12 12M18 6 6 18" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ChevronLeftIcon({ size = 22, color = "currentColor", strokeWidth = 2, style, className }: IconProps & { className?: string }) {
+  return (
+    <svg {...base(size)} style={style} className={className}>
+      <path d="M15 4 8 12l7 8" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function CheckIcon({ size = 22, color = "currentColor", strokeWidth = 2, style }: IconProps) {
+  return (
+    <svg {...base(size)} style={style}>
+      <path d="m4.5 12.5 5 5L19.5 7" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function MoreIcon({ size = 22, color = "currentColor", style }: IconProps) {
   return (
     <svg {...base(size)} style={style}>

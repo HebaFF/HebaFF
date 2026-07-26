@@ -3,7 +3,7 @@
 // Shared UI primitives — ported 1:1 from design_handoff_glucodose/components.jsx.
 // Keep styling pixel-for-pixel; this is the single source of design truth.
 import React, { useState } from "react";
-import { MoreIcon, SettingsIcon, CrownIcon, PlusIcon } from "@/components/icons";
+import { MoreIcon, SettingsIcon, CrownIcon, PlusIcon, ChevronLeftIcon, CloseIcon } from "@/components/icons";
 
 const shellStyles: Record<string, React.CSSProperties> = {
   page: {
@@ -61,27 +61,19 @@ export function TopBar({
           onClick={onBack}
           aria-label={backLabel}
           style={{
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             borderRadius: 999,
             border: "none",
             background: "var(--surface-2)",
+            color: "var(--text)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" className="back-chevron">
-            <path
-              d="M10 2 4 8l6 6"
-              stroke="var(--text)"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ChevronLeftIcon size={18} className="back-chevron" />
         </button>
       )}
       <div
@@ -184,7 +176,7 @@ export function TopNav({
               gap: 4,
               border: "none",
               borderRadius: 999,
-              padding: "6px 12px",
+              padding: "9px 14px",
               fontSize: 12,
               fontWeight: 800,
               background: isPremium ? "var(--warn-tint)" : "var(--surface-2)",
@@ -203,8 +195,8 @@ export function TopNav({
               style={{
                 position: "relative",
                 zIndex: 11,
-                width: 34,
-                height: 34,
+                width: 40,
+                height: 40,
                 borderRadius: 999,
                 border: "none",
                 background: "var(--surface-2)",
@@ -222,7 +214,7 @@ export function TopNav({
                 <div
                   style={{
                     position: "absolute",
-                    top: 40,
+                    top: 46,
                     insetInlineEnd: 0,
                     background: "var(--surface)",
                     border: "1px solid var(--border)",
@@ -879,14 +871,16 @@ export function Modal({
               border: "none",
               background: "var(--primary-tint)",
               borderRadius: 999,
-              width: 32,
-              height: 32,
-              fontSize: 17,
-              fontWeight: 700,
+              width: 36,
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               color: "var(--primary-dark)",
+              flexShrink: 0,
             }}
           >
-            ×
+            <CloseIcon size={16} strokeWidth={2.4} />
           </button>
         </div>
         {children}

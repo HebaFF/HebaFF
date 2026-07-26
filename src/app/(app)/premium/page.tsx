@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, Button } from "@/components/ui";
+import { CrownIcon, CheckIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LangContext";
 import { api, ApiError } from "@/lib/api";
@@ -69,7 +70,7 @@ export default function PremiumPage() {
     return (
       <div style={{ padding: "6px 20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
         <Card style={{ background: "var(--good-tint)", border: "none", textAlign: "center", padding: 28 }}>
-          <div style={{ fontSize: 30 }}>✓</div>
+          <CheckIcon size={30} color="var(--good)" strokeWidth={2.4} />
           <div style={{ fontSize: 16, fontWeight: 800, color: "var(--good)", marginTop: 8 }}>{T.premiumUnlockedTitle}</div>
           <div style={{ fontSize: 13, color: "var(--text-2)", marginTop: 4 }}>{T.premiumUnlockedDesc}</div>
         </Card>
@@ -92,9 +93,7 @@ export default function PremiumPage() {
             justifyContent: "center",
           }}
         >
-          <svg width="26" height="26" viewBox="0 0 24 24">
-            <path d="M4 8l3 3 5-6 5 6 3-3-2 11H6L4 8Z" fill="white" />
-          </svg>
+          <CrownIcon size={26} color="white" />
         </div>
         <div style={{ fontSize: 20, fontWeight: 800 }}>{T.title}</div>
         <div style={{ fontSize: 13.5, color: "var(--text-2)", marginTop: 4 }}>{T.subtitle}</div>
@@ -139,9 +138,7 @@ export default function PremiumPage() {
                 marginTop: 1,
               }}
             >
-              <svg width="11" height="11" viewBox="0 0 16 16">
-                <path d="M3 8.5 6 11.5 13 4.5" stroke="var(--good)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <CheckIcon size={11} color="var(--good)" strokeWidth={2.4} />
             </div>
             <div style={{ fontSize: 13.5, color: "var(--text)" }}>{f}</div>
           </div>
