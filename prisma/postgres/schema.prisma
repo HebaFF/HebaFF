@@ -1,0 +1,143 @@
+// Production Postgres variant of ../schema.prisma — see README.md
+// "Database" and "Deploying" sections. Kept as a separate schema (own
+// migrations/ folder alongside it) so local dev keeps using SQLite with
+// zero setup; the production build points Prisma at this file instead.
+// Keep the model definitions below in sync with ../schema.prisma by hand —
+// Prisma has no native per-environment provider switching.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  profile            Profile?
+  customFoods        CustomFood[]
+  logEntries         LogEntry[]
+  subscription       Subscription?
+  passwordResetTokens PasswordResetToken[]
+  communityPosts     CommunityPost[]
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name            String
+  gender          String
+  age             Int
+  diagnosisDate   DateTime
+  diabetesType    String // type1 | type2 | gestational | other
+  units           String // mgdl | mmol
+  treatmentMode   String // insulin | pills | both
+  insulinDelivery String? // injections | pump
+
+  rapidInsulinType  String?
+  rapidUnitsPerDay  Float?
+  basalInsulinType  String?
+  basalUnitsPerDay  Float?
+  pills             String  @default("[]") // JSON-encoded string[]
+
+  carbRatio           Float?
+  isf                 Float?
+  carbRatioOverridden Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model CustomFood {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name     String
+  category String
+  portion  String
+  carbs    Float
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("custom_foods")
+}
+
+model LogEntry {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      String // meal | mealCorrection | correction | hypo | bg
+  timestamp DateTime
+
+  foods       String? // JSON-encoded [{name, qty, carbs}]
+  carbs       Float?
+  currentBG   Float?
+  targetBG    Float?
+  dose        Float?
+  carbsNeeded Float?
+  notes       String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, timestamp])
+  @@map("log_entries")
+}
+
+model CommunityPost {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  content String
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("community_posts")
+}
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  isPremium        Boolean   @default(false)
+  trialUsed        Boolean   @default(false)
+  trialStartedAt   DateTime?
+  purchasedAt      DateTime?
+  paymentReference String?
+  paymobOrderId    String?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("subscriptions")
+}
