@@ -140,6 +140,33 @@ If shipping as a native iOS/Android app instead of web, swap this for
 StoreKit / Google Play Billing (non-consumable product) as noted in the
 original design handoff — the "pay once, keep forever" model maps directly.
 
+## Deploying
+
+**Website** (Vercel): `prisma/postgres/schema.prisma` is a Postgres variant
+of the SQLite dev schema (see "Database" above) with its own `migrations/`
+folder. The `vercel-build` script in `package.json` points Vercel's build at
+it automatically — deploying just needs `DATABASE_URL` (a real Postgres
+instance, e.g. Neon) and `AUTH_SECRET` set as Vercel environment variables;
+no other setup is required.
+
+**iOS (TestFlight)**: `capacitor.config.ts` wraps the deployed site in a
+native WebView shell (via `server.url`, not a static bundle — this app has a
+real backend, so the native shell just points at wherever it's hosted). The
+`ios/` Xcode project was generated with `npx cap add ios`. Steps to build:
+
+1. Deploy the website first (above) and get its URL.
+2. Update `server.url` in `capacitor.config.ts` to that URL.
+3. `npx cap sync ios` to pull the change into the Xcode project.
+4. `npx cap open ios` (must run on macOS with Xcode installed) to open it,
+   then use Xcode's Product > Archive > Distribute App flow to upload a
+   build to App Store Connect / TestFlight.
+
+**Before submitting to the App Store (not needed for TestFlight testing)**:
+Apple requires digital goods/subscriptions to go through StoreKit, not an
+external processor — the Paymob checkout (see "Payments" above) would need
+to be swapped for StoreKit's in-app purchase API to pass App Review. This
+doesn't block TestFlight, which only distributes to invited testers.
+
 ## Calculation logic
 
 `src/lib/calc.ts` ports the prototype's dose formulas verbatim (500 rule for
