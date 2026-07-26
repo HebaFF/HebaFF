@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <body className={`${jakarta.variable} ${grotesk.variable} ${tajawal.variable}`}>
         <Providers>{children}</Providers>
       </body>
