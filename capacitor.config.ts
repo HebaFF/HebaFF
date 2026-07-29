@@ -13,11 +13,13 @@ const config: CapacitorConfig = {
     url: process.env.CAPACITOR_SERVER_URL || "https://tradition-sharpie-gurgling.ngrok-free.dev",
     cleartext: false,
   },
-  // Appending a custom token to the WebView's User-Agent makes ngrok's free
-  // tier skip its "abuse prevention" browser-warning interstitial on every
+  // A fully custom (non-browser-looking) User-Agent makes ngrok's free tier
+  // skip its "abuse prevention" browser-warning interstitial on every
   // request (this is ngrok's own documented bypass) — otherwise it reappears
   // on every fresh app launch since a new WebView session has no cookie yet.
-  appendUserAgent: "GlucoDoseApp",
+  // Appending to the default UA isn't enough since it still contains
+  // recognizable browser tokens (Safari/Mozilla) that ngrok matches on.
+  overrideUserAgent: "GlucoDoseApp/1.0",
   ios: {
     contentInset: "always",
   },
