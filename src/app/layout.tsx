@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk, Tajawal } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/context/Providers";
@@ -22,6 +22,12 @@ const tajawal = Tajawal({
 export const metadata: Metadata = {
   title: "GlucoDose — Diabetes Companion",
   description: "Personalized carb ratio and insulin dose calculator.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
