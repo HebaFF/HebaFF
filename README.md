@@ -142,12 +142,15 @@ original design handoff — the "pay once, keep forever" model maps directly.
 
 ## Deploying
 
-**Website** (Vercel): `prisma/postgres/schema.prisma` is a Postgres variant
+**Website** (Railway): `prisma/postgres/schema.prisma` is a Postgres variant
 of the SQLite dev schema (see "Database" above) with its own `migrations/`
-folder. The `vercel-build` script in `package.json` points Vercel's build at
-it automatically — deploying just needs `DATABASE_URL` (a real Postgres
-instance, e.g. Neon) and `AUTH_SECRET` set as Vercel environment variables;
-no other setup is required.
+folder. The `prod-build` script in `package.json` (run via `railway.json`'s
+`buildCommand`) generates the Prisma client, applies migrations, and builds
+the app against it — deploying just needs `DATABASE_URL` (Railway's own
+Postgres plugin provides this automatically as a reference variable) and
+`AUTH_SECRET` set as Railway environment variables; no other setup is
+required. (A Vercel-compatible `vercel-build` script pointing at the same
+Postgres schema is also kept, if hosting there is ever preferred instead.)
 
 **iOS (TestFlight)**: `capacitor.config.ts` wraps the deployed site in a
 native WebView shell (via `server.url`, not a static bundle — this app has a
