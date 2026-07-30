@@ -54,7 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           lang={lang}
           onChangeLang={setLang}
         />
-        {children}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>{children}</div>
         <BottomNav tab={activeBottomTab} onChange={(id) => router.push(`/${id}`)} tabs={bottomTabs} />
       </AppShell>
     </AppDataProvider>
