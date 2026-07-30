@@ -11,8 +11,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
-    "prod-build": "prisma generate --schema=prisma/postgres/schema.prisma && prisma migrate deploy --schema=prisma/postgres/schema.prisma && next build",
-    "vercel-build": "npm run prod-build",
+    "prod-build": "prisma generate --schema=prisma/postgres/schema.prisma && next build",
+    "prod-start": "prisma migrate deploy --schema=prisma/postgres/schema.prisma && next start -p ${PORT:-3000}",
+    "vercel-build": "prisma generate --schema=prisma/postgres/schema.prisma && prisma migrate deploy --schema=prisma/postgres/schema.prisma && next build",
     "cap:sync": "cap sync ios",
     "cap:open:ios": "cap open ios"
   },
