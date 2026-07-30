@@ -43,7 +43,7 @@ type FormData = {
 };
 
 export default function OnboardingPage() {
-  const { user, loading, refresh } = useAuth();
+  const { user, loading, refresh, logout } = useAuth();
   const router = useRouter();
   const { lang, t } = useLang();
   const T = t.onboarding;
@@ -153,6 +153,11 @@ export default function OnboardingPage() {
     setStep(step - 1);
   }
 
+  async function cancel() {
+    await logout();
+    router.replace("/login");
+  }
+
   if (loading || !user) return null;
 
   const displayCarbRatio = manualOverride && manualCarbRatio ? Number(manualCarbRatio) : carbRatio;
@@ -160,7 +165,29 @@ export default function OnboardingPage() {
 
   return (
     <AppShell>
-      <TopBar title={T.title} onBack={step > 0 ? back : undefined} backLabel={t.common.back} />
+      <TopBar
+        title={T.title}
+        onBack={step > 0 ? back : undefined}
+        backLabel={t.common.back}
+        right={
+          step === 0 ? (
+            <button
+              onClick={cancel}
+              style={{
+                border: "none",
+                background: "transparent",
+                color: "var(--text-2)",
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                padding: "8px 4px",
+              }}
+            >
+              {t.common.cancel}
+            </button>
+          ) : undefined
+        }
+      />
       <ProgressDots total={STEPS.length} current={step} />
       <div style={{ flex: 1, overflowY: "auto", padding: "6px 20px 20px", display: "flex", flexDirection: "column", gap: 18 }}>
         {step === 0 && (

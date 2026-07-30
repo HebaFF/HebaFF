@@ -7,7 +7,7 @@ import { MoreIcon, SettingsIcon, CrownIcon, PlusIcon, ChevronLeftIcon, CloseIcon
 
 const shellStyles: Record<string, React.CSSProperties> = {
   page: {
-    minHeight: "100vh",
+    minHeight: "100dvh",
     background: "var(--bg)",
     display: "flex",
     justifyContent: "center",
@@ -15,7 +15,7 @@ const shellStyles: Record<string, React.CSSProperties> = {
   frame: {
     width: "100%",
     maxWidth: 480,
-    minHeight: "100vh",
+    minHeight: "100dvh",
     background: "var(--bg)",
     display: "flex",
     flexDirection: "column",

@@ -64,6 +64,7 @@ export const STRINGS = {
       loading: "Loading…",
       dash: "—",
       back: "Back",
+      cancel: "Cancel",
     },
     auth: {
       appTagline: "Personalized carb ratio and insulin dose calculator.",
@@ -392,6 +393,7 @@ export const STRINGS = {
       loading: "جارٍ التحميل…",
       dash: "—",
       back: "رجوع",
+      cancel: "إلغاء",
     },
     auth: {
       appTagline: "حاسبة معامل الكارب وحساسية الأنسولين الخاصة بك.",
