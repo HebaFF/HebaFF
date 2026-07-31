@@ -29,6 +29,7 @@ export async function PUT(req: NextRequest) {
     insulinDelivery: usesInsulin ? input.insulinDelivery ?? "injections" : null,
     rapidInsulinType: usesInsulin ? input.rapidType ?? null : null,
     rapidUnitsPerDay: usesInsulin ? input.rapidUnits ?? null : null,
+    rapidActionMinutes: input.rapidActionMinutes ?? 240,
     basalInsulinType: usesInsulin ? input.basalType ?? null : null,
     basalUnitsPerDay: usesInsulin ? input.basalUnits ?? null : null,
     pills: JSON.stringify(input.pills ?? []),

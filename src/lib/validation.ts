@@ -47,6 +47,7 @@ export const profileSchema = z
     insulinDelivery: z.enum(["injections", "pump"]).optional(),
     rapidType: z.string().optional(),
     rapidUnits: z.coerce.number().min(0).optional(),
+    rapidActionMinutes: z.coerce.number().int().min(30).max(600).optional(),
     basalType: z.string().optional(),
     basalUnits: z.coerce.number().min(0).optional(),
     pills: z.array(z.string()).default([]),
@@ -91,3 +92,5 @@ export const logEntrySchema = z.object({
   carbsNeeded: z.coerce.number().optional(),
   notes: z.string().trim().max(280).optional(),
 });
+
+export const updateEntrySchema = logEntrySchema.omit({ type: true }).partial();

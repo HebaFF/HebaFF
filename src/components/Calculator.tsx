@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, TextInput, TextArea, Modal, Button, Badge, SegmentedControl, Field } from "@/components/ui";
-import { DropIcon, TargetIcon, NoteIcon, PlusIcon, MinusIcon } from "@/components/icons";
+import { DropIcon, TargetIcon, NoteIcon, PlusIcon, MinusIcon, CalendarIcon } from "@/components/icons";
 import { FOOD_DB, type Food as RawFood } from "@/lib/foodDb";
 import type { Food } from "@/lib/api";
 import { useAppData } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 import { convertBG, calcCarbRise, mealDose as calcMealDose, correctionDose, hypoCarbsNeeded, round2 } from "@/lib/calc";
+import { toDatetimeLocalValue, fromDatetimeLocalValue } from "@/lib/dateTimeLocal";
 import type { ProfileDTO } from "@/lib/profileDto";
 
 // Prefer the stable id when present — some distinct foods (curated DB entries or, in
@@ -170,6 +171,60 @@ function SuggestFoodModal({
   );
 }
 
+function ReviewMealModal({
+  open,
+  onClose,
+  items,
+  carbs,
+  onCarbsChange,
+  dose,
+  doseLabel,
+  onConfirm,
+}: {
+  open: boolean;
+  onClose: () => void;
+  items: { food: Food; qty: number }[];
+  carbs: string;
+  onCarbsChange: (v: string) => void;
+  dose: number;
+  doseLabel: string;
+  onConfirm: () => void;
+}) {
+  const { t } = useLang();
+  const T = t.calculator;
+  return (
+    <Modal open={open} onClose={onClose} title={T.reviewMealTitle}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {items.map((it) => (
+            <div key={foodKey(it.food)} style={{ display: "flex", justifyContent: "space-between", fontSize: 13.5 }}>
+              <span>
+                {it.food.name} × {it.qty}
+              </span>
+              <span className="num">{T.gramsShort(round2(it.food.carbs * it.qty))}</span>
+            </div>
+          ))}
+        </div>
+        <Field label={T.totalCarbsLabel}>
+          <TextInput type="number" value={carbs} onChange={(e) => onCarbsChange(e.target.value)} />
+        </Field>
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderTop: "1px solid var(--border)" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text-2)" }}>{doseLabel}</span>
+          <span className="num" style={{ fontSize: 16, fontWeight: 800 }}>
+            {round2(dose)} {T.units}
+          </span>
+        </div>
+        <Button full onClick={onConfirm}>
+          {T.confirmLogBtn}
+        </Button>
+        <Button variant="secondary" full onClick={onClose}>
+          {t.common.back}
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
 type Mode = "meal" | "mealCorrection" | "correction" | "hypo";
 
 export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
@@ -185,6 +240,10 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
   const [suggestOpen, setSuggestOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
+  const [timestamp, setTimestamp] = useState(() => Date.now());
+  const [maxTs] = useState(() => toDatetimeLocalValue(Date.now()));
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewCarbs, setReviewCarbs] = useState("");
 
   const allFoods = useMemo(
     () => [...customFoods, ...FOOD_DB.map((f) => localizeFood(f, lang))],
@@ -212,6 +271,11 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
   const combinedDose = mealDoseVal + correctionUnits;
   const hypoCarbs = usesInsulin && curBGmgdl && tgtBGmgdl ? hypoCarbsNeeded(curBGmgdl, tgtBGmgdl, carbRise) : 0;
 
+  const reviewCarbsNum = Number(reviewCarbs) || 0;
+  const reviewMealDoseVal = usesInsulin ? calcMealDose(reviewCarbsNum, profile.carbRatio!) : 0;
+  const reviewDoseVal = mode === "mealCorrection" ? reviewMealDoseVal + correctionUnits : reviewMealDoseVal;
+  const reviewDoseLabel = mode === "mealCorrection" ? T.mealCorrDoseLabel : T.mealDoseLabel;
+
   function addItem(food: Food) {
     setItems((list) => {
       const idx = list.findIndex((it) => foodKey(it.food) === foodKey(food));
@@ -232,37 +296,38 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     );
   }
 
-  // logResult only ever runs from the "Log this" onClick below, never during
-  // render, so Date.now() here is safe despite the lexically-scoped lint rule.
+  // logResult only ever runs from an onClick below, never during render, so
+  // Date.now() here is safe despite the lexically-scoped lint rule.
   /* eslint-disable react-hooks/purity -- event handler, not render */
-  async function logResult() {
+  async function logResult(carbsOverride?: number, doseOverride?: number) {
     const foodsPayload = items.map((it) => ({ name: it.food.name, qty: it.qty, carbs: it.food.carbs }));
     const notesPayload = notes.trim() ? { notes: notes.trim() } : {};
+    const finalCarbs = carbsOverride ?? totalCarbs;
     if (mode === "meal") {
       await logEntry({
         type: "meal",
-        timestamp: Date.now(),
+        timestamp,
         foods: foodsPayload,
-        carbs: round2(totalCarbs),
-        dose: round2(mealDoseVal),
+        carbs: round2(finalCarbs),
+        dose: round2(doseOverride ?? mealDoseVal),
         ...(curBGmgdl ? { currentBG: fromInternalDisplay(curBGmgdl) } : {}),
         ...notesPayload,
       });
     } else if (mode === "mealCorrection") {
       await logEntry({
         type: "mealCorrection",
-        timestamp: Date.now(),
+        timestamp,
         foods: foodsPayload,
-        carbs: round2(totalCarbs),
+        carbs: round2(finalCarbs),
         currentBG: fromInternalDisplay(curBGmgdl),
         targetBG: fromInternalDisplay(tgtBGmgdl),
-        dose: round2(combinedDose),
+        dose: round2(doseOverride ?? combinedDose),
         ...notesPayload,
       });
     } else if (mode === "correction") {
       await logEntry({
         type: "correction",
-        timestamp: Date.now(),
+        timestamp,
         currentBG: fromInternalDisplay(curBGmgdl),
         targetBG: fromInternalDisplay(tgtBGmgdl),
         dose: round2(correctionUnits),
@@ -271,7 +336,7 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     } else if (mode === "hypo") {
       await logEntry({
         type: "hypo",
-        timestamp: Date.now(),
+        timestamp,
         currentBG: fromInternalDisplay(curBGmgdl),
         targetBG: fromInternalDisplay(tgtBGmgdl),
         carbsNeeded: round2(hypoCarbs),
@@ -283,9 +348,16 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
     if (mode === "meal" || mode === "mealCorrection") setItems([]);
     if (mode === "meal") setCurrentBG("");
     setNotes("");
+    setTimestamp(Date.now());
+    setReviewOpen(false);
     router.push("/history");
   }
   /* eslint-enable react-hooks/purity */
+
+  function openReview() {
+    setReviewCarbs(String(round2(totalCarbs)));
+    setReviewOpen(true);
+  }
 
   const showFoodBuilder = mode === "meal" || mode === "mealCorrection";
   const showBGInputs = mode === "mealCorrection" || mode === "correction" || mode === "hypo";
@@ -404,6 +476,15 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
           </LogRow>
         )}
 
+        <LogRow icon={<CalendarIcon size={17} />} label={t.history.whenLabel}>
+          <TextInput
+            type="datetime-local"
+            value={toDatetimeLocalValue(timestamp)}
+            max={maxTs}
+            onChange={(e) => setTimestamp(fromDatetimeLocalValue(e.target.value))}
+          />
+        </LogRow>
+
         <LogRow icon={<NoteIcon size={17} />} label={T.notesLabel} divider={false}>
           <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={T.notesPlaceholder} maxLength={280} />
         </LogRow>
@@ -469,7 +550,10 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
               <div style={{ fontSize: 12.5, color: "oklch(100% 0 0 / 0.85)" }}>{T.treatLowFirst}</div>
             </>
           )}
-          <Button onClick={logResult} style={{ background: "white", color: mode === "hypo" ? "var(--danger)" : "var(--primary-dark)" }}>
+          <Button
+            onClick={showFoodBuilder ? openReview : () => logResult()}
+            style={{ background: "white", color: mode === "hypo" ? "var(--danger)" : "var(--primary-dark)" }}
+          >
             {savedFlash ? T.savedBtn : T.logThisBtn}
           </Button>
         </Card>
@@ -479,6 +563,16 @@ export function CalculatorWidget({ profile }: { profile: ProfileDTO }) {
         <FoodPicker foods={allFoods} onAdd={addItem} />
       </Modal>
       <SuggestFoodModal open={suggestOpen} onClose={() => setSuggestOpen(false)} onSuggest={addCustomFood} />
+      <ReviewMealModal
+        open={reviewOpen}
+        onClose={() => setReviewOpen(false)}
+        items={items}
+        carbs={reviewCarbs}
+        onCarbsChange={setReviewCarbs}
+        dose={reviewDoseVal}
+        doseLabel={reviewDoseLabel}
+        onConfirm={() => logResult(reviewCarbsNum, reviewDoseVal)}
+      />
     </div>
   );
 }

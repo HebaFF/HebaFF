@@ -8,9 +8,15 @@ type AppDataContextValue = {
   foods: Food[];
   loading: boolean;
   logEntry: (entry: Omit<LogEntry, "id">) => Promise<void>;
+  updateEntry: (id: string, patch: Partial<Omit<LogEntry, "id" | "type">>) => Promise<void>;
+  deleteEntry: (id: string) => Promise<void>;
   addCustomFood: (food: { name: string; portion: string; carbs: number; category?: string }) => Promise<void>;
   refresh: () => Promise<void>;
 };
+
+function byTimestampDesc(a: LogEntry, b: LogEntry) {
+  return b.timestamp - a.timestamp;
+}
 
 const AppDataContext = createContext<AppDataContextValue | null>(null);
 
@@ -41,7 +47,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   const logEntry = useCallback(async (entry: Omit<LogEntry, "id">) => {
     const { entry: saved } = await api.addEntry(entry);
-    setEntries((prev) => [saved, ...prev]);
+    setEntries((prev) => [...prev, saved].sort(byTimestampDesc));
+  }, []);
+
+  const updateEntry = useCallback(async (id: string, patch: Partial<Omit<LogEntry, "id" | "type">>) => {
+    const { entry: saved } = await api.updateEntry(id, patch);
+    setEntries((prev) => prev.map((e) => (e.id === id ? saved : e)).sort(byTimestampDesc));
+  }, []);
+
+  const deleteEntry = useCallback(async (id: string) => {
+    await api.deleteEntry(id);
+    setEntries((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
   const addCustomFood = useCallback(
@@ -53,7 +69,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <AppDataContext.Provider value={{ entries, foods, loading, logEntry, addCustomFood, refresh }}>
+    <AppDataContext.Provider
+      value={{ entries, foods, loading, logEntry, updateEntry, deleteEntry, addCustomFood, refresh }}
+    >
       {children}
     </AppDataContext.Provider>
   );

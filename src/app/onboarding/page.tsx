@@ -36,6 +36,7 @@ type FormData = {
   insulinDelivery: Delivery;
   rapidType: string;
   rapidUnits: string;
+  rapidActionMinutes: string;
   basalType: string;
   basalUnits: string;
   pills: string[];
@@ -66,6 +67,7 @@ export default function OnboardingPage() {
     insulinDelivery: (initial?.insulinDelivery as Delivery) ?? "injections",
     rapidType: initial?.rapidType ?? RAPID_INSULINS[0],
     rapidUnits: initial?.rapidUnits ? String(initial.rapidUnits) : "",
+    rapidActionMinutes: initial?.rapidActionMinutes ? String(initial.rapidActionMinutes) : "240",
     basalType: initial?.basalType ?? BASAL_INSULINS[0],
     basalUnits: initial?.basalUnits ? String(initial.basalUnits) : "",
     pills: initial?.pills ?? [],
@@ -132,6 +134,7 @@ export default function OnboardingPage() {
         insulinDelivery: data.insulinDelivery,
         rapidType: data.rapidType,
         rapidUnits: data.rapidUnits || undefined,
+        rapidActionMinutes: data.rapidActionMinutes || undefined,
         basalType: data.basalType,
         basalUnits: data.basalUnits || undefined,
         pills: data.pills,
@@ -337,6 +340,16 @@ export default function OnboardingPage() {
                     </Field>
                   </>
                 )}
+
+                <Field label={T.rapidActionMinutesLabel} hint={T.rapidActionMinutesHint}>
+                  <TextInput
+                    type="number"
+                    min="30"
+                    max="600"
+                    value={data.rapidActionMinutes}
+                    onChange={(e) => set({ rapidActionMinutes: e.target.value })}
+                  />
+                </Field>
               </Card>
             )}
 

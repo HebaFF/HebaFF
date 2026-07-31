@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Modal, Field, TextInput, Button, Card, SegmentedControl } from "@/components/ui";
+import { useEffect, useState } from "react";
+import { Modal, Field, TextInput, TextArea, Button, Card, SegmentedControl } from "@/components/ui";
 import { classifyBG, convertBG } from "@/lib/calc";
 import { RANGE_TONE } from "@/lib/historyMeta";
 import { useLang } from "@/context/LangContext";
+import { toDatetimeLocalValue, fromDatetimeLocalValue } from "@/lib/dateTimeLocal";
 import type { LogEntry } from "@/lib/api";
 
 export function LogBGModal({
@@ -21,11 +22,14 @@ export function LogBGModal({
   const { t } = useLang();
   const T = t.history;
   const [val, setVal] = useState("");
+  const [ts, setTs] = useState(() => Date.now());
+  const [maxTs] = useState(() => toDatetimeLocalValue(Date.now()));
   async function save() {
     if (!val) return;
     const mgdl = units === "mmol" ? Number(val) * 18.0182 : Number(val);
-    await onSave({ type: "bg", timestamp: Date.now(), currentBG: convertBG(mgdl, units) });
+    await onSave({ type: "bg", timestamp: ts, currentBG: convertBG(mgdl, units) });
     setVal("");
+    setTs(Date.now());
     onClose();
   }
   return (
@@ -34,10 +38,157 @@ export function LogBGModal({
         <Field label={T.bloodGlucoseLabel(units === "mmol" ? "mmol/L" : "mg/dL")}>
           <TextInput type="number" value={val} onChange={(e) => setVal(e.target.value)} autoFocus placeholder={units === "mmol" ? "6.5" : "115"} />
         </Field>
+        <Field label={T.whenLabel}>
+          <TextInput
+            type="datetime-local"
+            value={toDatetimeLocalValue(ts)}
+            max={maxTs}
+            onChange={(e) => setTs(fromDatetimeLocalValue(e.target.value))}
+          />
+        </Field>
         <Button full onClick={save}>
           {T.saveReadingBtn}
         </Button>
       </div>
+    </Modal>
+  );
+}
+
+export function EditEntryModal({
+  open,
+  onClose,
+  entry,
+  units,
+  onSave,
+  onDelete,
+}: {
+  open: boolean;
+  onClose: () => void;
+  entry: LogEntry | null;
+  units: "mgdl" | "mmol";
+  onSave: (id: string, patch: Partial<Omit<LogEntry, "id" | "type">>) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+}) {
+  const { t } = useLang();
+  const T = t.history;
+  const TC = t.calculator;
+  const [currentBG, setCurrentBG] = useState("");
+  const [targetBG, setTargetBG] = useState("");
+  const [carbs, setCarbs] = useState("");
+  const [dose, setDose] = useState("");
+  const [carbsNeeded, setCarbsNeeded] = useState("");
+  const [notes, setNotes] = useState("");
+  const [ts, setTs] = useState(() => Date.now());
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [maxTs] = useState(() => toDatetimeLocalValue(Date.now()));
+
+  // Syncs the edit form's local state to whichever entry was tapped — a
+  // deliberate one-time sync on prop change (see AuthContext.tsx for why
+  // this pattern is kept as-is rather than restructured).
+  useEffect(() => {
+    if (!entry) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setCurrentBG(entry.currentBG !== undefined ? String(entry.currentBG) : "");
+    setTargetBG(entry.targetBG !== undefined ? String(entry.targetBG) : "");
+    setCarbs(entry.carbs !== undefined ? String(entry.carbs) : "");
+    setDose(entry.dose !== undefined ? String(entry.dose) : "");
+    setCarbsNeeded(entry.carbsNeeded !== undefined ? String(entry.carbsNeeded) : "");
+    setNotes(entry.notes ?? "");
+    setTs(entry.timestamp);
+    setConfirmingDelete(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [entry]);
+
+  if (!entry) return null;
+  const unitLabel = units === "mmol" ? "mmol/L" : "mg/dL";
+
+  async function save() {
+    setSaving(true);
+    try {
+      const patch: Partial<Omit<LogEntry, "id" | "type">> = { timestamp: ts, notes: notes.trim() || undefined };
+      if (entry!.currentBG !== undefined || entry!.type === "bg") patch.currentBG = currentBG ? Number(currentBG) : undefined;
+      if (entry!.targetBG !== undefined) patch.targetBG = targetBG ? Number(targetBG) : undefined;
+      if (entry!.carbs !== undefined) patch.carbs = carbs ? Number(carbs) : undefined;
+      if (entry!.dose !== undefined) patch.dose = dose ? Number(dose) : undefined;
+      if (entry!.carbsNeeded !== undefined) patch.carbsNeeded = carbsNeeded ? Number(carbsNeeded) : undefined;
+      await onSave(entry!.id, patch);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function confirmDelete() {
+    setSaving(true);
+    try {
+      await onDelete(entry!.id);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Modal open={open} onClose={onClose} title={T.editEntryTitle}>
+      {confirmingDelete ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ fontSize: 14, color: "var(--text)" }}>{T.deleteConfirmMessage}</div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <Button variant="secondary" full onClick={() => setConfirmingDelete(false)}>
+              {t.common.cancel}
+            </Button>
+            <Button variant="danger" full onClick={confirmDelete} disabled={saving}>
+              {T.deleteConfirmBtn}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {(entry.currentBG !== undefined || entry.type === "bg") && (
+            <Field label={TC.currentBGLabel(unitLabel)}>
+              <TextInput type="number" value={currentBG} onChange={(e) => setCurrentBG(e.target.value)} />
+            </Field>
+          )}
+          {entry.targetBG !== undefined && (
+            <Field label={TC.targetBGLabel(unitLabel)}>
+              <TextInput type="number" value={targetBG} onChange={(e) => setTargetBG(e.target.value)} />
+            </Field>
+          )}
+          {entry.carbs !== undefined && (
+            <Field label={TC.totalCarbsLabel}>
+              <TextInput type="number" value={carbs} onChange={(e) => setCarbs(e.target.value)} />
+            </Field>
+          )}
+          {entry.carbsNeeded !== undefined && (
+            <Field label={TC.hypoCarbsLabel}>
+              <TextInput type="number" value={carbsNeeded} onChange={(e) => setCarbsNeeded(e.target.value)} />
+            </Field>
+          )}
+          {entry.dose !== undefined && (
+            <Field label={T.doseLabel}>
+              <TextInput type="number" value={dose} onChange={(e) => setDose(e.target.value)} />
+            </Field>
+          )}
+          <Field label={T.whenLabel}>
+            <TextInput
+              type="datetime-local"
+              value={toDatetimeLocalValue(ts)}
+              max={maxTs}
+              onChange={(e) => setTs(fromDatetimeLocalValue(e.target.value))}
+            />
+          </Field>
+          <Field label={TC.notesLabel}>
+            <TextArea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={TC.notesPlaceholder} />
+          </Field>
+          <Button full onClick={save} disabled={saving}>
+            {T.saveChangesBtn}
+          </Button>
+          <Button variant="danger" full onClick={() => setConfirmingDelete(true)} disabled={saving}>
+            {T.deleteEntryBtn}
+          </Button>
+        </div>
+      )}
     </Modal>
   );
 }

@@ -72,6 +72,9 @@ export const api = {
   listEntries: () => request<{ entries: LogEntry[] }>("/api/entries"),
   addEntry: (entry: Omit<LogEntry, "id">) =>
     request<{ entry: LogEntry }>("/api/entries", { method: "POST", body: JSON.stringify(entry) }),
+  updateEntry: (id: string, patch: Partial<Omit<LogEntry, "id" | "type">>) =>
+    request<{ entry: LogEntry }>(`/api/entries/${id}`, { method: "PATCH", body: JSON.stringify(patch) }),
+  deleteEntry: (id: string) => request<{ ok: true }>(`/api/entries/${id}`, { method: "DELETE" }),
   startTrial: () =>
     request<{ isPremium: boolean; trialUsed: boolean; trialStartedAt: number | null }>(
       "/api/subscription/trial",

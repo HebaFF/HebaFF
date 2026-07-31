@@ -11,18 +11,18 @@ function activeFraction(elapsedMinutes: number, windowMinutes: number): number {
   return 1 - elapsedMinutes / windowMinutes;
 }
 
-export function computeActiveInsulin(entries: LogEntry[], now: number): number {
+export function computeActiveInsulin(entries: LogEntry[], now: number, actionMinutes: number = RAPID_ACTION_MINUTES): number {
   const total = entries.reduce((sum, e) => {
     if (e.dose === undefined) return sum;
-    return sum + e.dose * activeFraction((now - e.timestamp) / 60000, RAPID_ACTION_MINUTES);
+    return sum + e.dose * activeFraction((now - e.timestamp) / 60000, actionMinutes);
   }, 0);
   return Math.round(total * 10) / 10;
 }
 
-export function computeActiveCarbs(entries: LogEntry[], now: number): number {
+export function computeActiveCarbs(entries: LogEntry[], now: number, carbMinutes: number = CARB_ABSORPTION_MINUTES): number {
   const total = entries.reduce((sum, e) => {
     if (e.carbs === undefined) return sum;
-    return sum + e.carbs * activeFraction((now - e.timestamp) / 60000, CARB_ABSORPTION_MINUTES);
+    return sum + e.carbs * activeFraction((now - e.timestamp) / 60000, carbMinutes);
   }, 0);
   return Math.round(total);
 }

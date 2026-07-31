@@ -4,13 +4,14 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Badge } from "@/components/ui";
 import { DownloadIcon } from "@/components/icons";
-import { TrendChart, LogBGModal } from "@/components/History";
+import { TrendChart, LogBGModal, EditEntryModal } from "@/components/History";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
 import { useLang } from "@/context/LangContext";
 import { classifyBG } from "@/lib/calc";
 import { RANGE_TONE, TYPE_TONE } from "@/lib/historyMeta";
 import { buildReportPdf } from "@/lib/report";
+import type { LogEntry } from "@/lib/api";
 
 function formatWhen(ts: number, todayLabel: string, locale: string) {
   const d = new Date(ts);
@@ -25,13 +26,14 @@ type Filter = "all" | "meals" | "doses" | "bg";
 
 export default function HistoryPage() {
   const { user } = useAuth();
-  const { entries, logEntry } = useAppData();
+  const { entries, logEntry, updateEntry, deleteEntry } = useAppData();
   const router = useRouter();
   const { lang, t } = useLang();
   const T = t.history;
   const locale = lang === "ar" ? "ar" : "en";
   const [filter, setFilter] = useState<Filter>("all");
   const [bgOpen, setBgOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<LogEntry | null>(null);
 
   const profile = user?.profile;
   const isPremium = !!user?.subscription.isPremium;
@@ -112,7 +114,11 @@ export default function HistoryPage() {
           const label = typeLabel[e.type] || typeLabel.bg;
           const range = e.currentBG !== undefined ? classifyBG(e.currentBG, profile.units) : null;
           return (
-            <Card key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+            <Card
+              key={e.id}
+              onClick={() => setEditingEntry(e)}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, cursor: "pointer" }}
+            >
               <div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
                   <Badge tone={tone}>{label}</Badge>
@@ -147,6 +153,14 @@ export default function HistoryPage() {
       )}
 
       <LogBGModal open={bgOpen} onClose={() => setBgOpen(false)} units={profile.units} onSave={logEntry} />
+      <EditEntryModal
+        open={!!editingEntry}
+        onClose={() => setEditingEntry(null)}
+        entry={editingEntry}
+        units={profile.units}
+        onSave={updateEntry}
+        onDelete={deleteEntry}
+      />
     </div>
   );
 }

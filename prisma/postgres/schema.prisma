@@ -60,6 +60,7 @@ model Profile {
 
   rapidInsulinType  String?
   rapidUnitsPerDay  Float?
+  rapidActionMinutes Int    @default(240)
   basalInsulinType  String?
   basalUnitsPerDay  Float?
   pills             String  @default("[]") // JSON-encoded string[]

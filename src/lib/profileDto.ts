@@ -18,6 +18,7 @@ export type ProfileDTO = {
   insulinDelivery: string | null;
   rapidType: string | null;
   rapidUnits: number;
+  rapidActionMinutes: number;
   basalType: string | null;
   basalUnits: number;
   pills: string[];
@@ -39,6 +40,7 @@ export function toProfileDTO(p: Profile): ProfileDTO {
     insulinDelivery: p.insulinDelivery,
     rapidType: p.rapidInsulinType,
     rapidUnits: p.rapidUnitsPerDay ?? 0,
+    rapidActionMinutes: p.rapidActionMinutes,
     basalType: p.basalInsulinType,
     basalUnits: p.basalUnitsPerDay ?? 0,
     pills: JSON.parse(p.pills) as string[],

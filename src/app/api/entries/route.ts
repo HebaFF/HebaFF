@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { getSessionUserId } from "@/lib/auth";
 import { logEntrySchema } from "@/lib/validation";
 
-function toEntryDTO(e: {
+export function toEntryDTO(e: {
   id: string;
   type: string;
   timestamp: Date;

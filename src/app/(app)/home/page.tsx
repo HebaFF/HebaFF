@@ -35,7 +35,7 @@ export default function HomePage() {
   const trend = !lastBG || !prevBG ? null : lastBG.currentBG! > prevBG.currentBG! + 10 ? "rising" : lastBG.currentBG! < prevBG.currentBG! - 10 ? "falling" : "stable";
   const trendLabel = trend === "rising" ? T.risingLabel : trend === "falling" ? T.fallingLabel : T.stableLabel;
 
-  const activeInsulin = computeActiveInsulin(entries, now);
+  const activeInsulin = computeActiveInsulin(entries, now, profile.rapidActionMinutes);
   const activeCarbs = computeActiveCarbs(entries, now);
 
   const recentEntries = [...entries].sort((a, b) => b.timestamp - a.timestamp).slice(0, 2);
