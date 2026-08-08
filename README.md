@@ -170,6 +170,34 @@ external processor — the Paymob checkout (see "Payments" above) would need
 to be swapped for StoreKit's in-app purchase API to pass App Review. This
 doesn't block TestFlight, which only distributes to invited testers.
 
+**Android (Google Play)**: same wrapping approach as iOS — the `android/`
+Gradle project was generated with `npx cap add android`, and shares the same
+`appId` (`com.glucodose.app`) and `server.url` in `capacitor.config.ts`.
+Steps to build:
+
+1. Deploy the website first (above) and confirm `server.url` in
+   `capacitor.config.ts` points at it.
+2. `npx cap sync android` to pull the config into the Gradle project.
+3. `npx cap open android` (requires Android Studio) to open it, then use
+   Build > Generate Signed App Bundle to produce a signed `.aab`. This
+   requires creating a signing keystore the first time (Android Studio can
+   generate one) — keep the keystore file and its passwords somewhere safe
+   outside the repo; losing it means you can never update the app under the
+   same listing again. Never commit the keystore or a `key.properties` file
+   (already gitignored under `android/`).
+4. Upload the `.aab` to Google Play Console's Internal testing track to
+   install it on your own device immediately, or Closed testing to invite
+   others — Play Console currently requires a closed test with 12+ opted-in
+   testers running for 14+ days before a new developer account can apply for
+   full Production access.
+
+**Before submitting to Google Play (not needed for internal/closed
+testing)**: same StoreKit-equivalent note as iOS — Google Play requires
+digital goods/subscriptions to go through Google Play Billing rather than an
+external processor, which would mean swapping out the Paymob checkout before
+a production listing goes live. Internal/closed testing isn't blocked by
+this.
+
 ## Calculation logic
 
 `src/lib/calc.ts` ports the prototype's dose formulas verbatim (500 rule for
