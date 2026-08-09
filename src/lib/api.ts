@@ -64,6 +64,7 @@ export const api = {
     request<{ ok: true }>("/api/auth/reset-password", { method: "POST", body: JSON.stringify({ token, password }) }),
   updateEmail: (email: string) =>
     request<{ email: string }>("/api/account/email", { method: "PUT", body: JSON.stringify({ email }) }),
+  deleteAccount: () => request<{ ok: true }>("/api/account", { method: "DELETE" }),
   saveProfile: (data: Record<string, unknown>) =>
     request<{ profile: ProfileDTO }>("/api/profile", { method: "PUT", body: JSON.stringify(data) }),
   listFoods: () => request<{ foods: Food[] }>("/api/foods"),

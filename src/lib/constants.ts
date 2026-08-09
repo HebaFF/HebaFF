@@ -338,6 +338,13 @@ export const STRINGS = {
       emailModalHint: "Used only to send you a password-reset link if you forget your password.",
       saveEmailBtn: "Save email",
       emailSaveError: "Could not save email.",
+      privacyPolicyLink: "Privacy Policy",
+      dangerZoneTitle: "Danger zone",
+      deleteAccountBtn: "Delete account",
+      deleteAccountConfirmMessage:
+        "This permanently deletes your account and everything in it — profile, logged readings, doses, and history. This can't be undone.",
+      deleteAccountConfirmBtn: "Yes, delete my account",
+      deleteAccountError: "Could not delete account.",
     },
     premium: {
       title: "GlucoDose Premium",
@@ -381,6 +388,49 @@ export const STRINGS = {
       confirmPasswordLabel: "Confirm new password",
       resetPasswordBtn: "Reset password",
       backToLogin: "Back to log in",
+    },
+    privacy: {
+      title: "Privacy Policy",
+      lastUpdated: "Last updated: August 9, 2026",
+      operatedBy: "GlucoDose is operated by HFarid Apps (\"we\", \"us\").",
+      sections: [
+        {
+          heading: "Information we collect",
+          body: "Account information: username, email address (optional, used only for password resets), and a securely hashed password — we never store your password in plain text. Health and profile information you choose to enter: age, gender, diabetes type, diagnosis date, insulin or medication regimen, and your carb ratio / insulin sensitivity factor. Logged entries: glucose readings, carbohydrate counts, insulin doses, and any notes you add, each with a timestamp. Payment information: if you purchase Premium, your payment is processed directly by Paymob — we never see or store your card details, only whether the payment succeeded.",
+        },
+        {
+          heading: "How we use your information",
+          body: "To provide the app's core features: calculating suggested doses, tracking your history, and showing your trends. To send a password-reset email if you request one. To process a one-time Premium purchase. We do not use your health data for advertising, and we do not sell your data to anyone.",
+        },
+        {
+          heading: "Third-party services",
+          body: "We use a small number of third-party services to run the app: Paymob for payment processing, Resend for transactional emails (like password resets), and a hosting/database provider to run the app and store your data securely. Each only receives the minimum information needed to do its job.",
+        },
+        {
+          heading: "Data retention and deletion",
+          body: "Your data is kept for as long as your account exists. You can permanently delete your account and everything in it — profile, logged entries, and history — at any time from Setup in the app. This action is immediate and cannot be undone.",
+        },
+        {
+          heading: "Data security",
+          body: "Passwords are hashed with bcrypt and never stored or compared in plain text. Sessions use signed, httpOnly cookies. All traffic to the app is encrypted (HTTPS).",
+        },
+        {
+          heading: "Medical disclaimer",
+          body: "GlucoDose is a self-management tool, not a substitute for professional medical advice. Dose calculations are estimates based on formulas you and your care team configure — always confirm dosing decisions with your doctor or diabetes care team.",
+        },
+        {
+          heading: "Children's privacy",
+          body: "GlucoDose is intended to be used by adults managing their own diabetes care, or by a parent/guardian managing a dependent's care. If you are a parent or guardian creating an account on behalf of a child, you are responsible for that account and consent to this policy on their behalf.",
+        },
+        {
+          heading: "Changes to this policy",
+          body: "If we make material changes to this policy, we'll update the \"last updated\" date above. Continued use of the app after a change means you accept the updated policy.",
+        },
+        {
+          heading: "Contact us",
+          body: "Questions about this policy or your data? Email heba@aosama.me.",
+        },
+      ],
     },
   },
   ar: {
@@ -678,6 +728,13 @@ export const STRINGS = {
       emailModalHint: "يُستخدم فقط لإرسال رابط استعادة كلمة المرور إذا نسيتها.",
       saveEmailBtn: "حفظ البريد الإلكتروني",
       emailSaveError: "تعذر حفظ البريد الإلكتروني.",
+      privacyPolicyLink: "سياسة الخصوصية",
+      dangerZoneTitle: "منطقة الخطر",
+      deleteAccountBtn: "حذف الحساب",
+      deleteAccountConfirmMessage:
+        "سيؤدي هذا إلى حذف حسابك وكل ما فيه بشكل نهائي — الملف الشخصي، القراءات المسجلة، الجرعات، والسجل. لا يمكن التراجع عن هذا.",
+      deleteAccountConfirmBtn: "نعم، احذفي حسابي",
+      deleteAccountError: "تعذر حذف الحساب.",
     },
     premium: {
       title: "بريميوم GlucoDose",
@@ -721,6 +778,49 @@ export const STRINGS = {
       confirmPasswordLabel: "تأكيد كلمة المرور الجديدة",
       resetPasswordBtn: "إعادة تعيين كلمة المرور",
       backToLogin: "العودة لتسجيل الدخول",
+    },
+    privacy: {
+      title: "سياسة الخصوصية",
+      lastUpdated: "آخر تحديث: 9 أغسطس 2026",
+      operatedBy: "يتم تشغيل GlucoDose بواسطة HFarid Apps (\"نحن\").",
+      sections: [
+        {
+          heading: "المعلومات التي نجمعها",
+          body: "معلومات الحساب: اسم المستخدم، البريد الإلكتروني (اختياري، يُستخدم فقط لاستعادة كلمة المرور)، وكلمة مرور مُشفّرة بشكل آمن — لا نقوم أبداً بتخزين كلمة مرورك كنص عادي. المعلومات الصحية والشخصية التي تختارين إدخالها: العمر، الجنس، نوع مرض السكري، تاريخ التشخيص، نظام الأنسولين أو الأدوية، ومعامل الكارب / حساسية الأنسولين الخاصين بك. الإدخالات المسجلة: قراءات السكر، عدد الكربوهيدرات، جرعات الأنسولين، وأي ملاحظات تضيفينها، كل منها مع وقت التسجيل. معلومات الدفع: إذا اشتريتِ بريميوم، تتم معالجة الدفع مباشرة عبر Paymob — لا نرى أو نخزّن تفاصيل بطاقتك أبداً، فقط ما إذا كانت عملية الدفع ناجحة.",
+        },
+        {
+          heading: "كيف نستخدم معلوماتك",
+          body: "لتوفير ميزات التطبيق الأساسية: حساب الجرعات المقترحة، تتبع سجلك، وعرض اتجاهاتك. لإرسال بريد إلكتروني لاستعادة كلمة المرور إذا طلبتِ ذلك. لمعالجة عملية شراء بريميوم لمرة واحدة. لا نستخدم بياناتك الصحية للإعلانات، ولا نبيع بياناتك لأي شخص.",
+        },
+        {
+          heading: "خدمات الطرف الثالث",
+          body: "نستخدم عدداً صغيراً من خدمات الطرف الثالث لتشغيل التطبيق: Paymob لمعالجة المدفوعات، وResend لإرسال الرسائل الإلكترونية التشغيلية (مثل استعادة كلمة المرور)، ومزود استضافة/قاعدة بيانات لتشغيل التطبيق وتخزين بياناتك بأمان. يتلقى كل منها الحد الأدنى فقط من المعلومات اللازمة لأداء مهمته.",
+        },
+        {
+          heading: "الاحتفاظ بالبيانات وحذفها",
+          body: "يتم الاحتفاظ ببياناتك طالما أن حسابك موجود. يمكنك حذف حسابك وكل ما فيه بشكل نهائي — الملف الشخصي، الإدخالات المسجلة، والسجل — في أي وقت من الإعدادات داخل التطبيق. هذا الإجراء فوري ولا يمكن التراجع عنه.",
+        },
+        {
+          heading: "أمان البيانات",
+          body: "يتم تشفير كلمات المرور باستخدام bcrypt ولا يتم تخزينها أو مقارنتها كنص عادي أبداً. تستخدم الجلسات ملفات تعريف ارتباط (cookies) موقّعة وhttpOnly. جميع الاتصالات بالتطبيق مشفّرة (HTTPS).",
+        },
+        {
+          heading: "إخلاء المسؤولية الطبية",
+          body: "GlucoDose هو أداة لإدارة الذات، وليس بديلاً عن الاستشارة الطبية المهنية. حسابات الجرعات هي تقديرات مبنية على معادلات تقومين أنتِ وفريق رعايتك بضبطها — تأكدي دائماً من قرارات الجرعات مع طبيبك أو فريق رعاية السكري.",
+        },
+        {
+          heading: "خصوصية الأطفال",
+          body: "يُقصد باستخدام GlucoDose أن يكون من قبل البالغين الذين يديرون رعاية السكري الخاصة بهم، أو من قبل ولي أمر يدير رعاية شخص يعتمد عليه. إذا كنتِ ولي أمر تنشئين حساباً نيابة عن طفل، فأنتِ مسؤولة عن هذا الحساب وتوافقين على هذه السياسة نيابة عنه.",
+        },
+        {
+          heading: "تغييرات على هذه السياسة",
+          body: "إذا أجرينا تغييرات جوهرية على هذه السياسة، سنقوم بتحديث تاريخ \"آخر تحديث\" أعلاه. استمرار استخدام التطبيق بعد أي تغيير يعني أنكِ توافقين على السياسة المحدثة.",
+        },
+        {
+          heading: "تواصلي معنا",
+          body: "أسئلة حول هذه السياسة أو بياناتك؟ راسلينا على heba@aosama.me.",
+        },
+      ],
     },
   },
 };

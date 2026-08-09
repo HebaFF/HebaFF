@@ -2,13 +2,64 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { DashboardCard, Button, Modal, Field, TextInput } from "@/components/ui";
-import { ClipboardIcon, CalculatorIcon, CrownIcon } from "@/components/icons";
+import { ClipboardIcon, CalculatorIcon, CrownIcon, WarningIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LangContext";
 import { diabetesTypesFor } from "@/lib/constants";
 import { round2 } from "@/lib/calc";
 import { api, ApiError } from "@/lib/api";
+
+function DeleteAccountSection() {
+  const { t } = useLang();
+  const T = t.setup;
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  async function confirmDelete() {
+    setError("");
+    setDeleting(true);
+    try {
+      await api.deleteAccount();
+      router.replace("/login");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : T.deleteAccountError);
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <DashboardCard icon={<WarningIcon />} title={T.dangerZoneTitle} tone="danger">
+      <Button
+        variant="danger"
+        full
+        onClick={() => {
+          setError("");
+          setOpen(true);
+        }}
+      >
+        {T.deleteAccountBtn}
+      </Button>
+      <Modal open={open} onClose={() => setOpen(false)} title={T.deleteAccountBtn}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ fontSize: 14, color: "var(--text)" }}>{T.deleteAccountConfirmMessage}</div>
+          {error && <div style={{ color: "var(--danger)", fontSize: 13, fontWeight: 600 }}>{error}</div>}
+          <div style={{ display: "flex", gap: 10 }}>
+            <Button variant="secondary" full onClick={() => setOpen(false)} disabled={deleting}>
+              {t.common.cancel}
+            </Button>
+            <Button variant="danger" full onClick={confirmDelete} disabled={deleting}>
+              {T.deleteAccountConfirmBtn}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </DashboardCard>
+  );
+}
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -206,6 +257,15 @@ export default function SetupPage() {
       <Button variant="ghost" onClick={handleLogout}>
         {T.logoutBtn}
       </Button>
+
+      <DeleteAccountSection />
+
+      <Link
+        href="/privacy"
+        style={{ textAlign: "center", fontSize: 12.5, color: "var(--text-3)", textDecoration: "underline" }}
+      >
+        {T.privacyPolicyLink}
+      </Link>
     </div>
   );
 }
