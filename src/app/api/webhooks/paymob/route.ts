@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
           isPremium: true,
           purchasedAt: new Date(),
           paymentReference: obj.id != null ? String(obj.id) : null,
+          paymentProvider: "paymob",
         },
       });
     }

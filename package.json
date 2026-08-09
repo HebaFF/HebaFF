@@ -27,6 +27,8 @@
     "@capacitor/ios": "^8.4.2",
     "@prisma/client": "^5.20.0",
     "bcryptjs": "^2.4.3",
+    "capacitor-plugin-cdv-purchase": "^13.18.0",
+    "googleapis": "^174.0.1",
     "jose": "^5.9.6",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",

@@ -82,6 +82,11 @@ export const api = {
       { method: "POST" },
     ),
   checkout: () => request<{ url: string }>("/api/subscription/checkout", { method: "POST" }),
+  verifyPlayPurchase: (purchaseToken: string, productId: string) =>
+    request<{ isPremium: boolean }>("/api/subscription/verify-play-purchase", {
+      method: "POST",
+      body: JSON.stringify({ purchaseToken, productId }),
+    }),
   listCommunityPosts: () => request<{ posts: CommunityPost[] }>("/api/community"),
   createCommunityPost: (content: string) =>
     request<{ post: CommunityPost }>("/api/community", { method: "POST", body: JSON.stringify({ content }) }),

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionUserId } from "@/lib/auth";
 
-// One-time 7-day free trial, available once per account. Trial state is
+// One-time free trial (see TRIAL_DAYS in constants.ts), available once per
+// account. Trial state is
 // server-authoritative — the client cannot flip trialUsed/trialStartedAt
 // directly, only trigger this endpoint.
 export async function POST() {

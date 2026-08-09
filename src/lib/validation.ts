@@ -94,3 +94,8 @@ export const logEntrySchema = z.object({
 });
 
 export const updateEntrySchema = logEntrySchema.omit({ type: true }).partial();
+
+export const verifyPlayPurchaseSchema = z.object({
+  purchaseToken: z.string().min(1),
+  productId: z.string().min(1),
+});

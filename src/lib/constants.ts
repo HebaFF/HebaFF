@@ -36,7 +36,7 @@ export const PILL_OPTIONS = [
 export const DIABETES_TYPE_IDS = ["type1", "type2", "gestational", "other"] as const;
 
 export const ONE_TIME_PRICE_DISPLAY = "$10";
-export const TRIAL_DAYS = 7;
+export const TRIAL_DAYS = 1;
 
 // Full UI-chrome translation (EN/AR), RTL-tested on every screen. Per the
 // original design handoff's stated scope, the food database (FOOD_DB) and
@@ -363,6 +363,9 @@ export const STRINGS = {
       premiumUnlockedDesc: "Unlocked for life — unlimited history, export, and more.",
       startTrialError: "Could not start trial.",
       checkoutError: "Could not start checkout.",
+      paymentsSecureNoteAndroid: "Payments are processed securely by Google Play.",
+      restorePurchasesBtn: "Restore purchases",
+      restoreError: "Could not restore purchases. Please try again or contact support.",
       features: [
         "Full searchable food database, unlimited history",
         "Export a PDF report for your doctor",
@@ -746,13 +749,16 @@ export const STRINGS = {
       checkoutCancelled: "تم إلغاء الدفع",
       onetimePurchaseLabel: "دفعة لمرة واحدة",
       payOnceMessage: "ادفعي مرة واحدة، واحتفظي ببريميوم للأبد",
-      startTrialBtn: (days: number) => `ابدئي تجربة ${days} أيام مجانية`,
+      startTrialBtn: (days: number) => `ابدئي تجربة ${days === 1 ? "يوم واحد" : `${days} أيام`} مجانية`,
       unlockPremiumBtn: "افتحي بريميوم",
       paymentsSecureNote: "تتم معالجة المدفوعات بأمان عبر Paymob.",
       premiumUnlockedTitle: "أنتِ عضوة بريميوم",
       premiumUnlockedDesc: "مفتوح مدى الحياة — سجل غير محدود، وتصدير، والمزيد.",
       startTrialError: "تعذر بدء التجربة المجانية.",
       checkoutError: "تعذر بدء عملية الدفع.",
+      paymentsSecureNoteAndroid: "تتم معالجة المدفوعات بأمان عبر Google Play.",
+      restorePurchasesBtn: "استعادة المشتريات",
+      restoreError: "تعذرت استعادة المشتريات. حاولي مرة أخرى أو تواصلي مع الدعم.",
       features: [
         "قاعدة بيانات أطعمة قابلة للبحث بالكامل، وسجل غير محدود",
         "تصدير تقرير PDF لطبيبك",

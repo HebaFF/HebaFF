@@ -8,6 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LangContext";
 import { api, ApiError } from "@/lib/api";
 import { ONE_TIME_PRICE_DISPLAY, TRIAL_DAYS } from "@/lib/constants";
+import { isAndroidNative } from "@/lib/platform";
+import { purchasePremium, restorePlayPurchases, onPurchaseVerified, onPurchaseFailed } from "@/lib/playBilling";
 
 export default function PremiumPage() {
   const { user, refresh } = useAuth();
@@ -16,10 +18,21 @@ export default function PremiumPage() {
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // Defaults to the web/Paymob branch on both the server render and the
+  // first client render (SSR has no notion of the native shell), then
+  // flips to true after mount if we're actually inside the Android app —
+  // avoids a hydration mismatch instead of calling isAndroidNative() directly.
+  const [nativeAndroid, setNativeAndroid] = useState(false);
   // Paymob's redirect URL is configured once in its dashboard (not passed
   // per-request like Stripe's success_url), so it always lands back on
   // /premium and appends its own query params — "success" is theirs.
   const paymobSuccess = searchParams.get("success");
+
+  /* eslint-disable react-hooks/set-state-in-effect -- one-time sync of a stable environment fact (native shell or not) after mount, not derived from render state */
+  useEffect(() => {
+    setNativeAndroid(isAndroidNative());
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (paymobSuccess === "true") {
@@ -34,6 +47,22 @@ export default function PremiumPage() {
       return () => clearInterval(id);
     }
   }, [paymobSuccess, refresh]);
+
+  useEffect(() => {
+    if (!nativeAndroid) return;
+    const offVerified = onPurchaseVerified(() => {
+      refresh();
+      setBusy(false);
+    });
+    const offFailed = onPurchaseFailed((message) => {
+      setError(message);
+      setBusy(false);
+    });
+    return () => {
+      offVerified();
+      offFailed();
+    };
+  }, [nativeAndroid, refresh]);
 
   if (!user) return null;
   const { isPremium, trialUsed, trialStartedAt } = user.subscription;
@@ -57,6 +86,15 @@ export default function PremiumPage() {
   async function subscribe() {
     setBusy(true);
     setError("");
+    if (nativeAndroid) {
+      const message = await purchasePremium();
+      if (message) {
+        setError(message);
+        setBusy(false);
+      }
+      // else: still busy until onPurchaseVerified/onPurchaseFailed fires.
+      return;
+    }
     try {
       const { url } = await api.checkout();
       window.location.href = url;
@@ -64,6 +102,19 @@ export default function PremiumPage() {
       setError(err instanceof ApiError ? err.message : T.checkoutError);
       setBusy(false);
     }
+  }
+
+  async function restore() {
+    setBusy(true);
+    setError("");
+    // Resolves once the store has finished asking Play for owned
+    // purchases — any that were found still fire the `approved` event
+    // (and onPurchaseVerified) asynchronously after this, refreshing the
+    // premium state then. Clearing busy here (rather than waiting on
+    // onPurchaseVerified) avoids hanging forever when nothing is owned.
+    const message = await restorePlayPurchases();
+    if (message) setError(message);
+    setBusy(false);
   }
 
   if (isPremium) {
@@ -163,7 +214,14 @@ export default function PremiumPage() {
       <Button size="lg" full onClick={subscribe} disabled={busy}>
         {T.unlockPremiumBtn}
       </Button>
-      <div style={{ fontSize: 11.5, color: "var(--text-3)", textAlign: "center", lineHeight: 1.5 }}>{T.paymentsSecureNote}</div>
+      {nativeAndroid && (
+        <Button variant="ghost" full onClick={restore} disabled={busy}>
+          {T.restorePurchasesBtn}
+        </Button>
+      )}
+      <div style={{ fontSize: 11.5, color: "var(--text-3)", textAlign: "center", lineHeight: 1.5 }}>
+        {nativeAndroid ? T.paymentsSecureNoteAndroid : T.paymentsSecureNote}
+      </div>
     </div>
   );
 }
