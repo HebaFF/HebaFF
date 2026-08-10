@@ -35,7 +35,12 @@ export const PILL_OPTIONS = [
 
 export const DIABETES_TYPE_IDS = ["type1", "type2", "gestational", "other"] as const;
 
+// Paymob (web/iOS) price. The Android price is set independently in Play
+// Console for the premium_lifetime product — intentionally lower, see
+// ANDROID_ONE_TIME_PRICE_DISPLAY below. Keep these in sync by hand if either
+// price changes; there's no API tying them together.
 export const ONE_TIME_PRICE_DISPLAY = "$10";
+export const ANDROID_ONE_TIME_PRICE_DISPLAY = "$5";
 export const TRIAL_DAYS = 1;
 
 // Full UI-chrome translation (EN/AR), RTL-tested on every screen. Per the

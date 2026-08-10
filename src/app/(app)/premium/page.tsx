@@ -7,7 +7,7 @@ import { CrownIcon, CheckIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LangContext";
 import { api, ApiError } from "@/lib/api";
-import { ONE_TIME_PRICE_DISPLAY, TRIAL_DAYS } from "@/lib/constants";
+import { ONE_TIME_PRICE_DISPLAY, ANDROID_ONE_TIME_PRICE_DISPLAY, TRIAL_DAYS } from "@/lib/constants";
 import { isAndroidNative } from "@/lib/platform";
 import { purchasePremium, restorePlayPurchases, onPurchaseVerified, onPurchaseFailed } from "@/lib/playBilling";
 
@@ -199,7 +199,7 @@ export default function PremiumPage() {
       <Card style={{ textAlign: "center", background: "var(--primary-tint)", border: "none" }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>{T.onetimePurchaseLabel}</div>
         <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 700, marginTop: 4 }}>
-          {ONE_TIME_PRICE_DISPLAY}
+          {nativeAndroid ? ANDROID_ONE_TIME_PRICE_DISPLAY : ONE_TIME_PRICE_DISPLAY}
         </div>
         <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>{T.payOnceMessage}</div>
       </Card>
