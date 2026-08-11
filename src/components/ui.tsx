@@ -357,12 +357,12 @@ export function FAB({ icon, label, onClick }: { icon?: React.ReactNode; label: s
           height: 56,
           borderRadius: 999,
           border: "none",
-          background: "var(--primary)",
+          background: "var(--primary-gradient)",
           color: "white",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 4px 14px oklch(0% 0 0 / 0.18)",
+          boxShadow: "var(--primary-shadow)",
         }}
       >
         {icon ?? <PlusIcon size={26} strokeWidth={2.6} />}
@@ -548,7 +548,7 @@ export function Button({
     lg: { padding: "17px 24px", fontSize: 16.5 },
   };
   const variants: Record<ButtonVariant, React.CSSProperties> = {
-    primary: { background: "var(--primary)", color: "white" },
+    primary: { background: "var(--primary-gradient)", color: "white", boxShadow: "var(--primary-shadow)" },
     secondary: { background: "var(--surface-2)", color: "var(--text)" },
     outline: { background: "transparent", color: "var(--primary-dark)", border: "1.5px solid var(--primary)" },
     danger: { background: "var(--danger)", color: "white" },

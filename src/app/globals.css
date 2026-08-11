@@ -9,13 +9,15 @@
   --text-2: #64748b;
   --text-3: #94a3b8;
 
-  --primary: #0d9488;
-  --primary-dark: #0f766e;
-  --primary-tint: #ccfbf1;
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --primary-tint: #dbeafe;
+  --primary-gradient: linear-gradient(135deg, #4f8ef7 0%, #2563eb 55%, #1d4ed8 100%);
+  --primary-shadow: 0 4px 14px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 
   --good: #16a34a;
   --good-tint: #dcfce7;
-  --warn: #d97706;
+  --warn: #b45309;
   --warn-tint: #fef3c7;
   --danger: #dc2626;
   --danger-tint: #fee2e2;
