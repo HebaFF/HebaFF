@@ -15,6 +15,13 @@
   --primary-gradient: linear-gradient(135deg, #4f8ef7 0%, #2563eb 55%, #1d4ed8 100%);
   --primary-shadow: 0 4px 14px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 
+  /* Teal secondary accent — echoes the icon's blue-to-green gradient corner.
+     Distinct from --good (glucose-in-range green) so it never reads as a
+     glucose status color. */
+  --secondary: #0d9488;
+  --secondary-dark: #0f766e;
+  --secondary-tint: #ccfbf1;
+
   --good: #16a34a;
   --good-tint: #dcfce7;
   --warn: #b45309;

@@ -371,10 +371,11 @@ export function FAB({ icon, label, onClick }: { icon?: React.ReactNode; label: s
   );
 }
 
-export type CardTone = "primary" | "good" | "warn" | "danger" | "indigo" | "sky" | "surface" | "neutral";
+export type CardTone = "primary" | "secondary" | "good" | "warn" | "danger" | "indigo" | "sky" | "surface" | "neutral";
 
 export const TONE_TINT: Record<CardTone, string> = {
   primary: "var(--primary-tint)",
+  secondary: "var(--secondary-tint)",
   good: "var(--good-tint)",
   warn: "var(--warn-tint)",
   danger: "var(--danger-tint)",
@@ -386,6 +387,7 @@ export const TONE_TINT: Record<CardTone, string> = {
 
 export const TONE_ICON_COLOR: Record<CardTone, string> = {
   primary: "var(--primary-dark)",
+  secondary: "var(--secondary-dark)",
   good: "var(--good)",
   warn: "var(--warn)",
   danger: "var(--danger)",

@@ -81,12 +81,12 @@ function RatioCard({
   label: string;
   value: React.ReactNode;
   unit: string;
-  tone: "primary" | "neutral";
+  tone: "primary" | "secondary" | "neutral";
   recalculateLabel: string;
   onRecalculate: () => void;
 }) {
-  const colorVar = tone === "neutral" ? "var(--text-2)" : `var(--${tone})`;
-  const bgVar = tone === "neutral" ? "var(--surface-2)" : "var(--primary-tint)";
+  const colorVar = tone === "neutral" ? "var(--text-2)" : `var(--${tone}${tone === "secondary" ? "-dark" : ""})`;
+  const bgVar = tone === "neutral" ? "var(--surface-2)" : `var(--${tone}-tint)`;
   return (
     <div
       style={{
@@ -218,13 +218,13 @@ export default function SetupPage() {
       </DashboardCard>
 
       {usesInsulin && (
-        <DashboardCard icon={<CalculatorIcon />} title={T.autoRatiosTitle} tone="primary">
+        <DashboardCard icon={<CalculatorIcon />} title={T.autoRatiosTitle} tone="secondary">
           <div style={{ display: "flex", gap: 10 }}>
             <RatioCard
               label={T.carbRatioTDDLabel}
               value={profile.carbRatio ? round2(profile.carbRatio) : t.common.dash}
               unit="g/u"
-              tone="primary"
+              tone="secondary"
               recalculateLabel={T.recalculateBtn}
               onRecalculate={() => router.push("/onboarding")}
             />
