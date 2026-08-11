@@ -35,11 +35,12 @@ export const PILL_OPTIONS = [
 
 export const DIABETES_TYPE_IDS = ["type1", "type2", "gestational", "other"] as const;
 
-// Paymob (web/iOS) price. The Android price is set independently in Play
-// Console for the premium_lifetime product — intentionally lower, see
-// ANDROID_ONE_TIME_PRICE_DISPLAY below. Keep these in sync by hand if either
-// price changes; there's no API tying them together.
-export const ONE_TIME_PRICE_DISPLAY = "$10";
+// Display price, shown on both the web/Paymob and Android/Play Billing
+// paths. The two are configured independently (Paymob's PAYMOB_AMOUNT_CENTS
+// env var vs the premium_lifetime price set in Play Console) — this
+// constant only controls the text shown in the app, not what either
+// processor actually charges. Keep all three in sync by hand.
+export const ONE_TIME_PRICE_DISPLAY = "$5";
 export const ANDROID_ONE_TIME_PRICE_DISPLAY = "$5";
 export const TRIAL_DAYS = 1;
 
