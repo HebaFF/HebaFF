@@ -99,3 +99,8 @@ export const verifyPlayPurchaseSchema = z.object({
   purchaseToken: z.string().min(1),
   productId: z.string().min(1),
 });
+
+export const verifyApplePurchaseSchema = z.object({
+  jws: z.string().min(1),
+  productId: z.string().min(1),
+});

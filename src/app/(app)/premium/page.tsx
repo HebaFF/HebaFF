@@ -7,9 +7,20 @@ import { CrownIcon, CheckIcon } from "@/components/icons";
 import { useAuth } from "@/context/AuthContext";
 import { useLang } from "@/context/LangContext";
 import { api, ApiError } from "@/lib/api";
-import { ONE_TIME_PRICE_DISPLAY, ANDROID_ONE_TIME_PRICE_DISPLAY, TRIAL_DAYS } from "@/lib/constants";
-import { isAndroidNative } from "@/lib/platform";
-import { purchasePremium, restorePlayPurchases, onPurchaseVerified, onPurchaseFailed } from "@/lib/playBilling";
+import { ONE_TIME_PRICE_DISPLAY, TRIAL_DAYS } from "@/lib/constants";
+import { isAndroidNative, isIOSNative } from "@/lib/platform";
+import {
+  purchasePremium as purchasePlayPremium,
+  restorePlayPurchases,
+  onPurchaseVerified as onPlayPurchaseVerified,
+  onPurchaseFailed as onPlayPurchaseFailed,
+} from "@/lib/playBilling";
+import {
+  purchaseApplePremium,
+  restoreApplePurchases,
+  onPurchaseVerified as onApplePurchaseVerified,
+  onPurchaseFailed as onApplePurchaseFailed,
+} from "@/lib/applePurchases";
 
 export default function PremiumPage() {
   const { user, refresh } = useAuth();
@@ -20,9 +31,11 @@ export default function PremiumPage() {
   const [busy, setBusy] = useState(false);
   // Defaults to the web/Paymob branch on both the server render and the
   // first client render (SSR has no notion of the native shell), then
-  // flips to true after mount if we're actually inside the Android app —
-  // avoids a hydration mismatch instead of calling isAndroidNative() directly.
+  // flips to true after mount if we're actually inside the Android/iOS app —
+  // avoids a hydration mismatch instead of calling isAndroidNative()/
+  // isIOSNative() directly.
   const [nativeAndroid, setNativeAndroid] = useState(false);
+  const [nativeIOS, setNativeIOS] = useState(false);
   // Paymob's redirect URL is configured once in its dashboard (not passed
   // per-request like Stripe's success_url), so it always lands back on
   // /premium and appends its own query params — "success" is theirs.
@@ -31,6 +44,7 @@ export default function PremiumPage() {
   /* eslint-disable react-hooks/set-state-in-effect -- one-time sync of a stable environment fact (native shell or not) after mount, not derived from render state */
   useEffect(() => {
     setNativeAndroid(isAndroidNative());
+    setNativeIOS(isIOSNative());
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -49,20 +63,26 @@ export default function PremiumPage() {
   }, [paymobSuccess, refresh]);
 
   useEffect(() => {
-    if (!nativeAndroid) return;
-    const offVerified = onPurchaseVerified(() => {
+    if (!nativeAndroid && !nativeIOS) return;
+    const onVerified = () => {
       refresh();
       setBusy(false);
-    });
-    const offFailed = onPurchaseFailed((message) => {
+    };
+    const onFailed = (message: string) => {
       setError(message);
       setBusy(false);
-    });
-    return () => {
-      offVerified();
-      offFailed();
     };
-  }, [nativeAndroid, refresh]);
+    const offPlayVerified = nativeAndroid ? onPlayPurchaseVerified(onVerified) : undefined;
+    const offPlayFailed = nativeAndroid ? onPlayPurchaseFailed(onFailed) : undefined;
+    const offAppleVerified = nativeIOS ? onApplePurchaseVerified(onVerified) : undefined;
+    const offAppleFailed = nativeIOS ? onApplePurchaseFailed(onFailed) : undefined;
+    return () => {
+      offPlayVerified?.();
+      offPlayFailed?.();
+      offAppleVerified?.();
+      offAppleFailed?.();
+    };
+  }, [nativeAndroid, nativeIOS, refresh]);
 
   if (!user) return null;
   const { isPremium, trialUsed, trialStartedAt } = user.subscription;
@@ -86,8 +106,8 @@ export default function PremiumPage() {
   async function subscribe() {
     setBusy(true);
     setError("");
-    if (nativeAndroid) {
-      const message = await purchasePremium();
+    if (nativeAndroid || nativeIOS) {
+      const message = await (nativeAndroid ? purchasePlayPremium() : purchaseApplePremium());
       if (message) {
         setError(message);
         setBusy(false);
@@ -107,12 +127,12 @@ export default function PremiumPage() {
   async function restore() {
     setBusy(true);
     setError("");
-    // Resolves once the store has finished asking Play for owned
+    // Resolves once the store has finished asking Play/StoreKit for owned
     // purchases — any that were found still fire the `approved` event
     // (and onPurchaseVerified) asynchronously after this, refreshing the
     // premium state then. Clearing busy here (rather than waiting on
     // onPurchaseVerified) avoids hanging forever when nothing is owned.
-    const message = await restorePlayPurchases();
+    const message = await (nativeAndroid ? restorePlayPurchases() : restoreApplePurchases());
     if (message) setError(message);
     setBusy(false);
   }
@@ -200,7 +220,7 @@ export default function PremiumPage() {
       <Card style={{ textAlign: "center", background: "var(--primary-tint)", border: "none" }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "var(--primary-dark)" }}>{T.onetimePurchaseLabel}</div>
         <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 700, marginTop: 4 }}>
-          {nativeAndroid ? ANDROID_ONE_TIME_PRICE_DISPLAY : ONE_TIME_PRICE_DISPLAY}
+          {ONE_TIME_PRICE_DISPLAY}
         </div>
         <div style={{ fontSize: 12, color: "var(--text-2)", marginTop: 2 }}>{T.payOnceMessage}</div>
       </Card>
@@ -215,13 +235,13 @@ export default function PremiumPage() {
       <Button size="lg" full onClick={subscribe} disabled={busy}>
         {T.unlockPremiumBtn}
       </Button>
-      {nativeAndroid && (
+      {(nativeAndroid || nativeIOS) && (
         <Button variant="ghost" full onClick={restore} disabled={busy}>
           {T.restorePurchasesBtn}
         </Button>
       )}
       <div style={{ fontSize: 11.5, color: "var(--text-3)", textAlign: "center", lineHeight: 1.5 }}>
-        {nativeAndroid ? T.paymentsSecureNoteAndroid : T.paymentsSecureNote}
+        {nativeAndroid ? T.paymentsSecureNoteAndroid : nativeIOS ? T.paymentsSecureNoteApple : T.paymentsSecureNote}
       </div>
     </div>
   );

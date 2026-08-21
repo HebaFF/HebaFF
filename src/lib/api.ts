@@ -87,6 +87,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ purchaseToken, productId }),
     }),
+  verifyApplePurchase: (jws: string, productId: string) =>
+    request<{ isPremium: boolean }>("/api/subscription/verify-apple-purchase", {
+      method: "POST",
+      body: JSON.stringify({ jws, productId }),
+    }),
   listCommunityPosts: () => request<{ posts: CommunityPost[] }>("/api/community"),
   createCommunityPost: (content: string) =>
     request<{ post: CommunityPost }>("/api/community", { method: "POST", body: JSON.stringify({ content }) }),

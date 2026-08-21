@@ -35,13 +35,14 @@ export const PILL_OPTIONS = [
 
 export const DIABETES_TYPE_IDS = ["type1", "type2", "gestational", "other"] as const;
 
-// Display price, shown on both the web/Paymob and Android/Play Billing
-// paths. The two are configured independently (Paymob's PAYMOB_AMOUNT_CENTS
-// env var vs the premium_lifetime price set in Play Console) — this
-// constant only controls the text shown in the app, not what either
-// processor actually charges. Keep all three in sync by hand.
+// Display price, shown on the web/Paymob, Android/Play Billing, and
+// iOS/StoreKit paths alike — all three are priced the same ($5). Each
+// processor is configured independently (Paymob's PAYMOB_AMOUNT_CENTS env
+// var, the premium_lifetime price in Play Console, the price set for the
+// product in App Store Connect) — this constant only controls the text
+// shown in the app, not what any processor actually charges. Keep all
+// three in sync by hand if the price ever changes.
 export const ONE_TIME_PRICE_DISPLAY = "$5";
-export const ANDROID_ONE_TIME_PRICE_DISPLAY = "$5";
 export const TRIAL_DAYS = 1;
 
 // Full UI-chrome translation (EN/AR), RTL-tested on every screen. Per the
@@ -370,6 +371,7 @@ export const STRINGS = {
       startTrialError: "Could not start trial.",
       checkoutError: "Could not start checkout.",
       paymentsSecureNoteAndroid: "Payments are processed securely by Google Play.",
+      paymentsSecureNoteApple: "Payments are processed securely by the App Store.",
       restorePurchasesBtn: "Restore purchases",
       restoreError: "Could not restore purchases. Please try again or contact support.",
       features: [
@@ -763,6 +765,7 @@ export const STRINGS = {
       startTrialError: "تعذر بدء التجربة المجانية.",
       checkoutError: "تعذر بدء عملية الدفع.",
       paymentsSecureNoteAndroid: "تتم معالجة المدفوعات بأمان عبر Google Play.",
+      paymentsSecureNoteApple: "تتم معالجة المدفوعات بأمان عبر App Store.",
       restorePurchasesBtn: "استعادة المشتريات",
       restoreError: "تعذرت استعادة المشتريات. حاولي مرة أخرى أو تواصلي مع الدعم.",
       features: [

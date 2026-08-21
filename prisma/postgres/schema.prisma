@@ -137,7 +137,7 @@ model Subscription {
   purchasedAt      DateTime?
   paymentReference String?
   paymobOrderId    String?
-  paymentProvider  String? // "paymob" | "play_billing"
+  paymentProvider  String? // "paymob" | "play_billing" | "app_store"
 
   updatedAt DateTime @updatedAt
 
