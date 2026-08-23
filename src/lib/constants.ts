@@ -444,6 +444,31 @@ export const STRINGS = {
         },
       ],
     },
+    support: {
+      title: "Support",
+      intro: "Need help with GlucoDose? We're happy to answer questions, fix bugs, or hear your feedback.",
+      contactHeading: "Contact us",
+      contactBody: "Email heba@aosama.me and we'll get back to you as soon as we can.",
+      faqHeading: "Frequently asked questions",
+      faq: [
+        {
+          q: "How does the free trial work?",
+          a: `GlucoDose gives you a ${TRIAL_DAYS}-day free trial when you sign up, with full access to every feature. After the trial ends, a one-time Premium purchase (${ONE_TIME_PRICE_DISPLAY}) unlocks the app permanently — no subscription, no recurring charges.`,
+        },
+        {
+          q: "How do I restore my Premium purchase?",
+          a: "Open Premium from the menu and tap \"Restore Purchases.\" This works on the same platform (App Store or Google Play) you originally purchased on.",
+        },
+        {
+          q: "How do I delete my account or data?",
+          a: "Go to Setup in the app and tap \"Delete account.\" This permanently removes your profile, logged entries, and history, and cannot be undone.",
+        },
+        {
+          q: "I found a bug or have a feature request.",
+          a: "Email us at heba@aosama.me with as much detail as you can (what you were doing, what you expected, and what happened instead) — screenshots help a lot.",
+        },
+      ],
+    },
   },
   ar: {
     nav: {
@@ -836,6 +861,31 @@ export const STRINGS = {
         {
           heading: "تواصلي معنا",
           body: "أسئلة حول هذه السياسة أو بياناتك؟ راسلينا على heba@aosama.me.",
+        },
+      ],
+    },
+    support: {
+      title: "الدعم",
+      intro: "تحتاجين مساعدة في GlucoDose؟ يسعدنا الرد على أسئلتك، وإصلاح الأخطاء، وسماع ملاحظاتك.",
+      contactHeading: "تواصلي معنا",
+      contactBody: "راسلينا على heba@aosama.me وسنرد عليكِ في أقرب وقت ممكن.",
+      faqHeading: "الأسئلة الشائعة",
+      faq: [
+        {
+          q: "كيف تعمل الفترة التجريبية المجانية؟",
+          a: `يمنحكِ GlucoDose فترة تجريبية مجانية لمدة ${TRIAL_DAYS} أيام عند التسجيل، مع وصول كامل لجميع الميزات. بعد انتهاء الفترة التجريبية، تفتح عملية شراء بريميوم لمرة واحدة (${ONE_TIME_PRICE_DISPLAY}) التطبيق بشكل دائم — بدون اشتراك، وبدون رسوم متكررة.`,
+        },
+        {
+          q: "كيف أستعيد عملية شراء بريميوم الخاصة بي؟",
+          a: "افتحي بريميوم من القائمة واضغطي على \"استعادة المشتريات\". يعمل هذا على نفس المنصة (App Store أو Google Play) التي اشتريتِ منها في الأصل.",
+        },
+        {
+          q: "كيف أحذف حسابي أو بياناتي؟",
+          a: "اذهبي إلى الإعدادات في التطبيق واضغطي على \"حذف الحساب\". يؤدي هذا إلى إزالة ملفك الشخصي وإدخالاتك المسجلة وسجلك بشكل نهائي، ولا يمكن التراجع عن هذا الإجراء.",
+        },
+        {
+          q: "وجدتُ خطأً أو لدي اقتراح ميزة.",
+          a: "راسلينا على heba@aosama.me مع أكبر قدر ممكن من التفاصيل (ماذا كنتِ تفعلين، وماذا توقعتِ، وماذا حدث فعلياً) — لقطات الشاشة تساعد كثيراً.",
         },
       ],
     },
