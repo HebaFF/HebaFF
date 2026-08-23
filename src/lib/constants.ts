@@ -43,7 +43,7 @@ export const DIABETES_TYPE_IDS = ["type1", "type2", "gestational", "other"] as c
 // shown in the app, not what any processor actually charges. Keep all
 // three in sync by hand if the price ever changes.
 export const ONE_TIME_PRICE_DISPLAY = "$5";
-export const TRIAL_DAYS = 1;
+export const TRIAL_DAYS = 2;
 
 // Full UI-chrome translation (EN/AR), RTL-tested on every screen. Per the
 // original design handoff's stated scope, the food database (FOOD_DB) and
@@ -357,8 +357,8 @@ export const STRINGS = {
       title: "GlucoDose Premium",
       subtitle: "Everything you need to manage diabetes with confidence.",
       trialActive: (days: number) => `Free trial active — ${days} day${days === 1 ? "" : "s"} left`,
-      trialSubtitle: "Subscribe below to keep Premium after your trial ends.",
-      trialEnded: "Your free trial has ended",
+      trialSubtitle: "Subscribe below to keep using GlucoDose after your trial ends.",
+      trialEnded: "Your free trial has ended — subscribe to keep using GlucoDose",
       paymentReceived: "Payment received — confirming…",
       checkoutCancelled: "Checkout cancelled",
       onetimePurchaseLabel: "One-time purchase",
@@ -375,6 +375,7 @@ export const STRINGS = {
       restorePurchasesBtn: "Restore purchases",
       restoreError: "Could not restore purchases. Please try again or contact support.",
       features: [
+        "Full access to dose calculations and daily tracking",
         "Full searchable food database, unlimited history",
         "Export a PDF report for your doctor",
         "Trend insights across meals & glucose readings",
@@ -751,8 +752,8 @@ export const STRINGS = {
       title: "بريميوم GlucoDose",
       subtitle: "كل ما تحتاجينه لإدارة مرض السكري بثقة.",
       trialActive: (days: number) => `التجربة المجانية مفعّلة — تبقى ${days} ${days === 1 ? "يوم" : "أيام"}`,
-      trialSubtitle: "اشتركي أدناه للاحتفاظ ببريميوم بعد انتهاء تجربتك.",
-      trialEnded: "انتهت تجربتك المجانية",
+      trialSubtitle: "اشتركي أدناه لمواصلة استخدام GlucoDose بعد انتهاء تجربتك.",
+      trialEnded: "انتهت تجربتك المجانية — اشتركي لمواصلة استخدام GlucoDose",
       paymentReceived: "تم استلام الدفعة — جارٍ التأكيد…",
       checkoutCancelled: "تم إلغاء الدفع",
       onetimePurchaseLabel: "دفعة لمرة واحدة",
@@ -769,6 +770,7 @@ export const STRINGS = {
       restorePurchasesBtn: "استعادة المشتريات",
       restoreError: "تعذرت استعادة المشتريات. حاولي مرة أخرى أو تواصلي مع الدعم.",
       features: [
+        "وصول كامل لحاسبة الجرعات والمتابعة اليومية",
         "قاعدة بيانات أطعمة قابلة للبحث بالكامل، وسجل غير محدود",
         "تصدير تقرير PDF لطبيبك",
         "رؤى واتجاهات عبر الوجبات وقراءات السكر",

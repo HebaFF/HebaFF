@@ -33,7 +33,12 @@ export async function POST(req: NextRequest) {
       username,
       email,
       passwordHash,
-      subscription: { create: {} },
+      // The free trial starts immediately at signup (not on a manual "Start
+      // trial" click) — every account gets TRIAL_DAYS of full access, then
+      // the (app) layout's paywall guard takes over. See
+      // src/app/(app)/layout.tsx for where trialUsed/trialStartedAt are
+      // read back to decide access.
+      subscription: { create: { trialUsed: true, trialStartedAt: new Date() } },
     },
   });
 

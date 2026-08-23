@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button, Card, Badge } from "@/components/ui";
 import { DownloadIcon } from "@/components/icons";
 import { TrendChart, LogBGModal, EditEntryModal } from "@/components/History";
@@ -27,7 +26,6 @@ type Filter = "all" | "meals" | "doses" | "bg";
 export default function HistoryPage() {
   const { user } = useAuth();
   const { entries, logEntry, updateEntry, deleteEntry } = useAppData();
-  const router = useRouter();
   const { lang, t } = useLang();
   const T = t.history;
   const locale = lang === "ar" ? "ar" : "en";
@@ -36,7 +34,6 @@ export default function HistoryPage() {
   const [editingEntry, setEditingEntry] = useState<LogEntry | null>(null);
 
   const profile = user?.profile;
-  const isPremium = !!user?.subscription.isPremium;
 
   const typeLabel: Record<string, string> = {
     meal: T.mealDoseType,
@@ -56,7 +53,10 @@ export default function HistoryPage() {
   }, [entries, filter]);
 
   if (!profile) return null;
-  const visible = isPremium ? filtered : filtered.slice(0, 15);
+  // No cap on visible entries here — this page is only reachable at all
+  // (see the (app) layout's paywall guard) once the user has full access
+  // (Premium or an active trial), so there's no "free tier" case to gate.
+  const visible = filtered;
 
   function downloadReport() {
     const doc = buildReportPdf({ patientName: user?.profile?.name ?? "", units: profile!.units, entries });
@@ -143,14 +143,6 @@ export default function HistoryPage() {
           );
         })}
       </div>
-
-      {!isPremium && filtered.length > 15 && (
-        <Card style={{ background: "var(--surface-2)", border: "none", textAlign: "center" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>{T.hiddenEntries(filtered.length - 15)}</div>
-          <div style={{ fontSize: 12.5, color: "var(--text-2)", marginBottom: 12 }}>{T.freeAccountsMessage}</div>
-          <Button onClick={() => router.push("/premium")}>{T.seePremiumBtn}</Button>
-        </Card>
-      )}
 
       <LogBGModal open={bgOpen} onClose={() => setBgOpen(false)} units={profile.units} onSave={logEntry} />
       <EditEntryModal
